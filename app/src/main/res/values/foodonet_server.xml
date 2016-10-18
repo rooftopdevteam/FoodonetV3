@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="foodonet_server">https://prv-fd-server.herokuapp.com/</string>
+</resources>

@@ -1,10 +1,8 @@
-package com.roa.foodonetv3;
+package com.roa.foodonetv3.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.roa.foodonetv3.R;
 
 public class WelcomeUserActivity extends AppCompatActivity {
     ///test from roi
