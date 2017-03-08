@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "754311117367-c42ia8ipcf330b34n25uqlp72cutpb34.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.roa.foodonetv3",
-            "certificate_hash": "E8FFA04324833EFD04C678089BA59E380C691C9E"
-          }
-        },
-        {
           "client_id": "754311117367-ensqdv8pen9vcdchvi6amjfij3r6lmt2.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -30,6 +22,12 @@
       "api_key": [
         {
           "current_key": "AIzaSyAMn-d0Rq3X_8Swe_9PVokpmYLzv5mCOvM"
+        },
+        {
+          "current_key": "AIzaSyCYWHCySc8G9IYnl6m79QXFgqZAydLHozs"
+        },
+        {
+          "current_key": "AIzaSyDdKpu88l2Th71v6DwbG_37dqJV9llINIg"
         }
       ],
       "services": {

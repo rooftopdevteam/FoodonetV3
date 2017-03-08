@@ -41,6 +41,13 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".services.FoodonetGcmListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
         <activity
             android:name=".activities.WelcomeUserActivity"
             android:configChanges="orientation"

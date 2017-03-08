@@ -10,7 +10,7 @@ public class GroupMember implements Parcelable{
     private static final String TAG = "GroupMember";
 
     public static final String KEY = "members";
-    public static final String GROUP_ID = "group_id";
+    public static final String GROUP_ID = "Group_id";
     public static final String USER_ID = "user_id";
     public static final String PHONE_NUMBER = "phone_number";
     public static final String NAME = "name";
