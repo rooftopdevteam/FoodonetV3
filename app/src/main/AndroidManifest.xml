@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.roa.foodonetv3.permission.C2D_MESSAGE" />
+    <permission android:name="com.roa.foodonetv3.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
 
     <application
         android:allowBackup="true"
@@ -12,6 +16,22 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <receiver
+            android:name =".activities.MainActivity$GcmBroadcastReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.roa.foodonetv3" />
+            </intent-filter>
+        </receiver>
+         <service
+         android:name=".services.MyGcmListenerService"
+         android:exported="false" >
+         <intent-filter>
+         <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+         </intent-filter>
+         </service>
         <activity
             android:name=".activities.MainActivity"
             android:configChanges="orientation"
@@ -54,28 +74,31 @@
         <activity
             android:name=".activities.MapActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_map" />
+            android:label="@string/title_activity_map"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.SplashForCamera"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" />
-        <activity android:name=".activities.AboutUsActivity"
+        <activity
+            android:name=".activities.AboutUsActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activities.PrefsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.PrefsActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activities.PlacesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.PlacesActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.GroupsActivity"
-            android:label="@string/title_activity_groups"
             android:configChanges="orientation"
+            android:label="@string/title_activity_groups"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -100,7 +123,8 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-
     </application>
 
 </manifest>
+
+    <!--android:name="com.google.android.gms.gcm.GcmReceiver"-->

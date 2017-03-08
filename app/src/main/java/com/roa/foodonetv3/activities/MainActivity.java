@@ -1,5 +1,8 @@
 package com.roa.foodonetv3.activities;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +14,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -23,9 +27,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
@@ -39,10 +46,14 @@ import com.roa.foodonetv3.fragments.ClosestFragment;
 import com.roa.foodonetv3.fragments.RecentFragment;
 import com.roa.foodonetv3.model.User;
 import com.roa.foodonetv3.services.FoodonetService;
+import com.roa.foodonetv3.services.MyGcmListenerService;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.UUID;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.support.v4.content.WakefulBroadcastReceiver.startWakefulService;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,TabLayout.OnTabSelectedListener, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "MainActivity";
@@ -53,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private GoogleApiClient mGoogleApiClient;
     private SharedPreferences preferenceManager;
     private Button buttonTest;
+    private GcmBroadcastReceiver myReceiver;
 
 
     @Override
@@ -89,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // TODO: 01/01/2017 remove the notification token generator to initializes place
         /** generate notification token to register the device to get notification*/
         String token = preferenceManager.getString("notification_token",null);
+        Log.e("token: ", token);
         if (token == null) {
             generateNotificationToken();
         }
@@ -300,6 +313,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         };
         t.start();
+    }
+
+    public static class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Explicitly specify that GcmIntentService will handle the intent.
+            ComponentName comp = new ComponentName(context.getPackageName(),
+                    MyGcmListenerService.class.getName());
+            // Start the service, keeping the device awake while it is launching.
+            startWakefulService(context, (intent.setComponent(comp)));
+            setResultCode(Activity.RESULT_OK);
+        }
     }
 }
 
