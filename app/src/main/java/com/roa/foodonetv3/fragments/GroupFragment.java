@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.activities.GroupsActivity;
 import com.roa.foodonetv3.adapters.GroupMembersRecyclerAdapter;
+import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.GroupMembersDBHandler;
@@ -145,6 +147,7 @@ public class GroupFragment extends Fragment {
                 name = cursor.getString(nameIndex);
             }
             Log.d(TAG,"phone:"+phone+" ,name:"+name);
+            phone = CommonMethods.getDigitsFromPhone(phone);
             if(!groupMembersDBHandler.isMemberInGroup(group.getGroupID(),phone)){
                 GroupMember member = new GroupMember((long)-1,group.getGroupID(), UNKNOWN_USER_ID,phone,name,false);
                 boolean error = false;

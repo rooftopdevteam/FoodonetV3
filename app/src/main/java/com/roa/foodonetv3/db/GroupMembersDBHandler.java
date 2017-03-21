@@ -152,7 +152,7 @@ public class GroupMembersDBHandler {
 
         while(c!= null && c.moveToNext()){
             phoneNumber = c.getString(c.getColumnIndex(FoodonetDBProvider.MembersDB.USER_PHONE_COLUMN));
-            if (PhoneNumberUtils.compare(newPhone,phoneNumber)){
+            if (CommonMethods.comparePhoneNumbers(newPhone,phoneNumber)){
                 inGroup = true;
                 break;
             }

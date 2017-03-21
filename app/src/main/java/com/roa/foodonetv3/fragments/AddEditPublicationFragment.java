@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -44,6 +45,7 @@ import com.roa.foodonetv3.model.Publication;
 import com.roa.foodonetv3.model.SavedPlace;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -303,9 +305,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                 //  returns true if successful*/
                 case INTENT_TAKE_PICTURE:
                     mCurrentPhotoPath = pickPhotoPath;
-                    if (CommonMethods.editOverwriteImage(getContext(), mCurrentPhotoPath)) {
-                        /** let glide handle the caching and scaling to the imageView */
-                        Glide.with(this).load(mCurrentPhotoPath).centerCrop().into(imagePictureAddPublication);
+                    try {
+                        Glide.with(this).load(CommonMethods.compressImage(getContext(), null, mCurrentPhotoPath)).centerCrop().into(imagePictureAddPublication);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
                     break;
                 // an image was successfully picked, since we have the path already,
@@ -313,16 +316,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                 //  returns true if successful*/
                 case INTENT_PICK_PICTURE:
                     mCurrentPhotoPath = pickPhotoPath;
-                    Uri uri = data.getData();
-
                     try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-                        if (CommonMethods.editOverwriteImage(mCurrentPhotoPath,bitmap)) {
-                            // let glide handle the caching and scaling to the imageView */
-                            Glide.with(this).load(mCurrentPhotoPath).centerCrop().into(imagePictureAddPublication);
-                        }
-                    } catch (IOException e) {
-                        Log.e(TAG,e.getMessage());
+                        Glide.with(this).load(CommonMethods.compressImage(getContext(), data.getData(), mCurrentPhotoPath)).centerCrop().into(imagePictureAddPublication);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
                     break;
                 case PlacesActivity.REQUEST_PLACE_PICKER:

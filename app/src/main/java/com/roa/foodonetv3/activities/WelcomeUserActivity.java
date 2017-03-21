@@ -93,6 +93,7 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v) {
         String phone = userPhoneNumber.getText().toString();
+        phone = CommonMethods.getDigitsFromPhone(phone);
         String userName = editUserName.getText().toString();
         if(PhoneNumberUtils.isGlobalPhoneNumber(phone)){
             ServerMethods.addUser(this, phone, userName);
