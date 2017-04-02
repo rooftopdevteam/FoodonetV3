@@ -11,6 +11,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -67,11 +69,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         IntentFilter filter = new IntentFilter(ReceiverConstants.BROADCAST_FOODONET);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver,filter);
 
-        /** get to the onMapReady when done */
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        if(mapFragment!=null) {
-            mapFragment.getMapAsync(MapActivity.this);
-        }
+        startMap();
     }
 
     @Override
@@ -80,6 +78,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
+    public void startMap(){
+        /** get to the onMapReady when done */
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if(mapFragment!=null) {
+            mapFragment.getMapAsync(MapActivity.this);
+        }
+    }
 
     /**
      * Manipulates the map once available.
@@ -150,10 +155,38 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    private void updateMap(){
+        PublicationsDBHandler handler = new PublicationsDBHandler(getBaseContext());
+        publications = handler.getPublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS);
+        adapter.updatePublications(publications);
+        startMap();
+    }
+
     private class FoodonetReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // TODO: 15/01/2017 delete?
+            switch (intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1)){
+                case ReceiverConstants.ACTION_GET_PUBLICATION:
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 01/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        if(intent.getBooleanExtra(ReceiverConstants.UPDATE_DATA,true)){
+                            updateMap();
+                        }
+                    }
+                    break;
+                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 01/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        if(intent.getBooleanExtra(ReceiverConstants.UPDATE_DATA,true)){
+                            updateMap();
+                        }
+                    }
+                    break;
+            }
         }
     }
 }

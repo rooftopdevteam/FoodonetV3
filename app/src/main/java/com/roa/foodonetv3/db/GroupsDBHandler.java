@@ -36,7 +36,7 @@ public class GroupsDBHandler {
         return groups;
     }
 
-    /** get all groups not including 0 - public */
+    /** get all groups including 0 - public */
     public ArrayList<Group> getAllGroupsWithPublic(){
         Cursor c = context.getContentResolver().query(FoodonetDBProvider.GroupsDB.CONTENT_URI,null,null,null,null);
         ArrayList<Group> groups = new ArrayList<>();

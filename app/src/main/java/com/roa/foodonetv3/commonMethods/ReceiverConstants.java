@@ -20,6 +20,7 @@ public class ReceiverConstants {
     public static final int ACTION_ADD_PUBLICATION = 2;
     public static final int ACTION_EDIT_PUBLICATION = 3;
     public static final int ACTION_DELETE_PUBLICATION = 4;
+    public static final int ACTION_GET_PUBLICATION = 5;
     public static final int ACTION_GET_REPORTS = 10;
     public static final int ACTION_ADD_REPORT = 11;
     public static final int ACTION_ADD_USER = 20;
@@ -40,6 +41,7 @@ public class ReceiverConstants {
     public static final int ACTION_FAB_CLICK = 100;
     public static final int ACTION_GOT_DATA = 200;
     public static final int ACTION_GET_DATA = 201;
+    public static final int ACTION_GOT_NEW_REPORT = 202;
     public static final int ACTION_ADD_ADMIN_MEMBER = 210;
     public static final int ACTION_SIGN_OUT = 300;
 
@@ -48,6 +50,7 @@ public class ReceiverConstants {
     public static final String GROUP_ID = "groupID";
     public static final String PUBLICATION_REGISTERED_USERS = "publicationRegisteredUsers";
     public static final String USER_EXITED_GROUP = "userExitedGroup";
+    public static final String UPDATE_DATA = "updateData";
 
     /** Local Extras*/
     public static final int FAB_TYPE_NEW_GROUP_MEMBER = 1;

@@ -114,6 +114,19 @@ public class GroupsOverviewFragment extends Fragment {
                     } else{
                         adapter.updateGroups(groupsDBHandler.getAllGroups());
                     }
+                    break;
+
+                case ReceiverConstants.ACTION_GET_GROUPS:
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 02/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else {
+                        ArrayList<Group> groups = groupsDBHandler.getAllGroups();
+                        if(groups.size()!=0){
+                            layoutInfo.setVisibility(View.GONE);
+                        }
+                        adapter.updateGroups(groups);
+                    }
             }
         }
     }

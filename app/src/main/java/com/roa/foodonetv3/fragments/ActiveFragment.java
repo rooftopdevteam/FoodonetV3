@@ -114,6 +114,26 @@ public class ActiveFragment extends Fragment {
                         adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS);
                     }
                     break;
+                case ReceiverConstants.ACTION_GET_PUBLICATION:
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 01/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        if(intent.getBooleanExtra(ReceiverConstants.UPDATE_DATA,true)){
+                            adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS);
+                        }
+                    }
+                    break;
+                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 01/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        if(intent.getBooleanExtra(ReceiverConstants.UPDATE_DATA,true)){
+                            adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS);
+                        }
+                    }
+                    break;
             }
         }
     }

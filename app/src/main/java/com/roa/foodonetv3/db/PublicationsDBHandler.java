@@ -127,6 +127,38 @@ public class PublicationsDBHandler {
         return publicationsIDs;
     }
 
+
+    public String getPublicationTitle(long publicationID) {
+        String[] projection = {FoodonetDBProvider.PublicationsDB.TITLE_COLUMN};
+        String selection = String.format("%1$s = ?",FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN);
+        String[] selectionArgs = {String.valueOf(publicationID)};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,selection,selectionArgs,null);
+        String title = null;
+        if(c != null && c.moveToNext()){
+            title = c.getString(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.TITLE_COLUMN));
+        }
+        if(c != null){
+            c.close();
+        }
+        return title;
+    }
+
+    public boolean isUserAdmin(long publicationID){
+        String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLISHER_ID_COLUMN};
+        String selection = String.format("%1$s = ? AND %2$s = ?",FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN,FoodonetDBProvider.PublicationsDB.PUBLISHER_ID_COLUMN);
+        String[] selectionArgs = {String.valueOf(publicationID),String.valueOf(CommonMethods.getMyUserID(context))};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,selection,selectionArgs,null);
+        boolean userAdmin = false;
+        if(c!= null && c.moveToNext()){
+            userAdmin = true;
+        }
+        if(c!= null){
+             c.close();
+        }
+        return userAdmin;
+
+    }
+
     /** deletes the publications in the db and add new publications data */
     public void replaceAllPublications(ArrayList<Publication> publications){
         /** delete all publications from db before adding the new ones */

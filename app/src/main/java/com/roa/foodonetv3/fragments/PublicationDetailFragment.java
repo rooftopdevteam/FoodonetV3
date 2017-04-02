@@ -569,9 +569,24 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         // TODO: 19/12/2016 add logic if fails
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     } else{
-                        Toast.makeText(context, getResources().getString(R.string.deleted), Toast.LENGTH_SHORT).show();
+                        if(intent.getLongExtra(Publication.PUBLICATION_ID,-1)==publication.getId()){
+                            Toast.makeText(context, getResources().getString(R.string.deleted), Toast.LENGTH_SHORT).show();
+                            onDeletePublicationListener.onDeletePublication();
+                        }
+                    }
+                    break;
 
-                        onDeletePublicationListener.onDeletePublication();
+                case ReceiverConstants.ACTION_GOT_NEW_REPORT:
+                    if(alertDialog!=null && alertDialog.isShowing()){
+                        alertDialog.dismiss();
+                    }
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 02/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        if(publication.getId() == intent.getLongExtra(Publication.PUBLICATION_ID,-1) && intent.getBooleanExtra(ReceiverConstants.UPDATE_DATA,true)){
+                            ServerMethods.getReports(getContext(),publication.getId(),publication.getVersion());
+                        }
                     }
                     break;
             }

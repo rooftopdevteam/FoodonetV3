@@ -172,6 +172,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
             groupName = group.getGroupName();
             groupsNames[i] = groupName;
         }
+        spinnerAdapter.clear();
         spinnerAdapter.addAll(groupsNames);
 
         if (mCurrentPhotoPath == null|| mCurrentPhotoPath.equals("")) {
@@ -358,6 +359,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         if (title.equals("") || location.equals("") || place.getLat()== CommonConstants.LATLNG_ERROR || place.getLng()==CommonConstants.LATLNG_ERROR
                 || photoPath == null) {
             Toast.makeText(getContext(), R.string.post_please_enter_all_fields, Toast.LENGTH_SHORT).show();
+            onReceiveResponseListener.onReceiveResponse();
         } else {
             double price;
             if (priceS.equals("")) {
@@ -386,6 +388,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
             }
         }
     }
+
 
     private class FoodonetReceiver extends BroadcastReceiver {
         @Override

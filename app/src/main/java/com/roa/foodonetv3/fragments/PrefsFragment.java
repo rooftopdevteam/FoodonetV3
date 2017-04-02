@@ -10,6 +10,7 @@ import android.telephony.PhoneNumberUtils;
 import android.widget.Toast;
 
 import com.roa.foodonetv3.R;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
 
 public class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
@@ -33,9 +34,10 @@ public class PrefsFragment extends PreferenceFragment implements Preference.OnPr
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        listNotificationRadius = (ListPreference) findPreference(getString(R.string.key_prefs_list_notification_radius));
+        listNotificationRadius = (ListPreference) findPreference(keyListNotificationRadius);
         String[] notificationRadiusListKMValues = getResources().getStringArray(R.array.prefs_notification_radius_values_km);
-        String currentValueNotificationRadiusListKM = sharedPreferences.getString(keyListNotificationRadius, notificationRadiusListKMValues[2]);
+        String currentValueNotificationRadiusListKM = sharedPreferences.getString(keyListNotificationRadius,
+                notificationRadiusListKMValues[CommonConstants.DEFAULT_NOTIFICATION_RADIUS_ITEM]);
         listNotificationRadius.setSummary(getEntryStringFromList(
                 R.array.prefs_notification_radius_entries_km,
                 R.array.prefs_notification_radius_values_km,

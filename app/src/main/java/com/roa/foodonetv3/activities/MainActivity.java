@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -33,22 +32,16 @@ import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.roa.foodonetv3.R;
-import com.roa.foodonetv3.adapters.PublicationsRecyclerAdapter;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
-import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.fragments.ActiveFragment;
 import com.roa.foodonetv3.fragments.ClosestFragment;
 import com.roa.foodonetv3.fragments.RecentFragment;
 import com.roa.foodonetv3.model.Publication;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
-import com.roa.foodonetv3.services.FoodonetService;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,TabLayout.OnTabSelectedListener,
@@ -78,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // TODO: 16/01/2017 remove this after finished testing the push notification user sign in
         buttonTest = (Button) findViewById(R.id.buttonTest);
         // disabling the button for now
-        buttonTest.setVisibility(View.GONE);
+//        buttonTest.setVisibility(View.GONE);
         buttonTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -305,5 +298,3 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         t.start();
     }
 }
-
-

@@ -11,7 +11,7 @@ public class CommonConstants {
 
     public static final double LATLNG_ERROR = -9999;
 
-    public static final int SPLASH_CAMERA_TIME = 3000;
+    public static final int SPLASH_CAMERA_TIME = 1500;
 
     public static final int NUMBER_OF_LATEST_SEARCHES = 5;
 
@@ -28,4 +28,6 @@ public class CommonConstants {
     /** map zoom */
     public static final float ZOOM_OUT = 9;
     public static final float ZOOM_IN = 13.6f;
+
+    public static final int DEFAULT_NOTIFICATION_RADIUS_ITEM = 2;
 }

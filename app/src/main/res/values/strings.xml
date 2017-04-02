@@ -139,5 +139,10 @@
     <string name="toast_there_are_no_registered_users">There are no registered users</string>
     <string name="dialog_please_wait">Please wait</string>
     <string name="menu_exit_group">Exit group</string>
+    <string name="deleted_share">Deleted Share</string>
+    <string name="a_new_user_registered_to_your_share">a new user registered to your share</string>
+    <string name="your_share">Your share</string>
+    <string name="got_a_new_report">got a new report</string>
+    <string name="you_were_added_to_a_new_group">You were added to a new group</string>
 
 </resources>

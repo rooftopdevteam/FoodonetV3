@@ -15,13 +15,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.adapters.PublicationsRecyclerAdapter;
+import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.FoodonetDBProvider;
 import com.roa.foodonetv3.db.PublicationsDBHandler;
 import com.roa.foodonetv3.db.RegisteredUsersDBHandler;
 import com.roa.foodonetv3.model.Publication;
+import com.roa.foodonetv3.model.User;
+
 import java.util.ArrayList;
 
 public class MyPublicationsFragment extends Fragment{
@@ -93,7 +98,37 @@ public class MyPublicationsFragment extends Fragment{
         public void onReceive(Context context, Intent intent) {
             int action = intent.getIntExtra(ReceiverConstants.ACTION_TYPE, -1);
             switch (action) {
-                // TODO: 16/01/2017 delete?
+                case ReceiverConstants.ACTION_GET_PUBLICATION:
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 01/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        if(intent.getBooleanExtra(ReceiverConstants.UPDATE_DATA,true) &&
+                                intent.getLongExtra(User.IDENTITY_PROVIDER_USER_ID,-1)== CommonMethods.getMyUserID(getContext())){
+                            adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_USER_PUBLICATIONS);
+                        }
+                    }
+                    break;
+
+                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 01/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        if(intent.getBooleanExtra(ReceiverConstants.UPDATE_DATA,true)){
+                            adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_USER_PUBLICATIONS);
+                        }
+                    }
+                    break;
+
+                case ReceiverConstants.ACTION_GET_ALL_PUBLICATIONS_REGISTERED_USERS:
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 02/04/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        // if got new registered users update the adapter
+                        adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_USER_PUBLICATIONS);
+                    }
             }
         }
     }

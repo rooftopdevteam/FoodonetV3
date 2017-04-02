@@ -19,6 +19,7 @@ public class StartFoodonetServiceMethods {
      * @param args
      * edit publication - add args[0] = (String) publication id
      * delete publication - add args[0] = (String) publication id
+     * get publication - add args[0] = (String) publication id, args[1] = (String) 1/0 send notification
      * get reports - add args[0] = (String) publication id, args[1] = (String) publication version
      * add report - add args[0] = (String) publication id
      * register for publication - add args[0] = (String) publication id
@@ -50,6 +51,11 @@ public class StartFoodonetServiceMethods {
                 builder.append(context.getResources().getString(R.string._json));
                 break;
             case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                builder.append(context.getResources().getString(R.string.foodonet_publications));
+                builder.append(String.format(Locale.US,"/%1$s",args[0]));
+                builder.append(context.getResources().getString(R.string._json));
+                break;
+            case ReceiverConstants.ACTION_GET_PUBLICATION:
                 builder.append(context.getResources().getString(R.string.foodonet_publications));
                 builder.append(String.format(Locale.US,"/%1$s",args[0]));
                 builder.append(context.getResources().getString(R.string._json));
@@ -137,6 +143,8 @@ public class StartFoodonetServiceMethods {
                 return CommonConstants.HTTP_PUT;
             case ReceiverConstants.ACTION_DELETE_PUBLICATION:
                 return CommonConstants.HTTP_DELETE;
+            case ReceiverConstants.ACTION_GET_PUBLICATION:
+                return CommonConstants.HTTP_GET;
             case ReceiverConstants.ACTION_GET_REPORTS:
                 return CommonConstants.HTTP_GET;
             case ReceiverConstants.ACTION_ADD_REPORT: // not tested

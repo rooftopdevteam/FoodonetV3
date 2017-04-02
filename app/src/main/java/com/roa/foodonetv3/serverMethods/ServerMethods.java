@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.roa.foodonetv3.R;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.GroupMembersDBHandler;
@@ -63,6 +64,20 @@ public class ServerMethods {
         deleteIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_DELETE_PUBLICATION);
         deleteIntent.putExtra(ReceiverConstants.ADDRESS_ARGS,args);
         context.startService(deleteIntent);
+    }
+
+    public static void getPublication(Context context, long publicationID, boolean notifyUser){
+        String notifyUserString;
+        if(notifyUser){
+            notifyUserString = String.valueOf(CommonConstants.VALUE_TRUE);
+        } else{
+            notifyUserString = String.valueOf(CommonConstants.VALUE_FALSE);
+        }
+        String[] args = {String.valueOf(publicationID),notifyUserString};
+        Intent getPublicationIntent = new Intent(context, FoodonetService.class);
+        getPublicationIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_PUBLICATION);
+        getPublicationIntent.putExtra(ReceiverConstants.ADDRESS_ARGS,args);
+        context.startService(getPublicationIntent);
     }
 
     public static void getReports(Context context, long publicationID, int publicationVersion){
@@ -214,4 +229,5 @@ public class ServerMethods {
         intent.putExtra(ReceiverConstants.JSON_TO_SEND,stringToSend);
         context.startService(intent);
     }
+
 }

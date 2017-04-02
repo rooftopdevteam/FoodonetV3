@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
+import com.roa.foodonetv3.model.User;
 import com.roa.foodonetv3.serverMethods.StartFoodonetServiceMethods;
 import com.roa.foodonetv3.db.GroupMembersDBHandler;
 import com.roa.foodonetv3.db.GroupsDBHandler;
@@ -136,6 +136,7 @@ public class FoodonetService extends IntentService {
     }
 
     private Intent addResponseToIntent(int actionType, String responseRoot, Intent intent){
+        Log.d(TAG,responseRoot);
         try {
             PublicationsDBHandler publicationsDBHandler;
             GroupsDBHandler groupsDBHandler;
@@ -225,7 +226,6 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_EDIT_PUBLICATION){
-                Log.d(TAG,responseRoot);
                 JSONObject root = new JSONObject(responseRoot);
                 long publicationID = root.getLong("id");
                 int publicationVersion = root.getInt("version");
@@ -258,6 +258,58 @@ public class FoodonetService extends IntentService {
             else if(actionType == ReceiverConstants.ACTION_DELETE_PUBLICATION){
                 publicationsDBHandler = new PublicationsDBHandler(this);
                 publicationsDBHandler.deletePublication(Long.parseLong(args[0]));
+                intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
+                intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
+            }
+
+            else if(actionType == ReceiverConstants.ACTION_GET_PUBLICATION){
+                groupsDBHandler = new GroupsDBHandler(this);
+                publicationsDBHandler = new PublicationsDBHandler(this);
+                ArrayList<Long> groupsIDs = groupsDBHandler.getGroupsIDs();
+                long id,audience;
+                String title,subtitle,address,startingDate,endingDate,contactInfo,activeDeviceDevUUID,photoURL,identityProviderUserName,priceDescription;
+                short typeOfCollecting;
+                Double lat,lng,price;
+                boolean isOnAir;
+                int version;
+                JSONObject publicationObject = new JSONObject(responseRoot);
+                audience = publicationObject.getLong("audience");
+                activeDeviceDevUUID = publicationObject.getString("active_device_dev_uuid");
+                boolean updateData = false;
+
+                if((audience == 0 || groupsIDs.contains(audience)) && !activeDeviceDevUUID.equals(CommonMethods.getDeviceUUID(this))){
+                    long publisherID = publicationObject.getLong("publisher_id");
+                    id = publicationObject.getLong("id");
+                    version = publicationObject.getInt("version");
+                    title = publicationObject.getString("title");
+                    subtitle = publicationObject.getString("subtitle");
+                    address = publicationObject.getString("address");
+                    typeOfCollecting = (short) publicationObject.getInt("type_of_collecting");
+                    lat = publicationObject.getDouble("latitude");
+                    lng = publicationObject.getDouble("longitude");
+                    startingDate = publicationObject.getString("starting_date");
+                    endingDate = publicationObject.getString("ending_date");
+                    contactInfo = publicationObject.getString("contact_info");
+                    isOnAir = publicationObject.getBoolean("is_on_air");
+                    photoURL = publicationObject.getString("photo_url");
+
+                    identityProviderUserName = publicationObject.getString("identity_provider_user_name");
+                    price = publicationObject.getDouble("price");
+                    priceDescription = publicationObject.getString("price_description");
+                    Publication publication = new Publication(id, version, title, subtitle, address, typeOfCollecting, lat, lng, startingDate, endingDate, contactInfo, isOnAir,
+                            activeDeviceDevUUID, photoURL, publisherID, audience, identityProviderUserName, price, priceDescription);
+                    publicationsDBHandler.insertPublication(publication);
+
+                    boolean notifyUser = args[1].equals(String.valueOf(CommonConstants.VALUE_TRUE));
+                    if(notifyUser){
+                        final String msgTitle = getString(R.string.foodonet);
+                        final String msgBody = String.format("%1$s: %2$s",getString(R.string.new_share),publication.getTitle());
+                        CommonMethods.sendNotification(this,msgTitle,msgBody);
+                    }
+                    intent.putExtra(User.IDENTITY_PROVIDER_USER_ID,publisherID);
+                    updateData = true;
+                }
+                intent.putExtra(ReceiverConstants.UPDATE_DATA,updateData);
             }
 
             else if(actionType == ReceiverConstants.ACTION_GET_REPORTS){
@@ -306,7 +358,6 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_UPDATE_USER){
-                Log.d(TAG,responseRoot);
                 // TODO: 22/02/2017 add logic
             }
 
@@ -457,7 +508,6 @@ public class FoodonetService extends IntentService {
             }
 
             else if (actionType == ReceiverConstants.ACTION_DELETE_GROUP_MEMBER){
-                Log.d(TAG,responseRoot);
                 long uniqueID = Long.valueOf(args[0]);
                 groupMembersDBHandler = new GroupMembersDBHandler(this);
                 groupMembersDBHandler.deleteGroupMember(uniqueID);

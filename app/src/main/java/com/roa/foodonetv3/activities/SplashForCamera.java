@@ -22,7 +22,7 @@ public class SplashForCamera extends AppCompatActivity {
         /** set animation of message to rotate the phone to take the picture, and rotate the message */
         TextView textSplashMessageForCamera = (TextView) findViewById(R.id.textSplashMessageForCamera);
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(textSplashMessageForCamera,"rotation",90);
-        objectAnimator.setDuration(CommonConstants.SPLASH_CAMERA_TIME /2);
+        objectAnimator.setDuration((int)(CommonConstants.SPLASH_CAMERA_TIME /1.5));
         objectAnimator.start();
 
         /** exit after timer ends */
