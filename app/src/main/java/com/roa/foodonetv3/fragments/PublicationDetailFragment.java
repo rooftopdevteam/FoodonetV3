@@ -376,7 +376,6 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                     break;
 
                 case R.id.imageActionAdminSMS:
-                    // TODO: 13/02/2017 check what this button needs to do and implement
                     if(countRegisteredUsers != 0){
                         RegisteredUsersDBHandler smsRegisteredUsersHandler = new RegisteredUsersDBHandler(getContext());
                         final ArrayList<RegisteredUser> smsRegisteredUsers = smsRegisteredUsersHandler.getPublicationRegisteredUsers(publication.getId());

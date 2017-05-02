@@ -432,7 +432,7 @@ public class CommonMethods {
     public static File createImageFile(Context context) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = context.getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS);
         return File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -442,7 +442,7 @@ public class CommonMethods {
     /** Creates a local image file name for downloaded images from s3 server of a specific publication */
     public static File createImageFile(Context context, long publicationID) throws IOException {
         String imageFileName = "PublicationID." + publicationID;
-        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = context.getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS);
 //        return File.createTempFile(
 //                imageFileName,  /* prefix */
 //                ".jpg",         /* suffix */
@@ -477,7 +477,7 @@ public class CommonMethods {
     /** Creates a local image file name for downloaded images from s3 server of a specific publication */
     public static String getPhotoPathByID(Context context, long publicationID, int version) {
         String imageFileName = getFileNameFromPublicationID(publicationID,version);
-        File directoryPictures = (context.getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+        File directoryPictures = (context.getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS));
         if(directoryPictures!= null){
             String storageDir = directoryPictures.getPath();
             return storageDir + "/" + imageFileName;

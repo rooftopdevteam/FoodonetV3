@@ -44,4 +44,6 @@ public class CommonConstants {
 
     public static final int PUBLICATION_SORT_TYPE_RECENT = 1;
     public static final int PUBLICATION_SORT_TYPE_CLOSEST = 2;
+    public static final String FILE_TYPE_PUBLICATIONS = "Pictures";
+    public static final String FILE_TYPE_USERS = "Users";
 }

@@ -5,16 +5,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.roa.foodonetv3.R;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.GroupMembersDBHandler;
 import com.roa.foodonetv3.db.LatestPlacesDBHandler;
+import com.roa.foodonetv3.db.PublicationsDBHandler;
 import com.roa.foodonetv3.db.ReportsDBHandler;
 import com.roa.foodonetv3.model.GroupMember;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
+import java.io.File;
+import java.util.ArrayList;
 
 public class GetDataService extends IntentService {
     private static final String TAG = "GetDataService";
@@ -65,6 +68,24 @@ public class GetDataService extends IntentService {
                 case ReceiverConstants.ACTION_GET_ALL_PUBLICATIONS_REGISTERED_USERS:
                     // get registered users */
                     ServerMethods.getAllRegisteredUsers(this);
+                    // continue to clean unused images
+                case ReceiverConstants.ACTION_CLEAN_IMAGES:
+                    File directoryPictures = (getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS));
+                    if(directoryPictures!= null) {
+                        PublicationsDBHandler publicationsDBHandler = new PublicationsDBHandler(this);
+                        ArrayList<String> fileNames = publicationsDBHandler.getPublicationImagesFileNames();
+
+                        File[] files = directoryPictures.listFiles();
+                        for (File file : files) {
+                            if (!fileNames.contains(file.getName())) {
+                                if (file.delete()) {
+                                    Log.d(TAG,"file Deleted :" + file.getName());
+                                } else {
+                                    Log.d(TAG,"file could not be Deleted :" + file.getName());
+                                }
+                            }
+                        }
+                    }
                     break;
 
                 case ReceiverConstants.ACTION_ADD_ADMIN_MEMBER:

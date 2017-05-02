@@ -4,7 +4,9 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.util.LongSparseArray;
 import android.util.SparseArray;
+import android.util.SparseLongArray;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
@@ -138,7 +140,8 @@ public class PublicationsDBHandler {
     /** get publications IDs */
     public ArrayList<Long> getPublicationsIDs(){
         ArrayList<Long> publicationsIDs = new ArrayList<>();
-        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,null,null,null,null);
+        String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,null,null,null);
         while(c!= null && c.moveToNext()){
             publicationsIDs.add(c.getLong(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN)));
         }
@@ -146,6 +149,29 @@ public class PublicationsDBHandler {
             c.close();
         }
         return publicationsIDs;
+    }
+
+    public ArrayList<String> getPublicationImagesFileNames(){
+        ArrayList<String> fileNames = new ArrayList<>();
+        String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN,FoodonetDBProvider.PublicationsDB.PUBLICATION_VERSION_COLUMN};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,null,null,null);
+        long id;
+        int version;
+        StringBuilder builder = new StringBuilder();
+        while(c!= null && c.moveToNext()){
+            builder.setLength(0);
+            id = c.getLong(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN));
+            builder.append(String.valueOf(id));
+            builder.append(".");
+            version = c.getInt(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_VERSION_COLUMN));
+            builder.append(String.valueOf(version));
+            builder.append(".jpg");
+            fileNames.add(builder.toString());
+        }
+        if(c!=null){
+            c.close();
+        }
+        return fileNames;
     }
 
     public int getPublicationVersion(long publicationID) {
