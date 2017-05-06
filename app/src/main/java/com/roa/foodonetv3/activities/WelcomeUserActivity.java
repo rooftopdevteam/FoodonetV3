@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -17,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.roa.foodonetv3.R;
@@ -24,7 +24,7 @@ import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
-import com.roa.foodonetv3.services.GetDataService;
+import com.roa.foodonetv3.services.GetMyUserImageService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +41,6 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
     private EditText userPhoneNumber;
     private String userName = "";
     private CircleImageView circleImageView;
-    private SharedPreferences preferences;
     private FoodonetReceiver receiver;
     private ProgressDialog dialog;
 
@@ -56,17 +55,11 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
         editUserName = (EditText) findViewById(R.id.editUserName);
         userPhoneNumber = (EditText) findViewById(R.id.editUserPhoneNumber);
         circleImageView = (CircleImageView) findViewById(R.id.circleImageUser);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mFirebaseUser != null) {
-            //load the photo from fireBase
-            Uri userPhotoUrl = mFirebaseUser.getPhotoUrl();
-            if (userPhotoUrl != null) {
-                Glide.with(this).load(userPhotoUrl).into(circleImageView);
-            } else {
-                Glide.with(this).load(R.drawable.foodonet_image).into(circleImageView);
-            }
+        if (mFirebaseUser != null && mFirebaseUser.getPhotoUrl()!= null) {
+            //load the photo from file
+           ServerMethods.getMyUserImage(this);
             userName = mFirebaseUser.getDisplayName();
             if (userName != null) {
                 editUserName.setText(userName);
@@ -102,10 +95,10 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
         if(PhoneNumberUtils.isGlobalPhoneNumber(phone)){
             ServerMethods.addUser(this, phone, userName);
             registerToPushNotification(this);
-            dialog = new ProgressDialog(WelcomeUserActivity.this);
+            dialog = new ProgressDialog(this);
             dialog.show();
         } else{
-            Toast.makeText(WelcomeUserActivity.this, R.string.invalid_phone_number, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.invalid_phone_number, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -113,7 +106,8 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
         JSONObject activeDeviceRoot = new JSONObject();
         JSONObject activeDevice = new JSONObject();
         try {
-            String token = preferences.getString(getString(R.string.key_prefs_notification_token), null);
+
+            String token = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.key_prefs_notification_token), null);
             activeDevice.put("dev_uuid",CommonMethods.getDeviceUUID(context));
             if (token== null) {
                 activeDevice.put("remote_notification_token", JSONObject.NULL);
@@ -121,8 +115,9 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
                 activeDevice.put("remote_notification_token", token);
             }
             activeDevice.put("is_ios", false);
-            activeDevice.put("last_location_latitude", preferences.getString(getString(R.string.key_prefs_user_lat), String.valueOf(CommonConstants.LATLNG_ERROR)));
-            activeDevice.put("last_location_longitude", preferences.getString(getString(R.string.key_prefs_user_lng),String.valueOf(CommonConstants.LATLNG_ERROR)));
+            LatLng userLatLng = CommonMethods.getLastLocation(this);
+            activeDevice.put("last_location_latitude", userLatLng.latitude);
+            activeDevice.put("last_location_longitude", userLatLng.longitude);
             activeDeviceRoot.put("active_device",activeDevice);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -133,22 +128,28 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
     private class FoodonetReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1)== ReceiverConstants.ACTION_ADD_USER){
-                /** receiver from the foodonet server of creating the new user */
-                if(dialog!=null){
-                    dialog.dismiss();
-                }
-                if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
-                    // TODO: 27/11/2016 add logic if fails
-                    Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
-                } else{
-                    /** user successfully added, finish the activity*/
-                    CommonMethods.getNewData(getBaseContext());
-                    Intent startActivityIntent = new Intent(WelcomeUserActivity.this, MainActivity.class);
-                    startActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(startActivityIntent);
-                    finish();
-                }
+            switch (intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1)){
+                case ReceiverConstants.ACTION_ADD_USER:
+                    /** receiver from the foodonet server of creating the new user */
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                    if (intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR, false)) {
+                        // TODO: 27/11/2016 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else {
+                        /** user successfully added, finish the activity*/
+                        CommonMethods.getNewData(getBaseContext());
+                        Intent startActivityIntent = new Intent(WelcomeUserActivity.this, MainActivity.class);
+                        startActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(startActivityIntent);
+                        finish();
+                    }
+                    break;
+
+                case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
+                    Glide.with(context).load(CommonMethods.getMyUserImageFilePath(context)).into(circleImageView);
+                    break;
             }
         }
     }

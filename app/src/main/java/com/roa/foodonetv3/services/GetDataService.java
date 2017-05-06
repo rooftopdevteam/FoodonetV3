@@ -69,6 +69,7 @@ public class GetDataService extends IntentService {
                     // get registered users */
                     ServerMethods.getAllRegisteredUsers(this);
                     // continue to clean unused images
+
                 case ReceiverConstants.ACTION_CLEAN_IMAGES:
                     File directoryPictures = (getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS));
                     if(directoryPictures!= null) {

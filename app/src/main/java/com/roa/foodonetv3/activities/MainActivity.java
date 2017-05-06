@@ -1,10 +1,7 @@
 package com.roa.foodonetv3.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -12,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,31 +17,24 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.roa.foodonetv3.R;
-import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
 import com.roa.foodonetv3.fragments.ActiveFragment;
 import com.roa.foodonetv3.fragments.ClosestFragment;
-import com.roa.foodonetv3.fragments.RecentFragment;
 import com.roa.foodonetv3.model.Publication;
-import com.roa.foodonetv3.serverMethods.ServerMethods;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,TabLayout.OnTabSelectedListener,
-        GoogleApiClient.OnConnectionFailedListener, OnReplaceFragListener {
+        GoogleApiClient.OnConnectionFailedListener, OnReplaceFragListener, OnGotMyUserImageListener {
     private static final String TAG = "MainActivity";
 
 
@@ -131,10 +120,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         /** set drawer header and image */
-        // TODO: 19/02/2017 currently loading the image from the web
-        FirebaseUser mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mFirebaseUser != null && mFirebaseUser.getPhotoUrl() != null) {
-            Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(circleImageView);
+        if (CommonMethods.isMyUserInitialized(this)) {
+            Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
             headerTxt.setText(CommonMethods.getMyUserName(this));
         } else {
             Glide.with(this).load(android.R.drawable.sym_def_app_icon).into(circleImageView);
@@ -198,6 +185,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         i.putExtra(PublicationActivity.ACTION_OPEN_PUBLICATION, openFragType);
         i.putExtra(Publication.PUBLICATION_KEY,id);
         this.startActivity(i);
+    }
+
+    @Override
+    public void gotMyUserImage() {
+        Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
+        headerTxt.setText(CommonMethods.getMyUserName(this));
     }
 
     //view pager adapter...

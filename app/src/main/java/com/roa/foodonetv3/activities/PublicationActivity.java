@@ -1,7 +1,6 @@
 package com.roa.foodonetv3.activities;
 
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,14 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.FabAnimation;
 import com.roa.foodonetv3.commonMethods.OnFabChangeListener;
-import com.roa.foodonetv3.commonMethods.OnReceiveResponse;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
+import com.roa.foodonetv3.commonMethods.OnReceiveResponseListener;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.PublicationsDBHandler;
@@ -36,14 +34,12 @@ import com.roa.foodonetv3.fragments.MyPublicationsFragment;
 import com.roa.foodonetv3.fragments.PublicationDetailFragment;
 import com.roa.foodonetv3.model.Publication;
 
-import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.Stack;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PublicationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener,
-        OnFabChangeListener, OnReceiveResponse, PublicationDetailFragment.OnDeletePublicationListener, OnReplaceFragListener {
+        OnFabChangeListener, OnReceiveResponseListener, PublicationDetailFragment.OnDeletePublicationListener, OnReplaceFragListener, OnGotMyUserImageListener {
     private static final String TAG = "PublicationActivity";
 
     public static final String ACTION_OPEN_PUBLICATION = "action_open_publication";
@@ -111,10 +107,8 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
     protected void onResume() {
         super.onResume();
         // set drawer header and image */
-        // TODO: 19/02/2017 currently loading the image from the web
-        FirebaseUser mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mFirebaseUser !=null && mFirebaseUser.getPhotoUrl()!=null) {
-            Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(circleImageView);
+        if (CommonMethods.isMyUserInitialized(this)) {
+            Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
             headerTxt.setText(CommonMethods.getMyUserName(this));
         }else{
             Glide.with(this).load(android.R.drawable.sym_def_app_icon).into(circleImageView);
@@ -338,5 +332,11 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
             publication = publicationsDBHandler.getPublication(id);
         }
         replaceFrags(openFragType,false);
+    }
+
+    @Override
+    public void gotMyUserImage() {
+        Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
+        headerTxt.setText(CommonMethods.getMyUserName(this));
     }
 }

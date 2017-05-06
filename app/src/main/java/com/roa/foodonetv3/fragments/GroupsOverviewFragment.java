@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.adapters.GroupsRecyclerAdapter;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.GroupsDBHandler;
 import com.roa.foodonetv3.model.Group;
@@ -127,6 +128,11 @@ public class GroupsOverviewFragment extends Fragment {
                         }
                         adapter.updateGroups(groups);
                     }
+                    break;
+                case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
+                    OnGotMyUserImageListener onGotMyUserImageListener = (OnGotMyUserImageListener) getContext();
+                    onGotMyUserImageListener.gotMyUserImage();
+                    break;
             }
         }
     }

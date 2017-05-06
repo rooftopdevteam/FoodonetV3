@@ -33,6 +33,7 @@ public class CommonConstants {
     public static final double CLEAR_NOTIFICATIONS_TIME_SECONDS = 604800; // 1 week 604800
     public static final long NOTIFICATION_ID_CLEAR = -1;
 
+    public static final long UNINITIALIZED_USER_ID = -1;
     // as named by server push
     public static final String NOTIF_TYPE_NEW_PUBLICATION = "new_publication";
     public static final String NOTIF_TYPE_DELETED_PUBLICATION = "deleted_publication";
@@ -44,6 +45,7 @@ public class CommonConstants {
 
     public static final int PUBLICATION_SORT_TYPE_RECENT = 1;
     public static final int PUBLICATION_SORT_TYPE_CLOSEST = 2;
-    public static final String FILE_TYPE_PUBLICATIONS = "Pictures";
-    public static final String FILE_TYPE_USERS = "Users";
+    public static final String FILE_TYPE_PUBLICATIONS = "pictures";
+    public static final String FILE_TYPE_USERS = "users";
+    public static final String MY_USER_ID_IMAGE_FILE_NAME = "User.jpg";
 }

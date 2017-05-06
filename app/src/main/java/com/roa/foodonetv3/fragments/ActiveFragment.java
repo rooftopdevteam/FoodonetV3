@@ -23,6 +23,7 @@ import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.activities.MainActivity;
 import com.roa.foodonetv3.adapters.PublicationsRecyclerAdapter;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.FoodonetDBProvider;
 
@@ -131,6 +132,10 @@ public class ActiveFragment extends Fragment {
                             adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS);
                         }
                     }
+                    break;
+                case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
+                    OnGotMyUserImageListener onGotMyUserImageListener = (OnGotMyUserImageListener) getContext();
+                    onGotMyUserImageListener.gotMyUserImage();
                     break;
             }
         }

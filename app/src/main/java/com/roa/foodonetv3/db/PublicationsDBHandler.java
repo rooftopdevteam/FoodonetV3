@@ -157,16 +157,10 @@ public class PublicationsDBHandler {
         Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,null,null,null);
         long id;
         int version;
-        StringBuilder builder = new StringBuilder();
         while(c!= null && c.moveToNext()){
-            builder.setLength(0);
             id = c.getLong(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN));
-            builder.append(String.valueOf(id));
-            builder.append(".");
             version = c.getInt(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_VERSION_COLUMN));
-            builder.append(String.valueOf(version));
-            builder.append(".jpg");
-            fileNames.add(builder.toString());
+            fileNames.add(CommonMethods.getFileNameFromPublicationID(id,version));
         }
         if(c!=null){
             c.close();

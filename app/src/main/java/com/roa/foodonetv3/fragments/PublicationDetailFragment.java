@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -16,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +26,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,7 +39,8 @@ import com.roa.foodonetv3.activities.SignInActivity;
 import com.roa.foodonetv3.adapters.ReportsRecyclerAdapter;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnFabChangeListener;
-import com.roa.foodonetv3.commonMethods.OnReceiveResponse;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
+import com.roa.foodonetv3.commonMethods.OnReceiveResponseListener;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.GroupsDBHandler;
@@ -50,7 +55,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PublicationDetailFragment extends Fragment implements View.OnClickListener, ReportDialog.OnReportCreateListener{
+public class PublicationDetailFragment extends Fragment implements View.OnClickListener, ReportDialog.OnReportCreateListener, TransferListener {
     private static final String TAG = "PublicationDetailFrag";
 
     private TextView textCategory,textTimeRemaining,textJoined,textTitlePublication,textPublicationAddress,textPublicationRating,
@@ -69,9 +74,10 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     private ReportDialog reportDialog;
     private RegisteredUsersDBHandler registeredUsersDBHandler;
     private OnFabChangeListener onFabChangeListener;
-    private OnReceiveResponse onReceiveResponseListener;
+    private OnReceiveResponseListener onReceiveResponseListener;
     private OnDeletePublicationListener onDeletePublicationListener;
     private OnReplaceFragListener onReplaceFragListener;
+    private String userImagePath;
 
     public PublicationDetailFragment() {
         // Required empty public constructor
@@ -81,7 +87,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     public void onAttach(Context context) {
         super.onAttach(context);
         onFabChangeListener = (OnFabChangeListener) context;
-        onReceiveResponseListener = (OnReceiveResponse) context;
+        onReceiveResponseListener = (OnReceiveResponseListener) context;
         onDeletePublicationListener = (OnDeletePublicationListener) context;
         onReplaceFragListener = (OnReplaceFragListener) context;
 
@@ -139,6 +145,17 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         imagePicturePublication = (ImageView) v.findViewById(R.id.imagePicturePublication);
         imagePicturePublication.setOnClickListener(this);
         imagePublisherUser = (CircleImageView) v.findViewById(R.id.imagePublisherUser);
+
+        // TODO: 05/05/2017 test
+        userImagePath = CommonMethods.getFilePathFromUserID(getContext(),publication.getPublisherID());
+        if(userImagePath != null){
+            File userImageFile = new File(userImagePath);
+            TransferObserver observer = CommonMethods.getS3TransferUtility(getContext()).download(getContext().getResources().getString(R.string.amazon_users_bucket),
+                    CommonMethods.getFileNameFromUserID(publication.getPublisherID()), userImageFile);
+            observer.setTransferListener(this);
+        }
+        //
+
         v.findViewById(R.id.imageActionPublicationReport).setOnClickListener(this);
         v.findViewById(R.id.imageActionPublicationSMS).setOnClickListener(this);
         v.findViewById(R.id.imageActionPublicationPhone).setOnClickListener(this);
@@ -279,7 +296,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         }
         textPublicationPrice.setText(priceS);
         textPublicationDetails.setText(publication.getSubtitle());
-        String mCurrentPhotoFileString = CommonMethods.getPhotoPathByID(getContext(),publication.getId(),publication.getVersion());
+        String mCurrentPhotoFileString = CommonMethods.getFilePathFromPublicationID(getContext(),publication.getId(),publication.getVersion());
         if(mCurrentPhotoFileString != null){
             File mCurrentPhotoFile = new File(mCurrentPhotoFileString);
             if(mCurrentPhotoFile.isFile()){
@@ -483,6 +500,21 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         ServerMethods.addReport(getContext(),publicationReport);
     }
 
+    @Override
+    public void onStateChanged(int id, TransferState state) {
+        Glide.with(getContext()).load(userImagePath).into(imagePublisherUser);
+    }
+
+    @Override
+    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+    }
+
+    @Override
+    public void onError(int id, Exception ex) {
+        Log.d(TAG, "amazon onError" + id + " " + ex.toString());
+    }
+
     private class FoodonetReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -590,6 +622,11 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                             ServerMethods.getReports(getContext(),publication.getId(),publication.getVersion());
                         }
                     }
+                    break;
+
+                case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
+                    OnGotMyUserImageListener onGotMyUserImageListener = (OnGotMyUserImageListener) getContext();
+                    onGotMyUserImageListener.gotMyUserImage();
                     break;
             }
         }
