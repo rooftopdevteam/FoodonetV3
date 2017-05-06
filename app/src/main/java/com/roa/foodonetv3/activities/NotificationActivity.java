@@ -1,32 +1,35 @@
 package com.roa.foodonetv3.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
+import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class NotificationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class NotificationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnGotMyUserImageListener {
 
     private static final String TAG = "NotificationActivity";
 
+    private FoodonetReceiver receiver;
     private CircleImageView circleImageView;
     private TextView headerTxt;
 
@@ -57,14 +60,22 @@ public class NotificationActivity extends AppCompatActivity implements Navigatio
     @Override
     protected void onResume() {
         super.onResume();
-        FirebaseUser mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mFirebaseUser != null && mFirebaseUser.getPhotoUrl() != null) {
-            Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(circleImageView);
+        receiver = new FoodonetReceiver();
+        IntentFilter filter = new IntentFilter(ReceiverConstants.BROADCAST_FOODONET);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver,filter);
+        if (CommonMethods.isMyUserInitialized(this)) {
+            Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
             headerTxt.setText(CommonMethods.getMyUserName(this));
         } else {
             Glide.with(this).load(android.R.drawable.sym_def_app_icon).into(circleImageView);
             headerTxt.setText(getResources().getString(R.string.not_signed_in));
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
     @Override
@@ -84,5 +95,22 @@ public class NotificationActivity extends AppCompatActivity implements Navigatio
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void gotMyUserImage() {
+        Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
+        headerTxt.setText(CommonMethods.getMyUserName(this));
+    }
+
+    private class FoodonetReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1)){
+                case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
+                    Glide.with(context).load(CommonMethods.getMyUserImageFilePath(context)).into(circleImageView);
+                    break;
+            }
+        }
     }
 }

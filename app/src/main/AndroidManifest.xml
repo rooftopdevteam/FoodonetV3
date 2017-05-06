@@ -90,7 +90,7 @@
         <activity
             android:name=".activities.NotificationActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"  />
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -135,6 +135,9 @@
         </service>
         <service
             android:name=".services.NotificationsDismissService"
+            android:exported="false" />
+        <service
+            android:name=".services.GetMyUserImageService"
             android:exported="false"/>
 
         <meta-data
@@ -143,7 +146,6 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-
     </application>
 
 </manifest>

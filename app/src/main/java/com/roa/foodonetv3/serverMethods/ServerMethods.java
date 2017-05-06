@@ -24,6 +24,7 @@ import com.roa.foodonetv3.model.PublicationReport;
 import com.roa.foodonetv3.model.RegisteredUser;
 import com.roa.foodonetv3.model.User;
 import com.roa.foodonetv3.services.FoodonetService;
+import com.roa.foodonetv3.services.GetMyUserImageService;
 
 import java.util.ArrayList;
 
@@ -235,5 +236,15 @@ public class ServerMethods {
         intent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION);
         intent.putExtra(ReceiverConstants.JSON_TO_SEND,stringToSend);
         context.startService(intent);
+    }
+
+    public static void getMyUserImage(Context context){
+        FirebaseUser mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (mFirebaseUser != null && mFirebaseUser.getPhotoUrl()!= null) {
+            String userImageUrl = mFirebaseUser.getPhotoUrl().toString();
+            Intent getUserImageIntent = new Intent(context, GetMyUserImageService.class);
+            getUserImageIntent.putExtra(GetMyUserImageService.IMAGE_URL,userImageUrl);
+            context.startService(getUserImageIntent);
+        }
     }
 }

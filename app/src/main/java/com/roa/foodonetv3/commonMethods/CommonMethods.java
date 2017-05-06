@@ -8,17 +8,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.location.LocationManager;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,8 +23,8 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 import com.roa.foodonetv3.activities.NotificationActivity;
-import com.roa.foodonetv3.activities.SplashScreenActivity;
 import com.roa.foodonetv3.db.NotificationsDBHandler;
 import com.roa.foodonetv3.dialogs.ContactUsDialog;
 import com.roa.foodonetv3.activities.GroupsActivity;
@@ -43,11 +39,10 @@ import com.roa.foodonetv3.model.GroupMember;
 import com.roa.foodonetv3.model.NotificationFoodonet;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
 import com.roa.foodonetv3.services.GetDataService;
+import com.roa.foodonetv3.services.GetMyUserImageService;
 import com.roa.foodonetv3.services.NotificationsDismissService;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -55,13 +50,9 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class CommonMethods {
     private static final String TAG = "CommonMethods";
@@ -220,6 +211,28 @@ public class CommonMethods {
         context.startService(getDataIntent);
     }
 
+    public static boolean isMyUserInitialized(Context context){
+        if(FirebaseAuth.getInstance().getCurrentUser() != null && CommonMethods.getMyUserID(context) != CommonConstants.UNINITIALIZED_USER_ID){
+            if(isMyUserImagePresent(context)){
+                return true;
+            } else{
+                ServerMethods.getMyUserImage(context);
+            }
+        }
+        return false;
+    }
+
+    public static boolean isMyUserImagePresent(Context context){
+        String filePath = CommonMethods.getMyUserImageFilePath(context);
+        if(filePath != null){
+            File imageFile = new File(filePath);
+            if(imageFile.isFile()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * returns a UUID
      */
@@ -231,8 +244,7 @@ public class CommonMethods {
      * returns the userID from shared preferences
      */
     public static long getMyUserID(Context context) {
-        long userID = PreferenceManager.getDefaultSharedPreferences(context).getLong(context.getString(R.string.key_prefs_user_id), (long) -1);
-        return userID;
+        return PreferenceManager.getDefaultSharedPreferences(context).getLong(context.getString(R.string.key_prefs_user_id), CommonConstants.UNINITIALIZED_USER_ID);
     }
 
     /**
@@ -294,6 +306,7 @@ public class CommonMethods {
         return df.format(num);
     }
 
+    /** sends all new messages from the db as notifications to the user */
     public static void sendNotification(Context context) {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         long loadNotificationsFromID = PreferenceManager.getDefaultSharedPreferences(context)
@@ -344,6 +357,9 @@ public class CommonMethods {
         mNotificationManager.notify(1, mBuilder.build());
     }
 
+    /** updates the shared preferences value of the latest unread notification, or clear it (all read)
+     * @param _id - local _id variable to update, CommonConstants.NOTIFICATION_ID_CLEAR to set as cleared
+     */
     public static void updateUnreadNotificationID(Context context, long _id){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String keyPrefsUnreadNotificationID = context.getString(R.string.key_prefs_unread_notification_id);
@@ -353,7 +369,7 @@ public class CommonMethods {
         }
     }
 
-    /** currently trying to update returns a 404, disabling for now */
+    /** @deprecated currently trying to update returns a 404, disabling for now */
     public static void updateUserLocationToServer(Context context){
         JSONObject activeDeviceRoot = new JSONObject();
         JSONObject activeDevice = new JSONObject();
@@ -384,8 +400,7 @@ public class CommonMethods {
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = R * c;
-        return distance;
+        return (double) R * c;
     }
 
     public static int[] getListIndexSortedValues(ArrayList<Double> list){
@@ -428,61 +443,58 @@ public class CommonMethods {
         return sortedIndex;
     }
 
-    /** Creates a local image file name for taking the picture with the camera */
+    /** @return File Creates a local image file name for taking the picture with the camera */
     public static File createImageFile(Context context) throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.US).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = context.getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS);
         return File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */);
     }
 
-    /** Creates a local image file name for downloaded images from s3 server of a specific publication */
-    public static File createImageFile(Context context, long publicationID) throws IOException {
-        String imageFileName = "PublicationID." + publicationID;
-        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-//        return File.createTempFile(
-//                imageFileName,  /* prefix */
-//                ".jpg",         /* suffix */
-//                storageDir      /* directory */);
-
-        File newFile = new File(storageDir.getPath() + "/" + imageFileName + ".jpg");
-        return newFile;
-    }
-
-    /** @return file name from publicationID */
+    /** @return String file name from publicationID */
     public static String getFileNameFromPublicationID(long publicationID,int version){
         return String.format(Locale.US,"%1$d.%2$d.jpg",
                 publicationID,version);
     }
 
-    /** returns the file name without the path */
-    public static String getFileNameFromPath(String path) {
-        String[] segments = path.split("/");
-        return segments[segments.length - 1];
-    }
-
-    /** returns the file name without the path */
-    public static String getPublicationIDFromFile(String path) {
-        String[] segments = path.split(".");
-        if (segments.length > 1) {
-            return segments[segments.length - 2];
-        } else {
-            return "n";
-        }
+    /** @return String file name from userID */
+    public static String getFileNameFromUserID(long userID){
+        return String.format(Locale.US,"%1$d.jpg",
+                userID);
     }
 
     /** Creates a local image file name for downloaded images from s3 server of a specific publication */
-    public static String getPhotoPathByID(Context context, long publicationID, int version) {
+    public static String getFilePathFromPublicationID(Context context, long publicationID, int version) {
         String imageFileName = getFileNameFromPublicationID(publicationID,version);
-        File directoryPictures = (context.getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+        File directoryPictures = (context.getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS));
         if(directoryPictures!= null){
             String storageDir = directoryPictures.getPath();
-            return storageDir + "/" + imageFileName;
+            return String.format(Locale.US,"%1$s/%2$s",storageDir,imageFileName);
         }
+        return null;
+    }
 
+    /** Creates a local image file name for a specific userID to work with s3 server */
+    public static String getFilePathFromUserID(Context context, long userID){
+        String imageFileName = getFileNameFromUserID(userID);
+        File directoryUsers = context.getExternalFilesDir(CommonConstants.FILE_TYPE_USERS);
+        if(directoryUsers != null){
+            String storageDir = directoryUsers.getPath();
+            return String.format(Locale.US,"%1$s/%2$s",storageDir,imageFileName);
+        }
+        return null;
+    }
+
+    public static String getMyUserImageFilePath(Context context){
+        String imageFileName = CommonConstants.MY_USER_ID_IMAGE_FILE_NAME;
+        File directoryUsers = context.getExternalFilesDir(CommonConstants.FILE_TYPE_USERS);
+        if(directoryUsers != null){
+            String storageDir = directoryUsers.getPath();
+            return String.format(Locale.US,"%1$s/%2$s",storageDir,imageFileName);
+        }
         return null;
     }
 
@@ -602,7 +614,7 @@ public class CommonMethods {
      * @param context An Context instance.
      * @return a TransferUtility instance
      */
-    public static TransferUtility getTransferUtility(Context context) {
+    public static TransferUtility getS3TransferUtility(Context context) {
         if (sTransferUtility == null) {
             sTransferUtility = new TransferUtility(getS3Client(context.getApplicationContext()),
                     context.getApplicationContext());

@@ -1,7 +1,6 @@
 package com.roa.foodonetv3.adapters;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -52,7 +51,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         this.sortType = sortType;
         onReplaceFragListener = (OnReplaceFragListener) context;
         /** get the S3 utility */
-        transferUtility = CommonMethods.getTransferUtility(context);
+        transferUtility = CommonMethods.getS3TransferUtility(context);
         userLatLng = CommonMethods.getLastLocation(context);
     }
 
@@ -155,15 +154,15 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
             }
             String registeredUsers = String.format(Locale.US, "%1$d %2$s", numberRegisteredUsers, context.getResources().getString(R.string.users_joined));
             textPublicationUsers.setText(registeredUsers);
-            String mCurrentPhotoFileString = CommonMethods.getPhotoPathByID(context, publication.getId(), publication.getVersion());
+            String mCurrentPhotoFileString = CommonMethods.getFilePathFromPublicationID(context, publication.getId(), publication.getVersion());
             if(mCurrentPhotoFileString!= null){
                 mCurrentPhotoFile = new File(mCurrentPhotoFileString);
                 if (mCurrentPhotoFile.isFile()) {
                     Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(imagePublication);
                 } else {
-                    String imagePath = CommonMethods.getFileNameFromPublicationID(publication.getId(), publication.getVersion());
+                    String s3FileName = CommonMethods.getFileNameFromPublicationID(publication.getId(), publication.getVersion());
                     TransferObserver observer = transferUtility.download(context.getResources().getString(R.string.amazon_publications_bucket),
-                            imagePath, mCurrentPhotoFile);
+                            s3FileName, mCurrentPhotoFile);
                     observer.setTransferListener(this);
                     observerId = observer.getId();
                 }

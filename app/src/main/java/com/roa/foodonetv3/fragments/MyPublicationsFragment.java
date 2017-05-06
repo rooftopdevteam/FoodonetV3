@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,14 +20,11 @@ import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.adapters.PublicationsRecyclerAdapter;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.FoodonetDBProvider;
 import com.roa.foodonetv3.db.PublicationsDBHandler;
-import com.roa.foodonetv3.db.RegisteredUsersDBHandler;
-import com.roa.foodonetv3.model.Publication;
 import com.roa.foodonetv3.model.User;
-
-import java.util.ArrayList;
 
 public class MyPublicationsFragment extends Fragment{
     private PublicationsRecyclerAdapter adapter;
@@ -127,6 +123,13 @@ public class MyPublicationsFragment extends Fragment{
                         // if got new registered users update the adapter
                         adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_USER_PUBLICATIONS);
                     }
+                    break;
+
+                case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
+                    OnGotMyUserImageListener onGotMyUserImageListener = (OnGotMyUserImageListener) getContext();
+                    onGotMyUserImageListener.gotMyUserImage();
+                    break;
+
             }
         }
     }

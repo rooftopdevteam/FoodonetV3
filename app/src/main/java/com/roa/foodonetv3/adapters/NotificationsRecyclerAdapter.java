@@ -42,7 +42,7 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
     public NotificationsRecyclerAdapter(Context context) {
         this.context = context;
         notifications = new ArrayList<>();
-        transferUtility = CommonMethods.getTransferUtility(context);
+        transferUtility = CommonMethods.getS3TransferUtility(context);
         notificationsDBHandler = new NotificationsDBHandler(context);
         publicationsDBHandler = new PublicationsDBHandler(context);
     }
@@ -109,7 +109,7 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_PUBLICATION_REPORT:
                     publicationVersion = publicationsDBHandler.getPublicationVersion(notification.getItemID());
                     isItemOnline = publicationVersion != -1;
-                    String mCurrentPhotoFileString = CommonMethods.getPhotoPathByID(context, notification.getItemID(), publicationVersion);
+                    String mCurrentPhotoFileString = CommonMethods.getFilePathFromPublicationID(context, notification.getItemID(), publicationVersion);
                     if(!isItemOnline){
                         Glide.with(context).load(R.drawable.camera_xxh).centerCrop().into(imageNotification);
                     } else if (mCurrentPhotoFileString!= null){
@@ -120,9 +120,9 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
                         }
                     } else {
                         Glide.with(context).load(R.drawable.camera_xxh).centerCrop().into(imageNotification);
-                        String imagePath = CommonMethods.getFileNameFromPublicationID(notification.getItemID(), publicationVersion);
+                        String s3FileName = CommonMethods.getFileNameFromPublicationID(notification.getItemID(), publicationVersion);
                         TransferObserver observer = transferUtility.download(context.getResources().getString(R.string.amazon_publications_bucket),
-                                imagePath, mCurrentPhotoFile);
+                                s3FileName, mCurrentPhotoFile);
                         observer.setTransferListener(this);
                         observerId = observer.getId();
                     }

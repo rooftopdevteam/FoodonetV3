@@ -195,9 +195,9 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_ADD_PUBLICATION){
-                JSONObject rootAddPublication = new JSONObject(responseRoot);
-                long publicationID = rootAddPublication.getLong("id");
-                int publicationVersion = rootAddPublication.getInt("version");
+                JSONObject root = new JSONObject(responseRoot);
+                long publicationID = root.getLong("id");
+                int publicationVersion = root.getInt("version");
                 intent.putExtra(Publication.PUBLICATION_ID,publicationID);
                 intent.putExtra(Publication.PUBLICATION_VERSION,publicationVersion);
                 if(data!= null){
@@ -207,18 +207,17 @@ public class FoodonetService extends IntentService {
                     publicationsDBHandler = new PublicationsDBHandler(this);
                     publicationsDBHandler.insertPublication(publication);
                     // instantiate the transfer utility for the s3*/
-                    TransferUtility transferUtility = CommonMethods.getTransferUtility(this);
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
                     // if there is an image to upload */
-                    if(publication.getPhotoURL()!=null && !publication.getPhotoURL().equals("")){
-                        String[] split = publication.getPhotoURL().split(":");
-                        File file = new File(split[1]);
-                        String destFileString = CommonMethods.getPhotoPathByID(this,publicationID,publicationVersion);
+                    if(publication.getPhotoURL()!= null && !publication.getPhotoURL().equals("")){
+                        File file = new File(publication.getPhotoURL());
+                        String destFileString = CommonMethods.getFilePathFromPublicationID(this,publicationID,publicationVersion);
                         if(destFileString!= null){
                             File destFile = new File(destFileString);
-                            String s3Name = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
+                            String s3FileName = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
                             boolean renamed = file.renameTo(destFile);
                             if(renamed){
-                                transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3Name,destFile);
+                                transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3FileName,destFile);
                             }else{
                                 Log.d(TAG,"Rename failed");
                             }
@@ -238,18 +237,17 @@ public class FoodonetService extends IntentService {
                     publicationsDBHandler = new PublicationsDBHandler(this);
                     publicationsDBHandler.updatePublication(publication);
                     // instantiate the transfer utility for the s3*/
-                    TransferUtility transferUtility = CommonMethods.getTransferUtility(this);
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
                     // if there is an image to upload */
                     if(publication.getPhotoURL()!=null && !publication.getPhotoURL().equals("")){
-                        String[] split = publication.getPhotoURL().split(":");
-                        File file = new File(split[1]);
-                        String destFileString = CommonMethods.getPhotoPathByID(this,publicationID,publicationVersion);
+                        File file = new File(publication.getPhotoURL());
+                        String destFileString = CommonMethods.getFilePathFromPublicationID(this,publicationID,publicationVersion);
                         if(destFileString!= null) {
                             File destFile = new File(destFileString);
-                            String s3Name = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
+                            String s3FileName = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
                             boolean renamed = file.renameTo(destFile);
                             if(renamed){
-                                transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3Name,destFile);
+                                transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3FileName,destFile);
                             }else{
                                 Log.d(TAG,"Rename failed");
                             }
@@ -364,6 +362,12 @@ public class FoodonetService extends IntentService {
                 long userID = rootAddUser.getLong("id");
                 CommonMethods.setMyUserID(this, userID);
                 Log.d("Add user response", "id: " + userID);
+                String filePath = CommonMethods.getMyUserImageFilePath(this);
+                if(filePath!= null && !filePath.equals("")){
+                    File file = new File(filePath);
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
+                    transferUtility.upload(getResources().getString(R.string.amazon_users_bucket),CommonMethods.getFileNameFromUserID(userID),file);
+                }
             }
 
             else if(actionType == ReceiverConstants.ACTION_UPDATE_USER){

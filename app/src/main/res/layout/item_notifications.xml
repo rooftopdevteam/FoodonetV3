@@ -18,8 +18,8 @@
         android:layout_marginEnd="@dimen/margin_16" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="@dimen/image_size_24"
-        android:layout_height="@dimen/image_size_24"
+        android:layout_width="@dimen/image_size_36"
+        android:layout_height="@dimen/image_size_36"
         android:id="@+id/imageNotificationType"
         app:srcCompat="@drawable/camera_xxh"
         android:layout_alignBottom="@+id/imageNotification"

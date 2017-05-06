@@ -40,7 +40,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     // Firebase instance variables
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mFirebaseAuth;
-    private CallbackManager mCallbackManager;
+    private CallbackManager mFacebookCallbackManager;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser user;
 
@@ -52,15 +52,15 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_sign_in);
 
         //initialize Facebook login
-        mCallbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
-        loginButton.setReadPermissions("email", "public_profile");
-        loginButton.registerCallback(mCallbackManager,this);
+        mFacebookCallbackManager = CallbackManager.Factory.create();
+        LoginButton buttonFacebookLogin = (LoginButton) findViewById(R.id.button_facebook_login);
+        buttonFacebookLogin.setReadPermissions("email", "public_profile");
+        buttonFacebookLogin.registerCallback(mFacebookCallbackManager,this);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                 user = firebaseAuth.getCurrentUser();
+                user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Toast.makeText(SignInActivity.this, R.string.success, Toast.LENGTH_SHORT).show();
@@ -74,7 +74,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         };
 
         // Assign fields
-        mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        mSignInButton = (SignInButton) findViewById(R.id.button_sign_in_facebook);
 
         // Set click listeners
         mSignInButton.setOnClickListener(this);
@@ -90,15 +90,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         // Initialize FirebaseAuth
         mFirebaseAuth = FirebaseAuth.getInstance();
-
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         mFirebaseAuth.addAuthStateListener(mAuthListener);
-
     }
     @Override
     public void onStop() {
@@ -112,7 +109,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_in_button:
+            case R.id.button_sign_in_facebook:
                 signIn();
                 break;
             default:
@@ -145,7 +142,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }else {
             // Facebook Sign In was successful, authenticate with Firebase
             Toast.makeText(SignInActivity.this, "from facebook", Toast.LENGTH_SHORT).show();
-            mCallbackManager.onActivityResult(requestCode, resultCode,data);
+            mFacebookCallbackManager.onActivityResult(requestCode, resultCode ,data);
         }
     }
     @Override

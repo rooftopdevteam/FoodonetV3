@@ -45,6 +45,8 @@ public class ReceiverConstants {
     public static final int ACTION_GOT_NEW_REPORT = 202;
     public static final int ACTION_ADD_ADMIN_MEMBER = 210;
     public static final int ACTION_SIGN_OUT = 300;
+    public static final int ACTION_CLEAN_IMAGES = 400;
+    public static final int ACTION_SAVE_USER_IMAGE = 500;
 
     public static final String FAB_TYPE = "fab_type";
     public static final String MEMBER_ADDED = "memberAdded";
