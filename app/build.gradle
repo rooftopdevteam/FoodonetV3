@@ -21,13 +21,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    // Google
-    //fireBase...
-    // Firebase
-    //    compile 'com.google.android.gms:play-services-appinvite:9.4.0'
-    //    compile 'com.google.android.gms:play-services-ads:9.4.0'
-    // Firebase UI
-    //Facebook
     compile 'com.google.android.gms:play-services-gcm:10.2.4'
     compile 'com.google.android.gms:play-services-auth:10.2.4'
     compile 'com.google.android.gms:play-services-maps:10.2.4'

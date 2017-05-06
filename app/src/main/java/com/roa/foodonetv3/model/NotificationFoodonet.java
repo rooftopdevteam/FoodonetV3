@@ -95,15 +95,15 @@ public class NotificationFoodonet {
         // TODO: 03/04/2017 change to actual drawables
         switch (typeNotification){
             case NOTIFICATION_TYPE_NEW_PUBLICATION:
-                return R.drawable.camera_xxh;
+                return R.drawable.notif_new;
             case NOTIFICATION_TYPE_PUBLICATION_DELETED:
-                return R.drawable.camera_xxh;
+                return R.drawable.notif_ended;
             case NOTIFICATION_TYPE_NEW_REGISTERED_USER:
-                return R.drawable.camera_xxh;
+                return R.drawable.notif_join;
             case NOTIFICATION_TYPE_NEW_PUBLICATION_REPORT:
-                return R.drawable.camera_xxh;
+                return R.drawable.notif_report;
             case NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
-                return R.drawable.camera_xxh;
+                return R.drawable.notif_group;
         }
         return -1;
     }

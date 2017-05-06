@@ -502,7 +502,11 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
 
     @Override
     public void onStateChanged(int id, TransferState state) {
-        Glide.with(getContext()).load(userImagePath).into(imagePublisherUser);
+        if (state== TransferState.COMPLETED){
+            Glide.with(getContext()).load(userImagePath).into(imagePublisherUser);
+        } else{
+            // TODO: 06/05/2017 add
+        }
     }
 
     @Override

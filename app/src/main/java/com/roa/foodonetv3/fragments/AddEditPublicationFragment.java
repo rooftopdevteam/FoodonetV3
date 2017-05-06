@@ -264,7 +264,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                 Log.e(TAG, ex.getMessage());
             }
             // Continue only if the File was successfully created
-            if (photoFile != null) {
+            if (photoFile != null && photoFile.isFile()) {
                 Uri photoURI = FileProvider.getUriForFile(getContext(),
                         "com.roa.foodonetv3.fileprovider",
                         photoFile);
@@ -354,12 +354,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         }
         String photoPath;
         if(mCurrentPhotoPath==null || mCurrentPhotoPath.equals("")){
-            photoPath = null;
-        } else{
-            photoPath = "file:"+mCurrentPhotoPath;
+            mCurrentPhotoPath = null;
         }
         if (title.equals("") || location.equals("") || place.getLat()== CommonConstants.LATLNG_ERROR || place.getLng()==CommonConstants.LATLNG_ERROR
-                || photoPath == null) {
+                || mCurrentPhotoPath == null) {
             Toast.makeText(getContext(), R.string.post_please_enter_all_fields, Toast.LENGTH_SHORT).show();
             onReceiveResponseListener.onReceiveResponse();
         } else {
@@ -380,7 +378,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
 
             publication = new Publication(localPublicationID, -1, title, details, location, (short) 2, place.getLat(), place.getLng(),
                     String.valueOf(startingDate), String.valueOf(endingDate), contactInfo, true, CommonMethods.getDeviceUUID(getContext()),
-                    photoPath,
+                    mCurrentPhotoPath,
                     CommonMethods.getMyUserID(getContext()),
                     groups.get(spinnerShareWith.getSelectedItemPosition()).getGroupID() , CommonMethods.getMyUserName(getContext()), price, "");
             if(isAddNewPublication){

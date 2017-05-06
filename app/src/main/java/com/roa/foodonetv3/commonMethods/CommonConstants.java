@@ -45,7 +45,9 @@ public class CommonConstants {
 
     public static final int PUBLICATION_SORT_TYPE_RECENT = 1;
     public static final int PUBLICATION_SORT_TYPE_CLOSEST = 2;
-    public static final String FILE_TYPE_PUBLICATIONS = "pictures";
-    public static final String FILE_TYPE_USERS = "users";
     public static final String MY_USER_ID_IMAGE_FILE_NAME = "User.jpg";
+
+    // file provider folders, they are also hard coded in the file_paths.xml, if changing one, change the other as well
+    public static final String FILE_TYPE_PUBLICATIONS = "publications";
+    public static final String FILE_TYPE_USERS = "users";
 }

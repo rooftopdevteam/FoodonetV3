@@ -209,9 +209,8 @@ public class FoodonetService extends IntentService {
                     // instantiate the transfer utility for the s3*/
                     TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
                     // if there is an image to upload */
-                    if(publication.getPhotoURL()!=null && !publication.getPhotoURL().equals("")){
-                        String[] split = publication.getPhotoURL().split(":");
-                        File file = new File(split[1]);
+                    if(publication.getPhotoURL()!= null && !publication.getPhotoURL().equals("")){
+                        File file = new File(publication.getPhotoURL());
                         String destFileString = CommonMethods.getFilePathFromPublicationID(this,publicationID,publicationVersion);
                         if(destFileString!= null){
                             File destFile = new File(destFileString);
@@ -241,8 +240,7 @@ public class FoodonetService extends IntentService {
                     TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
                     // if there is an image to upload */
                     if(publication.getPhotoURL()!=null && !publication.getPhotoURL().equals("")){
-                        String[] split = publication.getPhotoURL().split(":");
-                        File file = new File(split[1]);
+                        File file = new File(publication.getPhotoURL());
                         String destFileString = CommonMethods.getFilePathFromPublicationID(this,publicationID,publicationVersion);
                         if(destFileString!= null) {
                             File destFile = new File(destFileString);
@@ -364,6 +362,12 @@ public class FoodonetService extends IntentService {
                 long userID = rootAddUser.getLong("id");
                 CommonMethods.setMyUserID(this, userID);
                 Log.d("Add user response", "id: " + userID);
+                String filePath = CommonMethods.getMyUserImageFilePath(this);
+                if(filePath!= null && !filePath.equals("")){
+                    File file = new File(filePath);
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
+                    transferUtility.upload(getResources().getString(R.string.amazon_users_bucket),CommonMethods.getFileNameFromUserID(userID),file);
+                }
             }
 
             else if(actionType == ReceiverConstants.ACTION_UPDATE_USER){
