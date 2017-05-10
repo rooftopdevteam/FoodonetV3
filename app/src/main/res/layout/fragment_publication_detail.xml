@@ -12,81 +12,75 @@
         android:id="@+id/detailTopPanelLayout"
         android:baselineAligned="false">
 
-
-        <!--<LinearLayout-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:layout_weight="1">-->
-
-            <!--<ImageView-->
-                <!--android:layout_width="20dp"-->
-                <!--android:layout_height="20dp"-->
-                <!--app:srcCompat="@drawable/camera_xxh"-->
-                <!--android:id="@+id/imageGroup" />-->
-
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+            <ImageView
+                android:layout_width="@dimen/image_size_24"
+                android:layout_height="@dimen/image_size_24"
+                android:id="@+id/imagePublicationGroup"
+                android:src="@drawable/public_blue"
+                android:layout_margin="@dimen/margin_4"
+                />
             <TextView
                 android:text="Public"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textCategory"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/group_public"
-                android:drawableStart="@drawable/group_public"
-                android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingStart="5dp" />
-        <!--</LinearLayout>-->
+                android:layout_centerVertical="true"
+                android:maxLines="2"
+                android:layout_toRightOf="@id/imagePublicationGroup"
+                android:layout_toEndOf="@id/imagePublicationGroup"
+                />
+        </RelativeLayout>
 
-        <!--<LinearLayout-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:layout_weight="1">-->
-
-            <!--<ImageView-->
-                <!--android:layout_width="20dp"-->
-                <!--android:layout_height="20dp"-->
-                <!--app:srcCompat="@drawable/camera_xxh"-->
-                <!--android:id="@+id/imageTime" />-->
-
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+            <ImageView
+                android:layout_width="@dimen/image_size_24"
+                android:layout_height="@dimen/image_size_24"
+                android:id="@+id/imagePublicationRemaining"
+                android:src="@drawable/clock"
+                android:layout_margin="@dimen/margin_4"
+                />
             <TextView
-                android:text="12h 35min"
+                android:text="12h 35min remaining"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textTimeRemaining"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/clock"
-                android:drawableStart="@drawable/clock"
-                android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingStart="5dp" />
-        <!--</LinearLayout>-->
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/imagePublicationRemaining"
+                android:layout_toEndOf="@id/imagePublicationRemaining"
+                />
+        </RelativeLayout>
 
-        <!--<LinearLayout-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:layout_weight="1">-->
-
-            <!--<ImageView-->
-                <!--android:layout_width="20dp"-->
-                <!--android:layout_height="20dp"-->
-                <!--app:srcCompat="@drawable/camera_xxh"-->
-                <!--android:id="@+id/imageJoined" />-->
-
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+            <ImageView
+                android:layout_width="@dimen/image_size_24"
+                android:layout_height="@dimen/image_size_24"
+                android:id="@+id/imagePublicationJoined"
+                android:src="@drawable/user"
+                android:layout_margin="@dimen/margin_4"
+                />
             <TextView
                 android:text="Joined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textJoined"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/user_icon"
-                android:drawableStart="@drawable/user_icon"
-                android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingStart="5dp" />
-        <!--</LinearLayout>-->
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/imagePublicationJoined"
+                android:layout_toEndOf="@+id/imagePublicationJoined"
+                />
+        </RelativeLayout>
 
     </LinearLayout>
     <View
@@ -98,7 +92,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/image_size_height_150"
+        android:layout_height="@dimen/image_size_height_180"
         app:srcCompat="@drawable/camera_xxh"
         android:id="@+id/imagePicturePublication"
         android:layout_below="@+id/divider"
@@ -174,6 +168,7 @@
         android:layout_toRightOf="@+id/textPublicationRating"
         android:layout_toEndOf="@+id/textPublicationRating"
         android:id="@+id/textPublisherName"
+        android:maxLines="1"
         android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginTop="@dimen/margin_8" />

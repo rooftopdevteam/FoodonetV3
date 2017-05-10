@@ -73,7 +73,7 @@
     <string name="feedback_share_your_thoughts_or_anything_else">Share your thoughts or anything else</string>
     <string name="feedback_feedback">Feedback</string>
     <string name="title_activity_groups">GroupsActivity</string>
-    <string name="admin">admin</string>
+    <string name="admin">Admin</string>
     <string name="group_name">Group name</string>
     <string name="group_members">Group members</string>
     <string name="dialog_new_group">New Group</string>
@@ -98,7 +98,7 @@
     <string name="title_activity_fullscreen_image">FullscreenActivityImage</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="new_location">New location</string>
+    <string name="pick_new_location">Pick new location</string>
     <string name="view_pager_tab_active">Active</string>
     <string name="view_pager_tab_recent">Recent</string>
     <string name="view_pager_tab_closest">Closest</string>
@@ -145,5 +145,8 @@
     <string name="new_messages">new messages</string>
     <string name="new_message">new message</string>
     <string name="clear_notifications">Clear notifications</string>
+    <string name="locations">Locations</string>
+    <string name="ended">Ended</string>
+    <string name="remaining">remaining</string>
 
 </resources>

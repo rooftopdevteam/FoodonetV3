@@ -62,7 +62,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         /** get non user publications from db */
         PublicationsDBHandler handler = new PublicationsDBHandler(this);
-        publications = handler.getPublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS, CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
+        publications = handler.getOnlineNonUserPublications(CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
         adapter.updatePublications(publications);
 
         /** set the broadcast receiver for future stuff */
@@ -157,7 +157,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void updateMap(){
         PublicationsDBHandler handler = new PublicationsDBHandler(getBaseContext());
-        publications = handler.getPublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS,CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
+        publications = handler.getOnlineNonUserPublications(CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
         adapter.updatePublications(publications);
         startMap();
     }
@@ -176,7 +176,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         }
                     }
                     break;
-                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
                     if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
                         // TODO: 01/04/2017 add logic if fails
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();

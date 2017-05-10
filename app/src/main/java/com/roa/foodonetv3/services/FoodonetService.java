@@ -152,6 +152,7 @@ public class FoodonetService extends IntentService {
                 JSONArray rootGetPublications;
                 rootGetPublications = new JSONArray(responseRoot);
 
+                // as for now, the server only returns public publications to "get all publications" method
                 long id,audience;
                 String title,subtitle,address,startingDate,endingDate,contactInfo,activeDeviceDevUUID,photoURL,identityProviderUserName,priceDescription;
                 short typeOfCollecting;
@@ -188,7 +189,7 @@ public class FoodonetService extends IntentService {
                     }
                 }
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                publicationsDBHandler.replaceAllPublications(publications);
+                publicationsDBHandler.updatePublicationsData(publications);
                 Intent getDataIntent = new Intent(this,GetDataService.class);
                 getDataIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_ALL_PUBLICATIONS_REGISTERED_USERS);
                 startService(getDataIntent);
@@ -259,7 +260,7 @@ public class FoodonetService extends IntentService {
 
             else if(actionType == ReceiverConstants.ACTION_DELETE_PUBLICATION){
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                publicationsDBHandler.deletePublication(Long.parseLong(args[0]));
+                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
                 intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
             }
@@ -317,6 +318,13 @@ public class FoodonetService extends IntentService {
                     updateData = true;
                 }
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,updateData);
+            }
+
+            else if(actionType == ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE){
+                publicationsDBHandler = new PublicationsDBHandler(this);
+                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
+                intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
+                intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
             }
 
             else if(actionType == ReceiverConstants.ACTION_GET_REPORTS){
@@ -396,7 +404,7 @@ public class FoodonetService extends IntentService {
                 ArrayList<RegisteredUser> registeredUsers = new ArrayList<>();
 
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                ArrayList<Long> publicationsIDs = publicationsDBHandler.getPublicationsIDs();
+                ArrayList<Long> publicationsIDs = publicationsDBHandler.getOnlinePublicationsIDs();
 
                 long publicationID, collectorUserID;
                 int publicationVersion;

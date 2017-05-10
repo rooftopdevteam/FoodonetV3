@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.activities.GroupsActivity;
 import com.roa.foodonetv3.activities.PublicationActivity;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.db.NotificationsDBHandler;
 import com.roa.foodonetv3.db.PublicationsDBHandler;
@@ -96,23 +97,25 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
             mCurrentPhotoFile = null;
             publicationVersion = -1;
             isItemOnline = false;
-            textNotificationType.setTextColor(ContextCompat.getColor(context,R.color.fooLightBlue));
             notification = notifications.get(position);
             textNotificationType.setText(notification.getTypeNotificationString(context));
+            textNotificationType.setTextColor(ContextCompat.getColor(context,notification.getNotificationTextColor()));
             textNotificationName.setText(notification.getNameNotification());
-            String timeAgo = CommonMethods.getTimeDifference(context,notification.getReceivedTime(),CommonMethods.getCurrentTimeSeconds());
+            String timeAgo = CommonMethods.getTimeDifference(context,notification.getReceivedTime(),CommonMethods.getCurrentTimeSeconds(), CommonConstants.TIME_TYPE_AGO);
             textNotificationTime.setText(timeAgo);
             Glide.with(context).load(notification.getNotificationTypeImageResource()).into(imageNotificationType);
             switch (notification.getTypeNotification()){
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_PUBLICATION:
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_REGISTERED_USER:
+                case NotificationFoodonet.NOTIFICATION_TYPE_PUBLICATION_DELETED:
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_PUBLICATION_REPORT:
                     publicationVersion = publicationsDBHandler.getPublicationVersion(notification.getItemID());
                     isItemOnline = publicationVersion != -1;
                     String mCurrentPhotoFileString = CommonMethods.getFilePathFromPublicationID(context, notification.getItemID(), publicationVersion);
-                    if(!isItemOnline){
-                        Glide.with(context).load(R.drawable.camera_xxh).centerCrop().into(imageNotification);
-                    } else if (mCurrentPhotoFileString!= null){
+//                    if(!isItemOnline){
+//                        Glide.with(context).load(R.drawable.camera_xxh).centerCrop().into(imageNotification);
+//                    } else
+                    if (mCurrentPhotoFileString!= null){
                         Glide.with(context).load(R.drawable.camera_xxh).centerCrop().into(imageNotification);
                         mCurrentPhotoFile = new File(mCurrentPhotoFileString);
                         if (mCurrentPhotoFile.isFile()) {
@@ -127,12 +130,8 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
                         observerId = observer.getId();
                     }
                     break;
-                case NotificationFoodonet.NOTIFICATION_TYPE_PUBLICATION_DELETED:
-                    textNotificationType.setTextColor(ContextCompat.getColor(context,R.color.fooRed));
-                    Glide.with(context).load(R.drawable.camera_xxh).centerCrop().into(imageNotification);
-                    break;
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
-                    Glide.with(context).load(R.drawable.camera_xxh).centerCrop().into(imageNotification);
+                    Glide.with(context).load(R.drawable.group_blue).centerCrop().into(imageNotification);
                     break;
             }
         }

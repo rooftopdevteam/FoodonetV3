@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +38,7 @@ import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.activities.PublicationActivity;
 import com.roa.foodonetv3.activities.SignInActivity;
 import com.roa.foodonetv3.adapters.ReportsRecyclerAdapter;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnFabChangeListener;
 import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
@@ -78,6 +80,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     private OnDeletePublicationListener onDeletePublicationListener;
     private OnReplaceFragListener onReplaceFragListener;
     private String userImagePath;
+    private ImageView imagePublicationGroup;
 
     public PublicationDetailFragment() {
         // Required empty public constructor
@@ -145,14 +148,20 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         imagePicturePublication = (ImageView) v.findViewById(R.id.imagePicturePublication);
         imagePicturePublication.setOnClickListener(this);
         imagePublisherUser = (CircleImageView) v.findViewById(R.id.imagePublisherUser);
+        imagePublicationGroup = (ImageView) v.findViewById(R.id.imagePublicationGroup);
 
         // TODO: 05/05/2017 test
         userImagePath = CommonMethods.getFilePathFromUserID(getContext(),publication.getPublisherID());
         if(userImagePath != null){
             File userImageFile = new File(userImagePath);
-            TransferObserver observer = CommonMethods.getS3TransferUtility(getContext()).download(getContext().getResources().getString(R.string.amazon_users_bucket),
-                    CommonMethods.getFileNameFromUserID(publication.getPublisherID()), userImageFile);
-            observer.setTransferListener(this);
+            if(userImageFile.isFile()){
+                Glide.with(getContext()).load(userImageFile).into(imagePublisherUser);
+            } else {
+                String userImageFIleName = CommonMethods.getFileNameFromUserID(publication.getPublisherID());
+                TransferObserver observer = CommonMethods.getS3TransferUtility(getContext()).download(getContext().getResources().getString(R.string.amazon_users_bucket),
+                        userImageFIleName, userImageFile);
+                observer.setTransferListener(this);
+            }
         }
         //
 
@@ -170,12 +179,10 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
 
     @Override
     public void onResume() {
-        // TODO: 21/11/2016 load from server every resume?
         super.onResume();
         IntentFilter filter = new IntentFilter(ReceiverConstants.BROADCAST_FOODONET);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
 
-        // TODO: 21/12/2016 should be from db
         ServerMethods.getReports(getContext(),publication.getId(),publication.getVersion());
 
         // initialize the views */
@@ -211,17 +218,13 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             case R.id.detail_edit:
                 onReplaceFragListener.onReplaceFrags(PublicationActivity.EDIT_PUBLICATION_TAG,publication.getId());
                 return true;
-            case R.id.detail_take_offline:
-                // TODO: 19/12/2016 add logic
-                Toast.makeText(getContext(), "take offline", Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.detail_delete:
                 AlertDialog.Builder alertDialogDeletePublication = new AlertDialog.Builder(getContext())
                         .setTitle(R.string.dialog_are_you_sure)
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                ServerMethods.deletePublication(getContext(),publication.getId());
+                                ServerMethods.takePublicationOffline(getContext(),publication.getId());
                             }
                         })
                         .setNegativeButton(R.string.no, null);
@@ -248,20 +251,26 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     /** set the views */
     private void initViews(){
         // if the user is the admin, registered user, or a non registered user, show different layouts */
-        if (isAdmin) {
-            layoutAdminDetails.setVisibility(View.VISIBLE);
-            layoutRegisteredDetails.setVisibility(View.GONE);
+        if(publication.isOnAir()) {
+            if (isAdmin) {
+                layoutAdminDetails.setVisibility(View.VISIBLE);
+                layoutRegisteredDetails.setVisibility(View.GONE);
 
-        } else if(isRegistered) {
-            layoutAdminDetails.setVisibility(View.GONE);
-            layoutRegisteredDetails.setVisibility(View.VISIBLE);
+            } else if (isRegistered) {
+                layoutAdminDetails.setVisibility(View.GONE);
+                layoutRegisteredDetails.setVisibility(View.VISIBLE);
 
+            } else {
+                layoutAdminDetails.setVisibility(View.GONE);
+                layoutRegisteredDetails.setVisibility(View.GONE);
+            }
         } else{
             layoutAdminDetails.setVisibility(View.GONE);
             layoutRegisteredDetails.setVisibility(View.GONE);
         }
         onFabChangeListener.onFabChange(PublicationActivity.PUBLICATION_DETAIL_TAG,!isAdmin && !isRegistered);
 
+        imagePublicationGroup.setImageResource(publication.getGroupImageResource());
         if(publication.getAudience()==0){
             // audience is public */
             textCategory.setText(getResources().getString(R.string.audience_public));
@@ -277,9 +286,14 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         }
 
         String timeRemaining = String.format(Locale.US, "%1$s",
-                CommonMethods.getTimeDifference(getContext(),CommonMethods.getCurrentTimeSeconds(),Double.parseDouble(publication.getEndingDate())));
+                CommonMethods.getTimeDifference(getContext(),CommonMethods.getCurrentTimeSeconds(),
+                        Double.parseDouble(publication.getEndingDate()), CommonConstants.TIME_TYPE_REMAINING));
 
-        textTimeRemaining.setText(timeRemaining);
+        if(publication.isOnAir()){
+            textTimeRemaining.setText(timeRemaining);
+        } else{
+            textTimeRemaining.setText(getString(R.string.ended));
+        }
         // get the number of users registered for this publication */
         countRegisteredUsers = registeredUsersDBHandler.getPublicationRegisteredUsersCount(publication.getId());
         textJoined.setText(String.format(Locale.US,"%1$s : %2$d",getResources().getString(R.string.joined),countRegisteredUsers));
@@ -291,8 +305,10 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         String priceS;
         if(publication.getPrice()==0){
             priceS = getResources().getString(R.string.free);
+            textPublicationPrice.setTextColor(ContextCompat.getColor(getContext(),R.color.fooLightBlue));
         } else{
             priceS = String.valueOf(publication.getPrice());
+            textPublicationPrice.setTextColor(ContextCompat.getColor(getContext(),R.color.fooYellow));
         }
         textPublicationPrice.setText(priceS);
         textPublicationDetails.setText(publication.getSubtitle());
@@ -503,7 +519,9 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     @Override
     public void onStateChanged(int id, TransferState state) {
         if (state== TransferState.COMPLETED){
-            Glide.with(getContext()).load(userImagePath).into(imagePublisherUser);
+            if(getContext()!= null){
+                Glide.with(getContext()).load(userImagePath).into(imagePublisherUser);
+            }
         } else{
             // TODO: 06/05/2017 add
         }
@@ -599,7 +617,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                     break;
 
                 // publication deleted
-                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
                     if(alertDialog!=null && alertDialog.isShowing()){
                         alertDialog.dismiss();
                     }

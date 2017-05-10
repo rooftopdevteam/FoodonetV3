@@ -4,9 +4,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.util.LongSparseArray;
-import android.util.SparseArray;
-import android.util.SparseLongArray;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
@@ -14,8 +11,6 @@ import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.model.Publication;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeMap;
 
 public class PublicationsDBHandler {
     private Context context;
@@ -69,26 +64,33 @@ public class PublicationsDBHandler {
     }
 
     /** get all publications either of the user or not of the user
-     * @param typeFilter TYPE_GET_USER_PUBLICATIONS or TYPE_GET_NON_USER_PUBLICATIONS from FoodonetDBProvider */
-    public ArrayList<Publication> getPublications(int typeFilter, int sortType){
+     * */
+    public ArrayList<Publication> getOnlineNonUserPublications(int sortType){
         long userID = CommonMethods.getMyUserID(context);
-        String filterString;
-        if(typeFilter == FoodonetDBProvider.PublicationsDB.TYPE_GET_USER_PUBLICATIONS){
-            filterString = "=";
-        }else{
-            filterString = "!=";
-        }
-        ArrayList<Publication> publications = new ArrayList<>();
-        String where = String.format("%1$s %2$s ?" ,FoodonetDBProvider.PublicationsDB.PUBLISHER_ID_COLUMN,filterString);
+        String where = String.format("%1$s != ? AND %2$s = ?" ,
+                FoodonetDBProvider.PublicationsDB.PUBLISHER_ID_COLUMN,FoodonetDBProvider.PublicationsDB.IS_ON_AIR_COLUMN);
+        String[] whereArgs = {String.valueOf(userID),String.valueOf(CommonConstants.VALUE_TRUE)};
+        return getPublications(where,whereArgs,sortType);
+    }
+
+    public ArrayList<Publication> getUserPublications(int sortType){
+        long userID = CommonMethods.getMyUserID(context);
+        String where = String.format("%1$s = ?" ,
+                FoodonetDBProvider.PublicationsDB.PUBLISHER_ID_COLUMN);
         String[] whereArgs = {String.valueOf(userID)};
+        return getPublications(where,whereArgs,sortType);
+    }
+
+    private ArrayList<Publication> getPublications(String selection, String[] selectionArgs, int sortType){
+        ArrayList<Publication> publications = new ArrayList<>();
         String sortOrder = null;
         ArrayList<Double> distances = new ArrayList<>();
         LatLng userLocation = CommonMethods.getLastLocation(context);
         if(sortType == CommonConstants.PUBLICATION_SORT_TYPE_RECENT){
             sortOrder = FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN+" DESC";
         }
-        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,null,where,whereArgs,sortOrder);
-        /** declarations */
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,null,selection,selectionArgs,sortOrder);
+        // declarations */
         long publicationID, publisherID, audience;
         int version;
         String title, subtitle, address, contactInfo, photoUrl, providerUserName, priceDesc, startingDate, endingDate;
@@ -138,10 +140,12 @@ public class PublicationsDBHandler {
     }
 
     /** get publications IDs */
-    public ArrayList<Long> getPublicationsIDs(){
+    public ArrayList<Long> getOnlinePublicationsIDs(){
         ArrayList<Long> publicationsIDs = new ArrayList<>();
         String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN};
-        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,null,null,null);
+        String where = String.format("%1$s = ?", FoodonetDBProvider.PublicationsDB.IS_ON_AIR_COLUMN);
+        String[] whereArgs = {String.valueOf(CommonConstants.VALUE_TRUE)};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,where,whereArgs,null);
         while(c!= null && c.moveToNext()){
             publicationsIDs.add(c.getLong(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN)));
         }
@@ -149,6 +153,22 @@ public class PublicationsDBHandler {
             c.close();
         }
         return publicationsIDs;
+    }
+
+    public ArrayList<Long> getOnlinePublicationsToUpdateIDs(){
+        ArrayList<Long> publications = new ArrayList<>();
+        String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN};
+        String selection = String.format("%1$s != ? AND %2$s > ? AND %3$s = ?",
+                FoodonetDBProvider.PublicationsDB.AUDIENCE_COLUMN,FoodonetDBProvider.PublicationsDB.ENDING_TIME_COLUMN, FoodonetDBProvider.PublicationsDB.IS_ON_AIR_COLUMN);
+        String[] selectionArgs = {"0",String.valueOf(CommonMethods.getCurrentTimeSeconds()),String.valueOf(CommonConstants.VALUE_TRUE)};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,selection,selectionArgs,null);
+        while(c!= null && c.moveToNext()){
+            publications.add(c.getLong(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN)));
+        }
+        if(c!=null){
+            c.close();
+        }
+        return publications;
     }
 
     public ArrayList<String> getPublicationImagesFileNames(){
@@ -228,7 +248,9 @@ public class PublicationsDBHandler {
         return publicationsAvailable;
     }
 
-    /** deletes the publications in the db and add new publications data */
+    /** deletes the publications in the db and add new publications data
+     *  @deprecated since the get all publication method in the server only returns public publications, it is no longer possible to delete all and replace all
+     *  */
     public void replaceAllPublications(ArrayList<Publication> publications){
         /** delete all publications from db before adding the new ones */
         deleteAllPublications();
@@ -268,6 +290,24 @@ public class PublicationsDBHandler {
         }
     }
 
+    public void updatePublicationsData(ArrayList<Publication> publications){
+        ArrayList<Long> existingPublicationsIDs = getOnlinePublicationsIDs();
+        for(int i = 0 ; i < publications.size(); i++){
+            long publicationID = publications.get(i).getId();
+            // check if publication is already in db
+            if(existingPublicationsIDs.contains(publicationID)){
+                // check if version is different
+                if(getPublicationVersion(publicationID)!= publications.get(i).getVersion()){
+                    // version is different, update
+                    updatePublication(publications.get(i));
+                }
+            } else{
+                // publication not in db, insert to db
+                insertPublication(publications.get(i));
+            }
+        }
+    }
+
     /** inserts a new publication into the db */
     public void insertPublication(Publication publication){
         ContentValues values = new ContentValues();
@@ -302,10 +342,33 @@ public class PublicationsDBHandler {
     }
 
     /** deletes a specific publication */
-    public void deletePublication(long publicationID){
+    private void deletePublication(long publicationID){
         String where = String.format("%1$s = ?",FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN);
         String [] whereArgs = {String.valueOf(publicationID)};
         context.getContentResolver().delete(FoodonetDBProvider.PublicationsDB.CONTENT_URI,where,whereArgs);
+    }
+
+    public void clearOldPublications(){
+        String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN};
+        String selection = String.format("%1$s != ? AND %2$s < ?",
+                FoodonetDBProvider.PublicationsDB.PUBLISHER_ID_COLUMN,FoodonetDBProvider.PublicationsDB.ENDING_TIME_COLUMN);
+        String[] selectionArgs = {String.valueOf(CommonMethods.getMyUserID(context)),String.valueOf(CommonMethods.getCurrentTimeSeconds()+CommonConstants.CLEAR_NOTIFICATIONS_TIME_SECONDS)};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,selection,selectionArgs,null);
+        while(c!= null && c.moveToNext()){
+            deletePublication(c.getLong(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN)));
+        }
+        if(c!=null){
+            c.close();
+        }
+    }
+
+    public void takePublicationOffline(long publicationID){
+        String where = String.format("%1$s = ?", FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN);
+        String[] whereArgs = {String.valueOf(publicationID)};
+
+        ContentValues values = new ContentValues();
+        values.put(FoodonetDBProvider.PublicationsDB.IS_ON_AIR_COLUMN,CommonConstants.VALUE_FALSE);
+        context.getContentResolver().update(FoodonetDBProvider.PublicationsDB.CONTENT_URI,values,where,whereArgs);
     }
 
     /** updates an existing publication */

@@ -11,17 +11,32 @@
     tools:context="com.roa.foodonetv3.activities.PlacesActivity">
 
     <TextView
-        android:text="@string/new_location"
+        android:text="@string/pick_new_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:id="@+id/textLatestPicker"
-        style="@style/FooMedium"
+        android:paddingLeft="@dimen/margin_16"
+        android:paddingStart="@dimen/margin_16"
+        android:paddingRight="@dimen/margin_16"
+        android:paddingEnd="@dimen/margin_16"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:id="@+id/textPickNewLocation"
+        android:background="@color/colorPrimary"
+        style="@style/FooMediumWhite"
         />
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1dp"-->
+        <!--android:id="@+id/divider"-->
+        <!--android:layout_below="@id/textPickNewLocation"-->
+        <!--android:background="@color/fooGrey"-->
+        <!--/>-->
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/textLatestPicker"
+        android:layout_below="@+id/textPickNewLocation"
         android:layout_centerHorizontal="true"
         android:id="@+id/recentPlacesList" />
 

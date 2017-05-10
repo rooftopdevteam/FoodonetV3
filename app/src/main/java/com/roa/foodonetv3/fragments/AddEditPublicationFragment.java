@@ -147,7 +147,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         }
 
         layoutInfo = v.findViewById(R.id.layoutInfo);
-        layoutInfo.setBackgroundColor(getResources().getColor(R.color.fooLightGrey));
+//        layoutInfo.setBackgroundColor(getResources().getColor(R.color.fooLightGrey));
         layoutInfo.setVisibility(View.GONE);
         TextView textInfo = (TextView) v.findViewById(R.id.textInfo);
         textInfo.setText(R.string.start_sharing_by_adding_an_image_of_the_food_you_wish_to_share);
@@ -179,6 +179,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
 
         if (mCurrentPhotoPath == null|| mCurrentPhotoPath.equals("")) {
             layoutInfo.setVisibility(View.VISIBLE);
+
             imagePictureAddPublication.setVisibility(View.GONE);
         } else{
             layoutInfo.setVisibility(View.GONE);

@@ -22,6 +22,11 @@
         <item name="android:textColor">@color/fooBlack</item>
     </style>
 
+    <style name="FooWhiteXL">
+        <item name="android:textSize">@dimen/text_size_36</item>
+        <item name="android:textColor">@color/fooWhite</item>
+    </style>
+
     <style name="FooXL">
         <item name="android:textSize">@dimen/text_size_36</item>
     </style>
@@ -46,6 +51,16 @@
 
     <style name="FooMedium">
         <item name="android:textSize">@dimen/text_size_20</item>
+    </style>
+
+    <style name="FooIndentMedium">
+        <item name="android:textSize">@dimen/text_size_20</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="FooMediumWhite">
+        <item name="android:textSize">@dimen/text_size_20</item>
+        <item name="android:textColor">@color/fooWhite</item>
     </style>
 
     <style name="FooBlackMedium">

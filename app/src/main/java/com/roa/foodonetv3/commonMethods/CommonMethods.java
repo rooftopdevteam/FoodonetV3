@@ -149,7 +149,7 @@ public class CommonMethods {
     /**
      * returns a string of time difference between two times in epoch time seconds (NOT MILLIS!) with a changing perspective according to the duration
      */
-    public static String getTimeDifference(Context context, Double earlierTimeInSeconds, Double laterTimeInSeconds) {
+    public static String getTimeDifference(Context context, Double earlierTimeInSeconds, Double laterTimeInSeconds, int type) {
         long timeDiff = (long) (laterTimeInSeconds - earlierTimeInSeconds) / 60; // minutes as start
         StringBuilder message = new StringBuilder();
         if (timeDiff < 0) {
@@ -174,6 +174,14 @@ public class CommonMethods {
                 /** only add hours if the difference is less than a week, otherwise just show days */
                 message.append(String.format(Locale.US, "%1$d%2$s", (timeDiff % 1440) / 60, context.getResources().getString(R.string.h_hours)));
             }
+        }
+        switch (type){
+            case CommonConstants.TIME_TYPE_REMAINING:
+                message.append(String.format(" %1$s",context.getString(R.string.remaining)));
+                break;
+            case CommonConstants.TIME_TYPE_AGO:
+                message.append(String.format(" %1$s",context.getString(R.string.ago)));
+                break;
         }
         return message.toString();
     }

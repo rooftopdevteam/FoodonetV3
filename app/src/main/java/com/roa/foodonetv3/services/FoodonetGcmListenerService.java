@@ -72,9 +72,10 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                     CommonMethods.sendNotification(this);
                 }
             }
-            publicationsDBHandler.deletePublication(publicationID);
+            publicationsDBHandler.takePublicationOffline(publicationID);
+//            publicationsDBHandler.deletePublication(publicationID);
             Intent intent = new Intent(ReceiverConstants.BROADCAST_FOODONET);
-            intent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_DELETE_PUBLICATION);
+            intent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE);
             intent.putExtra(ReceiverConstants.SERVICE_ERROR, false);
             intent.putExtra(ReceiverConstants.UPDATE_DATA, true);
             intent.putExtra(Publication.PUBLICATION_ID, publicationID);

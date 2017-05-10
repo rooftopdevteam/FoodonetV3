@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fooLightGrey"
     >
 
     <ImageView
-        android:layout_width="@dimen/image_size_width_220"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/no_photo_grey"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/no_photo_white"
         android:id="@+id/imageView"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
         />
-        <!--android:alpha="0.2"-->
     <TextView
         android:text="TextView"
         android:layout_width="wrap_content"

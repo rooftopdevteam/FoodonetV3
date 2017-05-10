@@ -189,7 +189,11 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                     bundle.putParcelable(Publication.PUBLICATION_KEY, publication);
                     publicationDetailFragment.setArguments(bundle);
                     updateContainer(isAddNewFragment, publicationDetailFragment, "publicationDetailFrag");
-                    animateFab(openFragType, true, duration);
+                    if(publication.isOnAir()){
+                        animateFab(openFragType, false, duration);
+                    } else{
+                        animateFab(openFragType, true, duration);
+                    }
                 }
                 break;
             case MY_PUBLICATIONS_TAG:

@@ -48,6 +48,8 @@ public class CommonConstants {
     public static final String MY_USER_ID_IMAGE_FILE_NAME = "User.jpg";
 
     // file provider folders, they are also hard coded in the file_paths.xml, if changing one, change the other as well
-    public static final String FILE_TYPE_PUBLICATIONS = "publications";
-    public static final String FILE_TYPE_USERS = "users";
+    public static final String FILE_TYPE_PUBLICATIONS = "publications images";
+    public static final String FILE_TYPE_USERS = "users images";
+    public static final int TIME_TYPE_REMAINING = 1;
+    public static final int TIME_TYPE_AGO = 2;
 }

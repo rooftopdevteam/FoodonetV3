@@ -33,12 +33,13 @@
     <ImageView
         android:layout_width="@dimen/image_size_50"
         android:layout_height="@dimen/image_size_50"
-        app:srcCompat="@drawable/minus"
+        app:srcCompat="@drawable/groups_leave"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/margin_16"
         android:layout_marginRight="@dimen/margin_16"
+        android:padding="@dimen/margin_8"
         android:id="@+id/imageRemoveMember" />
 
     <TextView

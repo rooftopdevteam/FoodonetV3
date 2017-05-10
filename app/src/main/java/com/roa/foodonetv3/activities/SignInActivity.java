@@ -35,7 +35,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
-    private SignInButton mSignInButton;
+    private SignInButton mButtonSignInGoogle;
 
     // Firebase instance variables
     private GoogleApiClient mGoogleApiClient;
@@ -52,10 +52,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_sign_in);
 
         //initialize Facebook login
-        mFacebookCallbackManager = CallbackManager.Factory.create();
-        LoginButton buttonFacebookLogin = (LoginButton) findViewById(R.id.button_facebook_login);
-        buttonFacebookLogin.setReadPermissions("email", "public_profile");
-        buttonFacebookLogin.registerCallback(mFacebookCallbackManager,this);
+        // TODO: 07/05/2017 disabling facebook login until fixed
+//        mFacebookCallbackManager = CallbackManager.Factory.create();
+//        LoginButton buttonFacebookLogin = (LoginButton) findViewById(R.id.button_facebook_login);
+//        buttonFacebookLogin.setReadPermissions("email", "public_profile");
+//        buttonFacebookLogin.registerCallback(mFacebookCallbackManager,this);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -74,10 +75,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         };
 
         // Assign fields
-        mSignInButton = (SignInButton) findViewById(R.id.button_sign_in_facebook);
+        mButtonSignInGoogle = (SignInButton) findViewById(R.id.button_sign_in_google);
 
         // Set click listeners
-        mSignInButton.setOnClickListener(this);
+        mButtonSignInGoogle.setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -109,7 +110,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_sign_in_facebook:
+            case R.id.button_sign_in_google:
                 signIn();
                 break;
             default:
