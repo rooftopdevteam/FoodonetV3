@@ -25,7 +25,7 @@
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginLeft="@dimen/margin_8"
         android:text="@string/not_signed_in"
-        style="@style/FooMediumWhite"
+        style="@style/FooWhiteMedium"
         android:id="@+id/headerNavTxt"
         android:ellipsize="marquee"
         android:maxLines="1" />

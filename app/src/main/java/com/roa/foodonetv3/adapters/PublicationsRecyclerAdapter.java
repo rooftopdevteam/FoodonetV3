@@ -147,6 +147,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         private void bindPublication(Publication publication) {
             this.publication = publication;
             textPublicationTitle.setText(publication.getTitle());
+            Glide.with(context).load(R.drawable.camera_xxh).into(imagePublication);
             imagePublicationGroup.setImageResource(publication.getGroupImageResource());
             if(publication.isOnAir() && Double.valueOf(publication.getEndingDate()) > CommonMethods.getCurrentTimeSeconds()){
                 textPublicationTimeRemaining.setText(CommonMethods.getTimeDifference(context,CommonMethods.getCurrentTimeSeconds(),

@@ -61,7 +61,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     private static final String TAG = "PublicationDetailFrag";
 
     private TextView textCategory,textTimeRemaining,textJoined,textTitlePublication,textPublicationAddress,textPublicationRating,
-            textPublisherName,textPublicationPrice,textPublicationDetails;
+            textPublisherName,textPublicationPrice,textPublicationDetails, textPublicationPriceType;
     private ImageView imagePicturePublication;
     private CircleImageView imagePublisherUser;
     private View layoutAdminDetails, layoutRegisteredDetails;
@@ -113,7 +113,9 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             // the user is not the admin, check if he's a registered user for the publication */
             isRegistered = registeredUsersDBHandler.isUserRegistered(publication.getId());
         }
-        setHasOptionsMenu(true);
+        if(publication.isOnAir()) {
+            setHasOptionsMenu(true);
+        }
 
         receiver = new FoodonetReceiver();
     }
@@ -149,8 +151,8 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         imagePicturePublication.setOnClickListener(this);
         imagePublisherUser = (CircleImageView) v.findViewById(R.id.imagePublisherUser);
         imagePublicationGroup = (ImageView) v.findViewById(R.id.imagePublicationGroup);
+        textPublicationPriceType = (TextView) v.findViewById(R.id.textPublicationPriceType);
 
-        // TODO: 05/05/2017 test
         userImagePath = CommonMethods.getFilePathFromUserID(getContext(),publication.getPublisherID());
         if(userImagePath != null){
             File userImageFile = new File(userImagePath);
@@ -224,7 +226,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                ServerMethods.takePublicationOffline(getContext(),publication.getId());
+                                ServerMethods.deletePublication(getContext(),publication.getId());
                             }
                         })
                         .setNegativeButton(R.string.no, null);
@@ -268,7 +270,8 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             layoutAdminDetails.setVisibility(View.GONE);
             layoutRegisteredDetails.setVisibility(View.GONE);
         }
-        onFabChangeListener.onFabChange(PublicationActivity.PUBLICATION_DETAIL_TAG,!isAdmin && !isRegistered);
+        boolean showFAB = !isAdmin && !isRegistered && publication.isOnAir();
+        onFabChangeListener.onFabChange(PublicationActivity.PUBLICATION_DETAIL_TAG,showFAB);
 
         imagePublicationGroup.setImageResource(publication.getGroupImageResource());
         if(publication.getAudience()==0){
@@ -301,14 +304,18 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         textPublicationAddress.setText(publication.getAddress());
         textPublisherName.setText(publication.getIdentityProviderUserName());
 
+        // currently only supporting NIS
+        textPublicationPriceType.setText(getString(R.string.currency_nis));
 
         String priceS;
         if(publication.getPrice()==0){
             priceS = getResources().getString(R.string.free);
             textPublicationPrice.setTextColor(ContextCompat.getColor(getContext(),R.color.fooLightBlue));
+            textPublicationPriceType.setVisibility(View.GONE);
         } else{
             priceS = String.valueOf(publication.getPrice());
             textPublicationPrice.setTextColor(ContextCompat.getColor(getContext(),R.color.fooYellow));
+            textPublicationPriceType.setVisibility(View.VISIBLE);
         }
         textPublicationPrice.setText(priceS);
         textPublicationDetails.setText(publication.getSubtitle());
@@ -617,7 +624,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                     break;
 
                 // publication deleted
-                case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
+                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
                     if(alertDialog!=null && alertDialog.isShowing()){
                         alertDialog.dismiss();
                     }

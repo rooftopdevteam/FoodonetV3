@@ -23,7 +23,7 @@
         android:paddingBottom="@dimen/margin_8"
         android:id="@+id/textPickNewLocation"
         android:background="@color/colorPrimary"
-        style="@style/FooMediumWhite"
+        style="@style/FooWhiteMedium"
         />
     <!--<View-->
         <!--android:layout_width="match_parent"-->

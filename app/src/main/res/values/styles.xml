@@ -58,7 +58,7 @@
         <item name="android:textStyle">italic</item>
     </style>
 
-    <style name="FooMediumWhite">
+    <style name="FooWhiteMedium">
         <item name="android:textSize">@dimen/text_size_20</item>
         <item name="android:textColor">@color/fooWhite</item>
     </style>
@@ -98,6 +98,11 @@
 
     <style name="FooSmall">
         <item name="android:textSize">@dimen/text_size_16</item>
+    </style>
+
+    <style name="FooYellowSmall">
+        <item name="android:textSize">@dimen/text_size_16</item>
+        <item name="android:textColor">@color/fooYellow</item>
     </style>
 
     <style name="FooBlueSmall">

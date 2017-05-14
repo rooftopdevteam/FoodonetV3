@@ -55,7 +55,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     public static final int TYPE_EDIT_PUBLICATION = 2;
     private EditText editTextTitleAddPublication, editTextPriceAddPublication, editTextDetailsAddPublication;
     private Spinner spinnerShareWith;
-    private TextView textLocationAddPublication;
+    private TextView textLocationAddPublication, textPublicationPriceType;
     private double endingDate;
     private String mCurrentPhotoPath, pickPhotoPath;
     private ImageView imagePictureAddPublication;
@@ -129,6 +129,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         editTextPriceAddPublication.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(5,2)});
         v.findViewById(R.id.imageTakePictureAddPublication).setOnClickListener(this);
         imagePictureAddPublication = (ImageView) v.findViewById(R.id.imagePictureAddPublication);
+
+        // currently only supporting NIS
+        textPublicationPriceType = (TextView) v.findViewById(R.id.textPublicationPriceType);
+        textPublicationPriceType.setText(getString(R.string.currency_nis));
 
         if(isEdit){
             spinnerShareWith.setEnabled(false);

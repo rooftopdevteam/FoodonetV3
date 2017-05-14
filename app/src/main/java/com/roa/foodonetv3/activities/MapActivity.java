@@ -1,18 +1,23 @@
 package com.roa.foodonetv3.activities;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,12 +31,13 @@ import com.roa.foodonetv3.adapters.MapPublicationRecyclerAdapter;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
-import com.roa.foodonetv3.db.FoodonetDBProvider;
 import com.roa.foodonetv3.db.PublicationsDBHandler;
 import com.roa.foodonetv3.model.Publication;
+import com.roa.foodonetv3.services.GetLocationService;
 import java.util.ArrayList;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, MapPublicationRecyclerAdapter.OnImageAdapterClickListener, View.OnClickListener, GoogleMap.OnInfoWindowClickListener {
+    private static final String TAG = "MapActivity";
 
     private GoogleMap mMap;
     private ArrayList<Publication> publications = new ArrayList<>();
@@ -70,6 +76,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver,filter);
 
         startMap();
+
+        getNewLocation(false,GetLocationService.TYPE_NORMAL);
     }
 
     @Override
@@ -119,15 +127,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         mMap.setOnInfoWindowClickListener(this);
-
-//        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//            @Override
-//            public boolean onMarkerClick(Marker marker) {
-//                long publicationID = (long) marker.getTag();
-//                Toast.makeText(MapActivity.this, "id: "+publicationID, Toast.LENGTH_SHORT).show();
-//                return true;
-//            }
-//        });
     }
 
     @Override
@@ -162,6 +161,48 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         startMap();
     }
 
+    private void getNewLocation(boolean getNewData, int actionType){
+        String locationType = CommonMethods.getAvailableLocationType(this);
+        switch (locationType){
+            case LocationManager.GPS_PROVIDER:
+            case LocationManager.NETWORK_PROVIDER:
+                if(CommonMethods.isLocationPermissionGranted(this)){
+                    CommonMethods.startGetLocationService(this,getNewData, locationType, actionType);
+                    Toast.makeText(this, "have permissions", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG,"have permissions");
+                } else{
+                    Toast.makeText(this, "ask permissions", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG,"ask permissions");
+                    ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},CommonConstants.PERMISSION_REQUEST_LOCATION);
+                }
+                break;
+            case CommonConstants.LOCATION_TYPE_LOCATION_DISABLED:
+                // TODO: 13/05/2017 add user message
+                Toast.makeText(this, "location disabled", Toast.LENGTH_SHORT).show();
+                Log.d(TAG,"location disabled");
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case CommonConstants.PERMISSION_REQUEST_LOCATION:
+                // in case of a request */
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // if granted, start getNewLocation service again
+                    getNewLocation(true, GetLocationService.TYPE_NORMAL);
+                } else {
+                    // request denied, give the user a message */
+                    CommonMethods.setLastUpdated(this);
+                    Toast.makeText(this, getResources().getString(R.string.toast_needs_location_permission), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG,getResources().getString(R.string.toast_needs_location_permission));
+                }
+                break;
+        }
+    }
+
     private class FoodonetReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -185,6 +226,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             updateMap();
                         }
                     }
+                    break;
+                case ReceiverConstants.ACTION_GOT_NEW_LOCATION:
+                    userLocation = CommonMethods.getLastLocation(MapActivity.this);
                     break;
             }
         }

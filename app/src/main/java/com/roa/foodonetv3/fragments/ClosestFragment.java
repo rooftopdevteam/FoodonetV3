@@ -31,7 +31,7 @@ public class ClosestFragment extends Fragment{
     private static final String TAG = "ClosestFragment";
 
     private PublicationsRecyclerAdapter adapter;
-    private ClosestFragment.FoodonetReceiver receiver;
+    private FoodonetReceiver receiver;
 
     public ClosestFragment() {
         // Required empty public constructor

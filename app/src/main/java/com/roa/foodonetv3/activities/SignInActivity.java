@@ -13,7 +13,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -65,8 +64,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Toast.makeText(SignInActivity.this, R.string.success, Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(SignInActivity.this, WelcomeUserActivity.class));
-                    finish();
+//                    openWelcomeUserActivity();
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -106,6 +104,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private void openWelcomeUserActivity(){
+        Intent intent = new Intent(SignInActivity.this, WelcomeUserActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
 
     @Override
     public void onClick(View v) {
@@ -169,8 +173,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
                 Toast.makeText(SignInActivity.this, "success auth", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(SignInActivity.this, WelcomeUserActivity.class));
-                finish();
+                openWelcomeUserActivity();
                 // If sign in fails, display a message to the user. If sign in succeeds
                 // the auth state listener will be notified and logic to handle the
                 // signed in user can be handled in the listener.
@@ -201,8 +204,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            startActivity(new Intent(SignInActivity.this, WelcomeUserActivity.class));
-                            finish();
+                            openWelcomeUserActivity();
                         }
                     }
                 });

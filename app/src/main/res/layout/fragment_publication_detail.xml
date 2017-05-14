@@ -23,6 +23,7 @@
                 android:id="@+id/imagePublicationGroup"
                 android:src="@drawable/public_blue"
                 android:layout_margin="@dimen/margin_4"
+                android:layout_centerVertical="true"
                 />
             <TextView
                 android:text="Public"
@@ -47,6 +48,7 @@
                 android:id="@+id/imagePublicationRemaining"
                 android:src="@drawable/clock"
                 android:layout_margin="@dimen/margin_4"
+                android:layout_centerVertical="true"
                 />
             <TextView
                 android:text="12h 35min remaining"
@@ -70,6 +72,7 @@
                 android:id="@+id/imagePublicationJoined"
                 android:src="@drawable/user"
                 android:layout_margin="@dimen/margin_4"
+                android:layout_centerVertical="true"
                 />
             <TextView
                 android:text="Joined"
@@ -196,6 +199,19 @@
         style="@style/FooBlueIndentMedium"
         android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8" />
+
+    <TextView
+        android:text="₪"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/textPublicationPrice"
+        android:layout_toRightOf="@id/textPublicationPrice"
+        android:layout_toEndOf="@id/textPublicationPrice"
+        android:id="@+id/textPublicationPriceType"
+        style="@style/FooYellowSmall"
+        android:layout_marginLeft="@dimen/margin_4"
+        android:layout_marginStart="@dimen/margin_4"
+        />
 
     <TextView
         android:text="Lorem ipsum dolor sit amet, conserctetur adipiscing elit."

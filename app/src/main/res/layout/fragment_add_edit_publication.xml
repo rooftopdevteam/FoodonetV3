@@ -128,7 +128,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="₪"
+        android:text="@string/currency_nis"
+        android:id="@+id/textPublicationPriceType"
         android:layout_alignBaseline="@id/textPriceHeader"
         android:layout_alignBottom="@+id/textPriceHeader"
         android:layout_toRightOf="@id/editTextPriceAddPublication"

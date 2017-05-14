@@ -138,7 +138,9 @@
             android:exported="false" />
         <service
             android:name=".services.GetMyUserImageService"
-            android:exported="false"/>
+            android:exported="false" />
+        <service
+            android:name=".services.GetLocationService"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

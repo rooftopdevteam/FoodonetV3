@@ -155,6 +155,21 @@ public class PublicationsDBHandler {
         return publicationsIDs;
     }
 
+    public ArrayList<Long> getPublicPublicatoinsIDs(){
+        ArrayList<Long> publicationsIDs = new ArrayList<>();
+        String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN};
+        String where = String.format("%1$s = ?", FoodonetDBProvider.PublicationsDB.AUDIENCE_COLUMN);
+        String[] whereArgs = {String.valueOf(0)};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,where,whereArgs,null);
+        while(c!= null && c.moveToNext()){
+            publicationsIDs.add(c.getLong(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN)));
+        }
+        if(c!=null){
+            c.close();
+        }
+        return publicationsIDs;
+    }
+
     public ArrayList<Long> getOnlinePublicationsToUpdateIDs(){
         ArrayList<Long> publications = new ArrayList<>();
         String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN};
@@ -290,12 +305,17 @@ public class PublicationsDBHandler {
         }
     }
 
-    public void updatePublicationsData(ArrayList<Publication> publications){
-        ArrayList<Long> existingPublicationsIDs = getOnlinePublicationsIDs();
+    /**
+     * updates the db with new public publication available, updating different versions ones, and locally setting to isOnAir = false the ones who are not in the new data
+     * @param publications new public publications to set
+     */
+    public void updatePublicPublicationsData(ArrayList<Publication> publications){
+        ArrayList<Long> existingPublicPublicationsIDs = getPublicPublicatoinsIDs();
         for(int i = 0 ; i < publications.size(); i++){
             long publicationID = publications.get(i).getId();
             // check if publication is already in db
-            if(existingPublicationsIDs.contains(publicationID)){
+            if(existingPublicPublicationsIDs.contains(publicationID)){
+                existingPublicPublicationsIDs.remove(publicationID);
                 // check if version is different
                 if(getPublicationVersion(publicationID)!= publications.get(i).getVersion()){
                     // version is different, update
@@ -305,6 +325,10 @@ public class PublicationsDBHandler {
                 // publication not in db, insert to db
                 insertPublication(publications.get(i));
             }
+        }
+        // after updating all public publications, locally set the ones who were not in the new data to offline
+        for(int i = 0; i < existingPublicPublicationsIDs.size(); i++){
+            takePublicationOffline(existingPublicPublicationsIDs.get(i));
         }
     }
 
@@ -362,6 +386,7 @@ public class PublicationsDBHandler {
         }
     }
 
+    /** locally set isOnAir to false */
     public void takePublicationOffline(long publicationID){
         String where = String.format("%1$s = ?", FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN);
         String[] whereArgs = {String.valueOf(publicationID)};

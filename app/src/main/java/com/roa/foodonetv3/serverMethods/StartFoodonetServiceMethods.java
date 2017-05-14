@@ -20,7 +20,7 @@ public class StartFoodonetServiceMethods {
      * edit publication - add args[0] = (String) publication id
      * delete publication - add args[0] = (String) publication id
      * take publication offline - args[0] = (String) publication id
-     * get publication - add args[0] = (String) publication id, args[1] = (String) 1/0 send notification
+     * get publication - add args[0] = (String) publication id
      * get reports - add args[0] = (String) publication id, args[1] = (String) publication version
      * add report - add args[0] = (String) publication id
      * register for publication - add args[0] = (String) publication id

@@ -41,7 +41,8 @@ public class UpdatePublicationTask extends AsyncTask<ArrayList<Long>,Void,Void> 
         String[] args;
         ArrayList<Long> publications = params[0];
         for (int i = 0; i < publications.size(); i++) {
-            args = new String[]{String.valueOf(publications.get(i))};
+            long publicationID = publications.get(i);
+            args = new String[]{String.valueOf(publicationID)};
             int actionType = ReceiverConstants.ACTION_GET_PUBLICATION;
             String urlAddress = StartFoodonetServiceMethods.getUrlAddress(context, ReceiverConstants.ACTION_GET_PUBLICATION, args);
             PublicationsDBHandler publicationsDBHandler = new PublicationsDBHandler(context);
@@ -54,9 +55,10 @@ public class UpdatePublicationTask extends AsyncTask<ArrayList<Long>,Void,Void> 
                 connection = (HttpsURLConnection) url.openConnection();
                 connection.setConnectTimeout(TIMEOUT_TIME);
                 // TODO: 28/11/2016 add logic for timeout
-                int httpType = StartFoodonetServiceMethods.getHTTPType(actionType);
                 int responseCode = connection.getResponseCode();
-                if (responseCode != HttpsURLConnection.HTTP_OK && responseCode != HttpsURLConnection.HTTP_CREATED
+                if(responseCode == HttpsURLConnection.HTTP_NOT_FOUND){
+                    publicationsDBHandler.takePublicationOffline(publicationID);
+                } else if (responseCode != HttpsURLConnection.HTTP_OK && responseCode != HttpsURLConnection.HTTP_CREATED
                         // right now deleting the last member from a group gives response 500 from the server, though still deleting the member,
                         // in order to operate adding this logic here for now
                         && responseCode != HttpsURLConnection.HTTP_INTERNAL_ERROR) {
@@ -72,28 +74,30 @@ public class UpdatePublicationTask extends AsyncTask<ArrayList<Long>,Void,Void> 
                         }
                         // TODO: 10/05/2017 add declarations
                         JSONObject publicationObject = new JSONObject(builder.toString());
-                        String activeDeviceDevUUID = publicationObject.getString("active_device_dev_uuid");
-                        long audience = publicationObject.getLong("audience");
-                        long publisherID = publicationObject.getLong("publisher_id");
-                        long id = publicationObject.getLong("id");
                         int version = publicationObject.getInt("version");
-                        String title = publicationObject.getString("title");
-                        String subtitle = publicationObject.getString("subtitle");
-                        String address = publicationObject.getString("address");
-                        short typeOfCollecting = (short) publicationObject.getInt("type_of_collecting");
-                        Double lat = publicationObject.getDouble("latitude");
-                        Double lng = publicationObject.getDouble("longitude");
-                        String startingDate = publicationObject.getString("starting_date");
-                        String endingDate = publicationObject.getString("ending_date");
-                        String contactInfo = publicationObject.getString("contact_info");
-                        boolean isOnAir = publicationObject.getBoolean("is_on_air");
-                        String photoURL = publicationObject.getString("photo_url");
-                        String identityProviderUserName = publicationObject.getString("identity_provider_user_name");
-                        Double price = publicationObject.getDouble("price");
-                        String priceDescription = publicationObject.getString("price_description");
-                        Publication publication = new Publication(id, version, title, subtitle, address, typeOfCollecting, lat, lng, startingDate, endingDate, contactInfo, isOnAir,
-                                activeDeviceDevUUID, photoURL, publisherID, audience, identityProviderUserName, price, priceDescription);
-                        publicationsDBHandler.updatePublication(publication);
+                        if(version!= publicationsDBHandler.getPublicationVersion(publicationID)){
+                            String activeDeviceDevUUID = publicationObject.getString("active_device_dev_uuid");
+                            long audience = publicationObject.getLong("audience");
+                            long publisherID = publicationObject.getLong("publisher_id");
+                            long id = publicationObject.getLong("id");
+                            String title = publicationObject.getString("title");
+                            String subtitle = publicationObject.getString("subtitle");
+                            String address = publicationObject.getString("address");
+                            short typeOfCollecting = (short) publicationObject.getInt("type_of_collecting");
+                            Double lat = publicationObject.getDouble("latitude");
+                            Double lng = publicationObject.getDouble("longitude");
+                            String startingDate = publicationObject.getString("starting_date");
+                            String endingDate = publicationObject.getString("ending_date");
+                            String contactInfo = publicationObject.getString("contact_info");
+                            boolean isOnAir = publicationObject.getBoolean("is_on_air");
+                            String photoURL = publicationObject.getString("photo_url");
+                            String identityProviderUserName = publicationObject.getString("identity_provider_user_name");
+                            Double price = publicationObject.getDouble("price");
+                            String priceDescription = publicationObject.getString("price_description");
+                            Publication publication = new Publication(id, version, title, subtitle, address, typeOfCollecting, lat, lng, startingDate, endingDate, contactInfo, isOnAir,
+                                    activeDeviceDevUUID, photoURL, publisherID, audience, identityProviderUserName, price, priceDescription);
+                            publicationsDBHandler.updatePublication(publication);
+                        }
                     }
                 }
             } catch (IOException e) {

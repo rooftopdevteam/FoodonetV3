@@ -48,11 +48,8 @@ public class ServerMethods {
     private static void updateNonPublicPublications(Context context){
         PublicationsDBHandler publicationsDBHandler = new PublicationsDBHandler(context);
         ArrayList<Long> publicationToUpdate = publicationsDBHandler.getOnlinePublicationsToUpdateIDs();
-//        for(int i = 0; i < publicationToUpdate.size(); i++){
         UpdatePublicationTask task = new UpdatePublicationTask(context);
         task.execute(publicationToUpdate);
-//            task.execute(publicationToUpdate.get(i));
-//        }
     }
 
     public static void addPublication(Context context, Publication publication){
@@ -78,8 +75,9 @@ public class ServerMethods {
     }
 
     /**
-     *  @deprecated don't delete since it removes the publication from the server's db, use takePublicationOffline instead
-     *  */
+     * removes publication from foodonet server
+     * @param publicationID publication to remove
+     */
     public static void deletePublication(Context context, long publicationID){
         String[] args = {String.valueOf(publicationID)};
         Intent deleteIntent = new Intent(context,FoodonetService.class);
@@ -88,6 +86,10 @@ public class ServerMethods {
         context.startService(deleteIntent);
     }
 
+    /**
+     * @deprecated
+     * @param publicationID publication to delete
+     */
     public static void takePublicationOffline(Context context, long publicationID){
         String[] args = {String.valueOf(publicationID)};
         Intent intent = new Intent(context,FoodonetService.class);
@@ -106,14 +108,8 @@ public class ServerMethods {
         context.startService(intent);
     }
 
-    public static void getPublication(Context context, long publicationID, boolean notifyUser){
-        String notifyUserString;
-        if(notifyUser){
-            notifyUserString = String.valueOf(CommonConstants.VALUE_TRUE);
-        } else{
-            notifyUserString = String.valueOf(CommonConstants.VALUE_FALSE);
-        }
-        String[] args = {String.valueOf(publicationID),notifyUserString};
+    public static void getPublication(Context context, long publicationID){
+        String[] args = {String.valueOf(publicationID)};
         Intent getPublicationIntent = new Intent(context, FoodonetService.class);
         getPublicationIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_PUBLICATION);
         getPublicationIntent.putExtra(ReceiverConstants.ADDRESS_ARGS,args);
