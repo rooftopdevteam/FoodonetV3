@@ -1,11 +1,7 @@
 package com.roa.foodonetv3.activities;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -22,8 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.db.GroupsDBHandler;
 import com.roa.foodonetv3.dialogs.NewGroupDialog;
 import com.roa.foodonetv3.R;
@@ -36,15 +31,13 @@ import com.roa.foodonetv3.fragments.GroupFragment;
 import com.roa.foodonetv3.fragments.GroupsOverviewFragment;
 import com.roa.foodonetv3.model.Group;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
-
-import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GroupsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener ,
-        OnReplaceFragListener,NewGroupDialog.OnNewGroupClickListener {
+        OnReplaceFragListener,NewGroupDialog.OnNewGroupClickListener, OnGotMyUserImageListener {
     private static final String TAG = "GroupsActivity";
 
     public static final String GROUPS_OVERVIEW_TAG = "groupsOverviewFrag";
@@ -112,9 +105,8 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
         super.onResume();
         /** set drawer header and image */
         // TODO: 19/02/2017 currently loading the image from the web
-        FirebaseUser mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mFirebaseUser !=null && mFirebaseUser.getPhotoUrl()!=null) {
-            Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(circleImageView);
+        if (CommonMethods.isMyUserInitialized(this)) {
+            Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
             headerTxt.setText(CommonMethods.getMyUserName(this));
         }else{
             Glide.with(this).load(android.R.drawable.sym_def_app_icon).into(circleImageView);
@@ -215,12 +207,12 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
         // TODO: 13/02/2017 add different fab icons and colors
         switch (fragmentTag){
             case GROUPS_OVERVIEW_TAG:
-                imgResource = R.drawable.user;
+                imgResource = R.drawable.fab_plus;
                 color = getResources().getColor(R.color.fooGreen);
                 break;
             case ADMIN_GROUP_TAG:
-                imgResource = R.drawable.user;
-                color = getResources().getColor(R.color.fooGreen);
+                imgResource = R.drawable.fab_plus_user;
+                color = getResources().getColor(R.color.colorPrimary);
                 break;
             case NON_ADMIN_GROUP_TAG:
                 break;
@@ -256,7 +248,6 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
                             break;
                         case ADMIN_GROUP_TAG:
                             /** pressed on create a new user in a group the user is the admin of */
-                            // TODO: 14/12/2016 currently not working... getting a 440 json response
                             Toast.makeText(this, "add new member", Toast.LENGTH_SHORT).show();
                             Intent fabClickIntent = new Intent(ReceiverConstants.BROADCAST_FOODONET);
                             fabClickIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_FAB_CLICK);
@@ -291,5 +282,11 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
             }
         }
         replaceFrags(openFragType, false);
+    }
+
+    @Override
+    public void gotMyUserImage() {
+        Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
+        headerTxt.setText(CommonMethods.getMyUserName(this));
     }
 }

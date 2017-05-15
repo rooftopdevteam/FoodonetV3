@@ -6,11 +6,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.google.android.c2dm.permission.RECEIVE"/>
-    <permission android:name="com.roa.foodonetv3.permission.C2D_MESSAGE"
-        android:protectionLevel="signature"/>
-    <uses-permission android:name="com.roa.foodonetv3.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="android.google.android.c2dm.permission.RECEIVE" />
 
+    <permission
+        android:name="com.roa.foodonetv3.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.roa.foodonetv3.permission.C2D_MESSAGE" />
 
     <application
         android:allowBackup="true"
@@ -47,22 +49,6 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".services.FoodonetGcmListenerService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </service>
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="com.roa.foodonetv3" />
-            </intent-filter>
-        </receiver>
         <activity
             android:name=".activities.WelcomeUserActivity"
             android:configChanges="orientation"
@@ -101,6 +87,21 @@
             android:label="@string/title_activity_groups"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.NotificationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.roa.foodonetv3" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -125,6 +126,21 @@
         <service
             android:name=".services.GetDataService"
             android:exported="false" />
+        <service
+            android:name=".services.FoodonetGcmListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".services.NotificationsDismissService"
+            android:exported="false" />
+        <service
+            android:name=".services.GetMyUserImageService"
+            android:exported="false" />
+        <service
+            android:name=".services.GetLocationService"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -132,7 +148,6 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-
     </application>
 
 </manifest>

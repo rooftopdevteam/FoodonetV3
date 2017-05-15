@@ -7,9 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
@@ -33,7 +31,7 @@ public class MapPublicationRecyclerAdapter extends RecyclerView.Adapter<MapPubli
 
     public MapPublicationRecyclerAdapter(Context context){
         this.context = context;
-        transferUtility = CommonMethods.getTransferUtility(context);
+        transferUtility = CommonMethods.getS3TransferUtility(context);
         listener = (OnImageAdapterClickListener) context;
 
     }
@@ -79,13 +77,16 @@ public class MapPublicationRecyclerAdapter extends RecyclerView.Adapter<MapPubli
         }
 
         void bindPublication(Publication publication){
-            File mCurrentPhotoFile = new File(CommonMethods.getPhotoPathByID(context,publication.getId(),publication.getVersion()));
-            if(mCurrentPhotoFile.isFile()){
-                /** there's an image path, try to load from file */
-                Log.d(TAG,"layout size: "+mapRecyclerImageView.getWidth()+","+mapRecyclerImageView.getHeight());
-                Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(mapRecyclerImageView);
+            String mCurrentPhotoFileString = CommonMethods.getFilePathFromPublicationID(context,publication.getId(),publication.getVersion());
+            if(mCurrentPhotoFileString!= null){
+                File mCurrentPhotoFile = new File(mCurrentPhotoFileString);
+                if(mCurrentPhotoFile.isFile()){
+                    // there's an image path, try to load from file */
+                    Log.d(TAG,"layout size: "+mapRecyclerImageView.getWidth()+","+mapRecyclerImageView.getHeight());
+                    Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(mapRecyclerImageView);
+            }
             } else{
-                /** load default image */
+                // load default image */
                 Glide.with(context).load(R.drawable.foodonet_image).centerCrop().into(mapRecyclerImageView);
             }
         }

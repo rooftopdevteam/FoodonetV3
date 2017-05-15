@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/layout_size_80">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="@dimen/image_size_68"
+        android:layout_height="@dimen/image_size_68"
+        android:id="@+id/imageNotification"
+        app:srcCompat="@drawable/camera_xxh"
+        android:layout_marginLeft="@dimen/margin_16"
+        android:layout_marginStart="@dimen/margin_16"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="@dimen/margin_16"
+        android:layout_marginEnd="@dimen/margin_16" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="@dimen/image_size_36"
+        android:layout_height="@dimen/image_size_36"
+        android:id="@+id/imageNotificationType"
+        app:srcCompat="@drawable/camera_xxh"
+        android:layout_alignBottom="@+id/imageNotification"
+        android:layout_alignEnd="@id/imageNotification"
+        android:layout_alignRight="@id/imageNotification"
+
+        />
+
+    <TextView
+        android:text="New Event:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textNotificationType"
+        style="@style/FooBlueSmall"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_toRightOf="@+id/imageNotification"
+        android:layout_toEndOf="@+id/imageNotification"
+        android:layout_marginStart="@dimen/margin_16"
+        android:layout_marginLeft="@dimen/margin_16" />
+
+    <TextView
+        android:text="Grilled meat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textNotificationName"
+        style="@style/FooSmall"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_toRightOf="@+id/imageNotification"
+        android:layout_toEndOf="@+id/imageNotification"
+        android:layout_below="@+id/textNotificationType"
+        android:layout_marginStart="@dimen/margin_16"
+        android:layout_marginLeft="@dimen/margin_16" />
+
+    <TextView
+        android:text="12 days"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textNotificationTime"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/margin_4"
+        android:layout_marginEnd="@dimen/margin_16"
+        android:layout_marginRight="@dimen/margin_16"
+        android:layout_marginBottom="@dimen/margin_4"
+        style="@style/FooSmall"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_toRightOf="@+id/imageNotification"
+        android:layout_toEndOf="@+id/imageNotification"
+        android:layout_marginRight="@dimen/margin_16"
+        android:layout_marginEnd="@dimen/margin_16"
+        android:background="@color/fooDivider"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

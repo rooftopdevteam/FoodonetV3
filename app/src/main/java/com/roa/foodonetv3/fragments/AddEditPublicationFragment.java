@@ -7,11 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -36,7 +33,8 @@ import com.roa.foodonetv3.activities.SplashForCamera;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.DecimalDigitsInputFilter;
-import com.roa.foodonetv3.commonMethods.OnReceiveResponse;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
+import com.roa.foodonetv3.commonMethods.OnReceiveResponseListener;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.GroupsDBHandler;
@@ -57,8 +55,8 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     public static final int TYPE_EDIT_PUBLICATION = 2;
     private EditText editTextTitleAddPublication, editTextPriceAddPublication, editTextDetailsAddPublication;
     private Spinner spinnerShareWith;
-    private TextView textLocationAddPublication;
-    private long endingDate;
+    private TextView textLocationAddPublication, textPublicationPriceType;
+    private double endingDate;
     private String mCurrentPhotoPath, pickPhotoPath;
     private ImageView imagePictureAddPublication;
     private SavedPlace place;
@@ -68,7 +66,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     private ArrayAdapter<String> spinnerAdapter;
     private FoodonetReceiver receiver;
     private View layoutInfo;
-    private OnReceiveResponse onReceiveResponseListener;
+    private OnReceiveResponseListener onReceiveResponseListener;
     private OnReplaceFragListener onReplaceFragListener;
 
 
@@ -79,7 +77,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        onReceiveResponseListener = (OnReceiveResponse) context;
+        onReceiveResponseListener = (OnReceiveResponseListener) context;
         onReplaceFragListener = (OnReplaceFragListener) context;
     }
 
@@ -87,7 +85,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        /** instantiate the transfer utility for the s3*/
-//        transferUtility = CommonMethods.getTransferUtility(getContext());
+//        transferUtility = CommonMethods.getS3TransferUtility(getContext());
 
         // local image path that will be used for saving locally and uploading the file name to the server*/
         mCurrentPhotoPath = "";
@@ -132,12 +130,20 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         v.findViewById(R.id.imageTakePictureAddPublication).setOnClickListener(this);
         imagePictureAddPublication = (ImageView) v.findViewById(R.id.imagePictureAddPublication);
 
+        // currently only supporting NIS
+        textPublicationPriceType = (TextView) v.findViewById(R.id.textPublicationPriceType);
+        textPublicationPriceType.setText(getString(R.string.currency_nis));
+
         if(isEdit){
-            mCurrentPhotoPath = CommonMethods.getPhotoPathByID(getContext(),publication.getId(),publication.getVersion());
-            File mCurrentPhotoFile = new File(mCurrentPhotoPath);
-            if(mCurrentPhotoFile.isFile()){
-                // there's an image path, try to load from file */
-                Glide.with(this).load(mCurrentPhotoFile).centerCrop().into(imagePictureAddPublication);
+            spinnerShareWith.setEnabled(false);
+            mCurrentPhotoPath = CommonMethods.getFilePathFromPublicationID(getContext(),publication.getId(),publication.getVersion());
+            File mCurrentPhotoFile = null;
+            if (mCurrentPhotoPath != null) {
+                mCurrentPhotoFile = new File(mCurrentPhotoPath);
+                if(mCurrentPhotoFile.isFile()){
+                    // there's an image path, try to load from file */
+                    Glide.with(this).load(mCurrentPhotoFile).centerCrop().into(imagePictureAddPublication);
+            }
             } else{
                 // load default image */
                 Glide.with(this).load(R.drawable.foodonet_image).centerCrop().into(imagePictureAddPublication);
@@ -145,7 +151,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         }
 
         layoutInfo = v.findViewById(R.id.layoutInfo);
-        layoutInfo.setBackgroundColor(getResources().getColor(R.color.fooLightGrey));
+//        layoutInfo.setBackgroundColor(getResources().getColor(R.color.fooLightGrey));
         layoutInfo.setVisibility(View.GONE);
         TextView textInfo = (TextView) v.findViewById(R.id.textInfo);
         textInfo.setText(R.string.start_sharing_by_adding_an_image_of_the_food_you_wish_to_share);
@@ -177,6 +183,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
 
         if (mCurrentPhotoPath == null|| mCurrentPhotoPath.equals("")) {
             layoutInfo.setVisibility(View.VISIBLE);
+
             imagePictureAddPublication.setVisibility(View.GONE);
         } else{
             layoutInfo.setVisibility(View.GONE);
@@ -262,7 +269,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                 Log.e(TAG, ex.getMessage());
             }
             // Continue only if the File was successfully created
-            if (photoFile != null) {
+            if (photoFile != null && photoFile.isFile()) {
                 Uri photoURI = FileProvider.getUriForFile(getContext(),
                         "com.roa.foodonetv3.fileprovider",
                         photoFile);
@@ -339,7 +346,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         String priceS = editTextPriceAddPublication.getText().toString();
         String details = editTextDetailsAddPublication.getText().toString();
         // currently starting time is now */
-        long startingDate = System.currentTimeMillis()/1000;
+        double startingDate = CommonMethods.getCurrentTimeSeconds();
         if (endingDate == 0) {
             // default ending date is 2 days after creation */
             endingDate = startingDate + 172800;
@@ -352,12 +359,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         }
         String photoPath;
         if(mCurrentPhotoPath==null || mCurrentPhotoPath.equals("")){
-            photoPath = null;
-        } else{
-            photoPath = "file:"+mCurrentPhotoPath;
+            mCurrentPhotoPath = null;
         }
         if (title.equals("") || location.equals("") || place.getLat()== CommonConstants.LATLNG_ERROR || place.getLng()==CommonConstants.LATLNG_ERROR
-                || photoPath == null) {
+                || mCurrentPhotoPath == null) {
             Toast.makeText(getContext(), R.string.post_please_enter_all_fields, Toast.LENGTH_SHORT).show();
             onReceiveResponseListener.onReceiveResponse();
         } else {
@@ -378,7 +383,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
 
             publication = new Publication(localPublicationID, -1, title, details, location, (short) 2, place.getLat(), place.getLng(),
                     String.valueOf(startingDate), String.valueOf(endingDate), contactInfo, true, CommonMethods.getDeviceUUID(getContext()),
-                    photoPath,
+                    mCurrentPhotoPath,
                     CommonMethods.getMyUserID(getContext()),
                     groups.get(spinnerShareWith.getSelectedItemPosition()).getGroupID() , CommonMethods.getMyUserName(getContext()), price, "");
             if(isAddNewPublication){
@@ -429,6 +434,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                     } else{
                         onReplaceFragListener.onReplaceFrags(PublicationActivity.BACK_IN_STACK_TAG,publication.getId());
                     }
+                    break;
+                case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
+                    OnGotMyUserImageListener onGotMyUserImageListener = (OnGotMyUserImageListener) getContext();
+                    onGotMyUserImageListener.gotMyUserImage();
                     break;
             }
         }

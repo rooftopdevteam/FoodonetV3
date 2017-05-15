@@ -6,10 +6,13 @@ import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.google.android.gms.maps.model.LatLng;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
+import com.roa.foodonetv3.db.NotificationsDBHandler;
+import com.roa.foodonetv3.model.NotificationFoodonet;
 import com.roa.foodonetv3.model.User;
 import com.roa.foodonetv3.serverMethods.StartFoodonetServiceMethods;
 import com.roa.foodonetv3.db.GroupMembersDBHandler;
@@ -142,6 +145,7 @@ public class FoodonetService extends IntentService {
             GroupsDBHandler groupsDBHandler;
             RegisteredUsersDBHandler registeredUsersDBHandler;
             GroupMembersDBHandler groupMembersDBHandler;
+
             if(actionType == ReceiverConstants.ACTION_GET_PUBLICATIONS){
                 // get the users groups id, as we don't care about the others */
                 groupsDBHandler = new GroupsDBHandler(this);
@@ -150,7 +154,8 @@ public class FoodonetService extends IntentService {
                 JSONArray rootGetPublications;
                 rootGetPublications = new JSONArray(responseRoot);
 
-                long id,audience;
+                // as for now, the server only returns public publications to "get all publications" method
+                long id,audience, publisherID;
                 String title,subtitle,address,startingDate,endingDate,contactInfo,activeDeviceDevUUID,photoURL,identityProviderUserName,priceDescription;
                 short typeOfCollecting;
                 Double lat,lng,price;
@@ -162,7 +167,7 @@ public class FoodonetService extends IntentService {
                     audience = publication.getLong("audience");
 
                     if(audience == 0 || groupsIDs.contains(audience)){
-                        long publisherID = publication.getLong("publisher_id");
+                        publisherID = publication.getLong("publisher_id");
                         id = publication.getLong("id");
                         version = publication.getInt("version");
                         title = publication.getString("title");
@@ -186,16 +191,16 @@ public class FoodonetService extends IntentService {
                     }
                 }
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                publicationsDBHandler.replaceAllPublications(publications);
+                publicationsDBHandler.updatePublicPublicationsData(publications);
                 Intent getDataIntent = new Intent(this,GetDataService.class);
                 getDataIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_ALL_PUBLICATIONS_REGISTERED_USERS);
                 startService(getDataIntent);
             }
 
             else if(actionType == ReceiverConstants.ACTION_ADD_PUBLICATION){
-                JSONObject rootAddPublication = new JSONObject(responseRoot);
-                long publicationID = rootAddPublication.getLong("id");
-                int publicationVersion = rootAddPublication.getInt("version");
+                JSONObject root = new JSONObject(responseRoot);
+                long publicationID = root.getLong("id");
+                int publicationVersion = root.getInt("version");
                 intent.putExtra(Publication.PUBLICATION_ID,publicationID);
                 intent.putExtra(Publication.PUBLICATION_VERSION,publicationVersion);
                 if(data!= null){
@@ -205,22 +210,22 @@ public class FoodonetService extends IntentService {
                     publicationsDBHandler = new PublicationsDBHandler(this);
                     publicationsDBHandler.insertPublication(publication);
                     // instantiate the transfer utility for the s3*/
-                    TransferUtility transferUtility = CommonMethods.getTransferUtility(this);
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
                     // if there is an image to upload */
-                    if(publication.getPhotoURL()!=null && !publication.getPhotoURL().equals("")){
-                        String[] split = publication.getPhotoURL().split(":");
-                        File file = new File(split[1]);
-                        File destFile = new File(CommonMethods.getPhotoPathByID(this,publicationID,publicationVersion));
-                        Log.d(TAG,"pre"+file.getPath());
-                        String s3Name = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
-                        boolean renamed = file.renameTo(destFile);
-                        Log.d(TAG,"post"+destFile.getPath());
-                        if(renamed){
-                            transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3Name,destFile);
-                        }else{
-                            Log.d(TAG,"Rename failed");
+                    if(publication.getPhotoURL()!= null && !publication.getPhotoURL().equals("")){
+                        File file = new File(publication.getPhotoURL());
+                        String destFileString = CommonMethods.getFilePathFromPublicationID(this,publicationID,publicationVersion);
+                        if(destFileString!= null){
+                            File destFile = new File(destFileString);
+                            String s3FileName = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
+                            boolean renamed = file.renameTo(destFile);
+                            if(renamed){
+                                transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3FileName,destFile);
+                            }else{
+                                Log.d(TAG,"Rename failed");
+                            }
+                            // TODO: 25/01/2017 currently not checking if the upload was successful or not
                         }
-                        // TODO: 25/01/2017 currently not checking if the upload was successful or not
                     }
                 }
             }
@@ -235,29 +240,29 @@ public class FoodonetService extends IntentService {
                     publicationsDBHandler = new PublicationsDBHandler(this);
                     publicationsDBHandler.updatePublication(publication);
                     // instantiate the transfer utility for the s3*/
-                    TransferUtility transferUtility = CommonMethods.getTransferUtility(this);
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
                     // if there is an image to upload */
                     if(publication.getPhotoURL()!=null && !publication.getPhotoURL().equals("")){
-                        String[] split = publication.getPhotoURL().split(":");
-                        File file = new File(split[1]);
-                        File destFile = new File(CommonMethods.getPhotoPathByID(this,publicationID,publicationVersion));
-                        Log.d(TAG,"pre"+file.getPath());
-                        String s3Name = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
-                        boolean renamed = file.renameTo(destFile);
-                        Log.d(TAG,"post"+destFile.getPath());
-                        if(renamed){
-                            transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3Name,destFile);
-                        }else{
-                            Log.d(TAG,"Rename failed");
+                        File file = new File(publication.getPhotoURL());
+                        String destFileString = CommonMethods.getFilePathFromPublicationID(this,publicationID,publicationVersion);
+                        if(destFileString!= null) {
+                            File destFile = new File(destFileString);
+                            String s3FileName = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
+                            boolean renamed = file.renameTo(destFile);
+                            if(renamed){
+                                transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3FileName,destFile);
+                            }else{
+                                Log.d(TAG,"Rename failed");
+                            }
+                            // TODO: 05/03/2017 currently not checking if the upload was successful or not
                         }
-                        // TODO: 05/03/2017 currently not checking if the upload was successful or not
                     }
                 }
             }
 
             else if(actionType == ReceiverConstants.ACTION_DELETE_PUBLICATION){
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                publicationsDBHandler.deletePublication(Long.parseLong(args[0]));
+                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
                 intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
             }
@@ -272,11 +277,13 @@ public class FoodonetService extends IntentService {
                 Double lat,lng,price;
                 boolean isOnAir;
                 int version;
+
                 JSONObject publicationObject = new JSONObject(responseRoot);
                 audience = publicationObject.getLong("audience");
                 activeDeviceDevUUID = publicationObject.getString("active_device_dev_uuid");
                 boolean updateData = false;
 
+                // get public or user group but not current user device created publication
                 if((audience == 0 || groupsIDs.contains(audience)) && !activeDeviceDevUUID.equals(CommonMethods.getDeviceUUID(this))){
                     long publisherID = publicationObject.getLong("publisher_id");
                     id = publicationObject.getLong("id");
@@ -300,16 +307,27 @@ public class FoodonetService extends IntentService {
                             activeDeviceDevUUID, photoURL, publisherID, audience, identityProviderUserName, price, priceDescription);
                     publicationsDBHandler.insertPublication(publication);
 
-                    boolean notifyUser = args[1].equals(String.valueOf(CommonConstants.VALUE_TRUE));
-                    if(notifyUser){
-                        final String msgTitle = getString(R.string.foodonet);
-                        final String msgBody = String.format("%1$s: %2$s",getString(R.string.new_share),publication.getTitle());
-                        CommonMethods.sendNotification(this,msgTitle,msgBody);
+                    boolean notifyUser = CommonMethods.isNotificationTurnedOn(this) && CommonMethods.isEventInNotificationRadius(this,new LatLng(lat,lng));
+                    boolean userNotAdmin = publisherID != CommonMethods.getMyUserID(this);
+                    if(userNotAdmin){
+                        NotificationsDBHandler notificationsDBHandler = new NotificationsDBHandler(this);
+                        notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_NEW_PUBLICATION,
+                                id,title,CommonMethods.getCurrentTimeSeconds()));
+                        if(notifyUser){
+                            CommonMethods.sendNotification(this);
+                        }
                     }
                     intent.putExtra(User.IDENTITY_PROVIDER_USER_ID,publisherID);
                     updateData = true;
                 }
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,updateData);
+            }
+
+            else if(actionType == ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE){
+                publicationsDBHandler = new PublicationsDBHandler(this);
+                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
+                intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
+                intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
             }
 
             else if(actionType == ReceiverConstants.ACTION_GET_REPORTS){
@@ -355,6 +373,12 @@ public class FoodonetService extends IntentService {
                 long userID = rootAddUser.getLong("id");
                 CommonMethods.setMyUserID(this, userID);
                 Log.d("Add user response", "id: " + userID);
+                String filePath = CommonMethods.getMyUserImageFilePath(this);
+                if(filePath!= null && !filePath.equals("")){
+                    File file = new File(filePath);
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
+                    transferUtility.upload(getResources().getString(R.string.amazon_users_bucket),CommonMethods.getFileNameFromUserID(userID),file);
+                }
             }
 
             else if(actionType == ReceiverConstants.ACTION_UPDATE_USER){
@@ -379,16 +403,11 @@ public class FoodonetService extends IntentService {
                 registeredUsersDBHandler.insertRegisteredUser(registeredUser);
             }
 
-//            else if(actionType == ReceiverConstants.ACTION_GET_PUBLICATION_REGISTERED_USERS){
-//                JSONArray registeredUsersArray = new JSONArray(responseRoot);
-//                intent.putExtra(Publication.PUBLICATION_COUNT_OF_REGISTER_USERS_KEY,registeredUsersArray.length());
-//            }
-
             else if(actionType == ReceiverConstants.ACTION_GET_ALL_PUBLICATIONS_REGISTERED_USERS){
                 ArrayList<RegisteredUser> registeredUsers = new ArrayList<>();
 
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                ArrayList<Long> publicationsIDs = publicationsDBHandler.getPublicationsIDs();
+                ArrayList<Long> publicationsIDs = publicationsDBHandler.getOnlinePublicationsIDs();
 
                 long publicationID, collectorUserID;
                 int publicationVersion;
@@ -529,6 +548,10 @@ public class FoodonetService extends IntentService {
 
             else if(actionType == ReceiverConstants.ACTION_ACTIVE_DEVICE_NEW_USER){
 
+            }
+
+            else if(actionType == ReceiverConstants.ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION){
+                Log.d(TAG,responseRoot);
             }
         } catch (JSONException e){
             Log.e(TAG,e.getMessage());

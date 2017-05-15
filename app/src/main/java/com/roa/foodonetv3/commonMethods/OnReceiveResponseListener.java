@@ -1,5 +1,5 @@
 package com.roa.foodonetv3.commonMethods;
 
-public interface OnReceiveResponse {
+public interface OnReceiveResponseListener {
     void onReceiveResponse();
 }

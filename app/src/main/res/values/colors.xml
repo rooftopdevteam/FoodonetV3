@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#42A5F5</color>// old #3F51B5
+    <color name="colorPrimaryDark">#42A5F5</color>
     <color name="colorAccent">#FF4081</color>
     <color name="fooBlack">#FF202020</color>
     <color name="fooGreen">#4CAF50</color>
     <color name="fooLightBlue">#2196F3</color>
     <color name="fooGrey">#707070</color>
     <color name="fooLightGrey">#B0B0B0</color>
-    <color name="fooDivider">#FF909090</color>
+    <color name="fooDivider">#979797</color>
+    <color name="fooRed">#FF3030</color>
+    <color name="fooYellow">#F5A623</color>
+    <color name="fooWhite">#ffffff</color>
+    <color name="fooPurple">#8e24aa</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

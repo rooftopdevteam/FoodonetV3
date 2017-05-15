@@ -16,11 +16,11 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/sign_in"
         android:layout_marginBottom="76dp"
-        android:layout_above="@+id/sign_in_button"
+        android:layout_above="@+id/button_sign_in_google"
         android:layout_centerHorizontal="true" />
 
     <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
+        android:id="@+id/button_sign_in_google"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -32,8 +32,9 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:id="@+id/button_facebook_login"
-        android:layout_below="@+id/sign_in_button"
+        android:layout_below="@+id/button_sign_in_google"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="77dp"
+        android:visibility="gone"
         />
 </RelativeLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="notification_new_event">New event:</string>
+    <string name="notification_publication_deleted">Event deleted:</string>
+    <string name="notification_new_registered_user">A user registered to your event:</string>
+    <string name="notification_new_publication_report">A user made a report on your event:</string>
+    <string name="notification_new_added_in_group">You were added to the group:</string>
+    <string name="notification_added_to_group">You were added to a group</string>
+</resources>

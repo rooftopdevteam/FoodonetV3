@@ -19,7 +19,8 @@ public class StartFoodonetServiceMethods {
      * @param args
      * edit publication - add args[0] = (String) publication id
      * delete publication - add args[0] = (String) publication id
-     * get publication - add args[0] = (String) publication id, args[1] = (String) 1/0 send notification
+     * take publication offline - args[0] = (String) publication id
+     * get publication - add args[0] = (String) publication id
      * get reports - add args[0] = (String) publication id, args[1] = (String) publication version
      * add report - add args[0] = (String) publication id
      * register for publication - add args[0] = (String) publication id
@@ -55,6 +56,11 @@ public class StartFoodonetServiceMethods {
                 builder.append(String.format(Locale.US,"/%1$s",args[0]));
                 builder.append(context.getResources().getString(R.string._json));
                 break;
+            case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
+                builder.append(context.getResources().getString(R.string.foodonet_publications));
+                builder.append(String.format(Locale.US,"/%1$s",args[0]));
+                builder.append(context.getResources().getString(R.string._json));
+                break;
             case ReceiverConstants.ACTION_GET_PUBLICATION:
                 builder.append(context.getResources().getString(R.string.foodonet_publications));
                 builder.append(String.format(Locale.US,"/%1$s",args[0]));
@@ -70,6 +76,7 @@ public class StartFoodonetServiceMethods {
                 builder.append(context.getResources().getString(R.string.foodonet_publications));
                 builder.append(String.format(Locale.US,"/%1$s",args[0]));
                 builder.append(context.getResources().getString(R.string.foodonet_publication_reports));
+                builder.append(context.getResources().getString(R.string._json));
                 break;
             case ReceiverConstants.ACTION_ADD_USER:
                 builder.append(context.getResources().getString(R.string.foodonet_users));
@@ -125,6 +132,10 @@ public class StartFoodonetServiceMethods {
                 break;
             case ReceiverConstants.ACTION_ACTIVE_DEVICE_NEW_USER:
                 builder.append(context.getResources().getString(R.string.foodonet_active_devices));
+                builder.append(context.getResources().getString(R.string._json));
+                break;
+            case ReceiverConstants.ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION:
+                builder.append(context.getResources().getString(R.string.foodonet_active_devices_put));
                 break;
         }
         return builder.toString();
@@ -145,6 +156,8 @@ public class StartFoodonetServiceMethods {
                 return CommonConstants.HTTP_DELETE;
             case ReceiverConstants.ACTION_GET_PUBLICATION:
                 return CommonConstants.HTTP_GET;
+            case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
+                return CommonConstants.HTTP_PUT;
             case ReceiverConstants.ACTION_GET_REPORTS:
                 return CommonConstants.HTTP_GET;
             case ReceiverConstants.ACTION_ADD_REPORT: // not tested
@@ -173,6 +186,8 @@ public class StartFoodonetServiceMethods {
                 return CommonConstants.HTTP_DELETE;
             case ReceiverConstants.ACTION_ACTIVE_DEVICE_NEW_USER:
                 return CommonConstants.HTTP_POST;
+            case ReceiverConstants.ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION:
+                return CommonConstants.HTTP_PUT;
         }
         return -1;
     }

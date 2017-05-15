@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.roa.foodonetv3.R;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.model.PublicationReport;
 import java.util.ArrayList;
@@ -73,10 +74,10 @@ public class ReportsRecyclerAdapter extends RecyclerView.Adapter<ReportsRecycler
 
         void bindReport(PublicationReport report){
             /** set the message */
-            textReport.setText(String.format(Locale.US,"%1$s - (%2$s %3$s)",
+            textReport.setText(String.format(Locale.US,"%1$s - (%2$s)",
                     CommonMethods.getReportStringFromType(context,report.getReportType()),
-                    CommonMethods.getTimeDifference(context,Double.parseDouble(report.getDateOfReport()),CommonMethods.getCurrentTimeSeconds()),
-                    context.getResources().getString(R.string.ago)));
+                    CommonMethods.getTimeDifference(context,Double.parseDouble(report.getDateOfReport()),
+                            CommonMethods.getCurrentTimeSeconds(), CommonConstants.TIME_TYPE_AGO)));
         }
     }
 }

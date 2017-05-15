@@ -8,34 +8,34 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/image_size_height_150"
+        android:layout_height="@dimen/image_size_height_180"
         android:id="@+id/layoutImage">
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/image_size_height_150"
-            app:srcCompat="@drawable/camera_xxh"
+            android:layout_height="@dimen/image_size_height_180"
+            app:srcCompat="@drawable/camera"
             android:id="@+id/imagePictureAddPublication" />
 
-        <include layout="@layout/layout_info"
+        <include layout="@layout/layout_info_add_publication"
             android:id="@+id/layoutInfo"/>
 
     </FrameLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@android:color/holo_blue_dark"
+        android:background="@color/fooDivider"
         android:layout_below="@id/layoutImage"/>
 
     <ImageView
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
-        app:srcCompat="@drawable/camera_xxh"
+        app:srcCompat="@drawable/camera"
         android:id="@+id/imageTakePictureAddPublication"
         android:scaleType="fitCenter"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="123dp"
+        android:layout_marginTop="153dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp" />
 
@@ -63,7 +63,7 @@
         android:id="@+id/textLocationAddPublication"
         android:layout_marginEnd="@dimen/margin_16"
         android:layout_marginStart="@dimen/margin_16"
-        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_4"
         android:paddingLeft="@dimen/margin_4"
         android:paddingStart="@dimen/margin_4"
         android:paddingRight="@dimen/margin_4"
@@ -128,7 +128,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="₪"
+        android:text="@string/currency_nis"
+        android:id="@+id/textPublicationPriceType"
         android:layout_alignBaseline="@id/textPriceHeader"
         android:layout_alignBottom="@+id/textPriceHeader"
         android:layout_toRightOf="@id/editTextPriceAddPublication"

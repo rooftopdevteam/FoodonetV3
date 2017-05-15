@@ -6,13 +6,16 @@
     >
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/image_size_width_220"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/icon"
+        app:srcCompat="@drawable/no_photo_grey"
         android:id="@+id/imageView"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:alpha="0.2"/>
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        />
+        <!--android:alpha="0.2"-->
     <TextView
         android:text="TextView"
         android:layout_width="wrap_content"

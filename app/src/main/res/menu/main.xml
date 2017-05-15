@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!--<item-->
-        <!--android:id="@+id/action_settings"-->
-        <!--android:orderInCategory="100"-->
-        <!--android:title="@string/sign_out"-->
-        <!--app:showAsAction="never" />-->
     <item android:id="@+id/search"
         android:title="@string/search_title"
-        android:icon="@drawable/search"
+        android:icon="@drawable/action_bar_magnifying_glass"
         app:showAsAction="collapseActionView|ifRoom"
         android:actionViewClass="android.support.v7.widget.SearchView" />
     <item android:id="@+id/map"
         android:title="@string/map"
-        android:icon="@drawable/drawer_map_view"
+        android:icon="@drawable/action_bar_map"
         app:showAsAction="ifRoom"/>
 
 </menu>

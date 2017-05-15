@@ -1,13 +1,14 @@
 package com.roa.foodonetv3.activities;
 
-import android.content.Context;
+import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -21,37 +22,28 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
 import com.roa.foodonetv3.fragments.ActiveFragment;
 import com.roa.foodonetv3.fragments.ClosestFragment;
-import com.roa.foodonetv3.fragments.RecentFragment;
 import com.roa.foodonetv3.model.Publication;
-import com.roa.foodonetv3.serverMethods.ServerMethods;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.roa.foodonetv3.services.GetLocationService;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,TabLayout.OnTabSelectedListener,
-        GoogleApiClient.OnConnectionFailedListener, OnReplaceFragListener {
+        OnReplaceFragListener, OnGotMyUserImageListener {
     private static final String TAG = "MainActivity";
 
 
     private ViewPager viewPager;
-    private SharedPreferences preferenceManager;
-    private Button buttonTest;
     private CircleImageView circleImageView;
     private TextView headerTxt;
 
@@ -61,39 +53,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /** toolbar set up */
+        // toolbar set up */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.foodonet);
         setSupportActionBar(toolbar);
 
-        preferenceManager = PreferenceManager.getDefaultSharedPreferences(this);
-
-        // TODO: 16/01/2017 remove this after finished testing the push notification user sign in
-        buttonTest = (Button) findViewById(R.id.buttonTest);
-        // disabling the button for now
-//        buttonTest.setVisibility(View.GONE);
-        buttonTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                registerToPushNotification(MainActivity.this);
-            }
-        });
-
-        /** set the google api ? */
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build();
-
-
-        // TODO: 01/01/2017 remove the notification token generator to initializes place
-        /** generate notification token to register the device to get notification*/
-        String token = preferenceManager.getString(getString(R.string.key_prefs_notification_token),null);
-        if (token == null) {
-            generateNotificationToken();
-        }
-
-        /** set the drawer */
+        // set the drawer */
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View hView =  navigationView.getHeaderView(0);
         circleImageView = (CircleImageView) hView.findViewById(R.id.headerCircleImage);
@@ -107,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        /** set the view pager */
+        // set the view pager */
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -118,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tabs.setupWithViewPager(viewPager);
 
 
-        /** set the floating action button, since it only serves one fragment, no need to animate or change the view */
+        // set the floating action button, since it only serves one fragment, no need to animate or change the view */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,20 +101,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(i);
             }
         });
+
+        // trying to update the location returns a 404, disabling for now
+        // TODO: 24/04/2017 temp test
+        // CommonMethods.updateUserLocationToServer(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        /** set drawer header and image */
-        // TODO: 19/02/2017 currently loading the image from the web
-        FirebaseUser mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (mFirebaseUser != null && mFirebaseUser.getPhotoUrl() != null) {
-            Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(circleImageView);
+        // set drawer header and image */
+        if (CommonMethods.isMyUserInitialized(this)) {
+            Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
             headerTxt.setText(CommonMethods.getMyUserName(this));
         } else {
             Glide.with(this).load(android.R.drawable.sym_def_app_icon).into(circleImageView);
             headerTxt.setText(getResources().getString(R.string.not_signed_in));
+        }
+
+        // check if the data last checked was more than the time specified, start getting new data if it did
+        if (!CommonMethods.isDataUpToDate(this)){
+            getNewLocation(true,GetLocationService.TYPE_NORMAL);
         }
     }
 
@@ -199,9 +171,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
     }
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-    }
 
     @Override
     public void onReplaceFrags(String openFragType, long id) {
@@ -209,6 +178,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         i.putExtra(PublicationActivity.ACTION_OPEN_PUBLICATION, openFragType);
         i.putExtra(Publication.PUBLICATION_KEY,id);
         this.startActivity(i);
+    }
+
+    @Override
+    public void gotMyUserImage() {
+        Glide.with(this).load(CommonMethods.getMyUserImageFilePath(this)).into(circleImageView);
+        headerTxt.setText(CommonMethods.getMyUserName(this));
+    }
+
+    private void getNewLocation(boolean getNewData, int actionType){
+        String locationType = CommonMethods.getAvailableLocationType(this);
+        switch (locationType){
+            case LocationManager.GPS_PROVIDER:
+            case LocationManager.NETWORK_PROVIDER:
+                if(CommonMethods.isLocationPermissionGranted(this)){
+                    CommonMethods.startGetLocationService(this,getNewData, locationType, actionType);
+//                    hText(this, "have permissions", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG,"have permissions");
+                } else{
+//                    Toast.makeText(this, "ask permissions", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG,"ask permissions");
+                    ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},CommonConstants.PERMISSION_REQUEST_LOCATION);
+                }
+                break;
+            case CommonConstants.LOCATION_TYPE_LOCATION_DISABLED:
+                // TODO: 13/05/2017 add user message
+                Toast.makeText(this, "location disabled", Toast.LENGTH_SHORT).show();
+                Log.d(TAG,"location disabled");
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case CommonConstants.PERMISSION_REQUEST_LOCATION:
+                // in case of a request */
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // if granted, start getNewLocation service again
+                    getNewLocation(true,GetLocationService.TYPE_NORMAL);
+                } else {
+                    // request denied, give the user a message */
+                    CommonMethods.setLastUpdated(this);
+//                    Toast.makeText(this, getResources().getString(R.string.toast_needs_location_permission), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG,getResources().getString(R.string.toast_needs_location_permission));
+                }
+                break;
+        }
     }
 
     //view pager adapter...
@@ -223,11 +240,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             switch (position){
                 case 0:
-                    return new ActiveFragment();
-                case 1:
-                    return new RecentFragment();
-                case 2:
                     return new ClosestFragment();
+                case 1:
+                    return new ActiveFragment();
             }
             return null;
         }
@@ -235,66 +250,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public CharSequence getPageTitle(int position) {
             switch (position){
                 case 0:
-                    return getString(R.string.view_pager_tab_active);
-                case 1:
-                    return getString(R.string.view_pager_tab_recent);
-                case 2:
                     return getString(R.string.view_pager_tab_closest);
+                case 1:
+                    return getString(R.string.view_pager_tab_active);
             }
 
             return null;
         }
-
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
-    }
-
-    // TODO: 15/01/2017 THIS IS A TEST
-    /** test - sign to notifications */
-    public void registerToPushNotification(Context context){
-        JSONObject activeDeviceRoot = new JSONObject();
-        JSONObject activeDevice = new JSONObject();
-        try {
-            String token = preferenceManager.getString(getString(R.string.key_prefs_notification_token), null);
-            activeDevice.put("dev_uuid",CommonMethods.getDeviceUUID(context));
-            if (token== null) {
-                activeDevice.put("remote_notification_token", activeDevice.NULL);
-            }else {
-                activeDevice.put("remote_notification_token", token);
-            }
-            activeDevice.put("is_ios", false);
-            activeDevice.put("last_location_latitude", preferenceManager.getString(getString(R.string.key_prefs_user_lat), String.valueOf(CommonConstants.LATLNG_ERROR)));
-            activeDevice.put("last_location_longitude", preferenceManager.getString(getString(R.string.key_prefs_user_lng),String.valueOf(CommonConstants.LATLNG_ERROR)));
-            activeDeviceRoot.put("active_device",activeDevice);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ServerMethods.activeDeviceNewUser(this,activeDeviceRoot.toString());
-    }
-
-    // TODO: 15/01/2017 TEST
-    public void generateNotificationToken(){
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                try {
-                    String token = InstanceID.getInstance(MainActivity.this).getToken(getString(R.string.gcm_defaultSenderId),
-                            GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-
-                    SharedPreferences.Editor editor = preferenceManager.edit();
-                    editor.putString(getString(R.string.key_prefs_notification_token), token);
-                    editor.apply();
-
-                    Log.i(TAG, "GCM Registration Token: " + token);
-
-                } catch (Exception e) {
-                    Log.e(TAG, "Failed to complete token refresh " + e.getMessage(), e);
-                }
-            }
-        };
-        t.start();
     }
 }

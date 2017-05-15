@@ -19,11 +19,15 @@
     <dimen name="margin_24">24dp</dimen>
 
     <dimen name="image_size_16">16dp</dimen>
-    <dimen name="image_size_68">68dp</dimen>
+    <dimen name="image_size_24">24dp</dimen>
+    <dimen name="image_size_36">36dp</dimen>
     <dimen name="image_size_50">50dp</dimen>
-    <dimen name="image_size_height_200">200dp</dimen>
-    <dimen name="image_size_height_150">150dp</dimen>
+    <dimen name="image_size_68">68dp</dimen>
+    <dimen name="image_size_86">86dp</dimen>
+    <dimen name="image_size_width_220">220dp</dimen>
     <dimen name="image_size_height_120">120dp</dimen>
+    <dimen name="image_size_height_160">160dp</dimen>
+    <dimen name="image_size_height_180">180dp</dimen>
 
     <dimen name="text_size_12">12sp</dimen>
     <dimen name="text_size_16">16sp</dimen>

@@ -28,17 +28,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:src="@drawable/white_plus"
+        android:src="@drawable/fab_plus"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/colorPrimary" />
-
-    <Button
-        android:text="Test Sign in"
-        android:visibility="visible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonTest"
-        app:layout_anchorGravity="center_vertical|center_horizontal"
-        android:layout_gravity="bottom|center_horizontal" />
 
 </android.support.design.widget.CoordinatorLayout>

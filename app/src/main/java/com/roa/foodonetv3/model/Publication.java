@@ -3,6 +3,9 @@ package com.roa.foodonetv3.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+
+import com.roa.foodonetv3.R;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +31,7 @@ public class Publication implements Parcelable {
     private static final String PUBLICATION_ENDING_DATE_KEY = "ending_date";
     private static final String PUBLICATION_CONTACT_INFO_KEY = "contact_info";
     private static final String PUBLICATION_PHOTO_URL = "photo_url";
-    private static final String PUBLICATION_IS_ON_AIR_KEY = "is_on_air";
+    public static final String PUBLICATION_IS_ON_AIR_KEY = "is_on_air";
     private static final String PUBLICATION_PUBLISHER_ID_KEY = "publisher_id";
     private static final String PUBLICATION_PRICE_KEY = "price";
     private static final String PUBLICATION_PRICE_DESCRIPTION_KEY = "price_description";
@@ -132,6 +135,24 @@ public class Publication implements Parcelable {
             Log.e(TAG,e.getMessage());
         }
         return publicationJsonRoot;
+    }
+
+    public int getGroupImageResource(){
+        int imageGroupResource;
+        if(getAudience() == 0){
+            if(getPrice()==0){
+                imageGroupResource = R.drawable.public_blue;
+            } else{
+                imageGroupResource = R.drawable.public_yellow;
+            }
+        } else{
+            if(getPrice() == 0){
+                imageGroupResource = R.drawable.group_blue;
+            } else{
+                imageGroupResource = R.drawable.group_yellow;
+            }
+        }
+        return imageGroupResource;
     }
 
     public long getId() {

@@ -11,12 +11,13 @@
 
     <string name="foodonet_publications">/publications</string>
     <string name="foodonet_reports_version">/publication_reports?publication_version=</string>
-    <string name="foodonet_publication_reports">/publication_reports.json</string>
+    <string name="foodonet_publication_reports">/publication_reports</string>
     <string name="foodonet_feedback">/feedbacks</string>
     <string name="foodonet_groups">/groups</string>
     <string name="foodonet_registered_user_for_publications">/registered_user_for_publications</string>
     <string name="foodonet_users">/users</string>
-    <string name="foodonet_active_devices">/active_devices.json</string>
+    <string name="foodonet_active_devices">/active_devices</string>
+    <string name="foodonet_active_devices_put">/ActiveDevices</string>
     <string name="foodonet_publication_version">publication_version=</string>
     <string name="foodonet_active_device_dev_uuid">active_device_dev_uuid</string>
     <string name=".json">.json</string>

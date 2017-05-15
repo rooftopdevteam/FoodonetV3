@@ -50,6 +50,11 @@ class FoodonetDBHelper extends SQLiteOpenHelper {
                 FoodonetDBProvider.RegisteredUsersDB.REGISTERED_USER_ACTIVE_DEVICE_UUID,FoodonetDBProvider.RegisteredUsersDB.REGISTERED_USER_NAME,
                 FoodonetDBProvider.RegisteredUsersDB.REGISTERED_USER_PHONE);
         sqLiteDatabase.execSQL(sql);
+        sql = String.format("CREATE TABLE %1$s(%2$s INTEGER PRIMARY KEY AUTOINCREMENT,%3$s INTEGER,%4$s INTEGER,%5$s TEXT,%6$s INTEGER)",
+                FoodonetDBProvider.NotificationsDB.TABLE_NAME,FoodonetDBProvider.NotificationsDB._ID_COLUMN,FoodonetDBProvider.NotificationsDB.ITEM_ID,
+                FoodonetDBProvider.NotificationsDB.NOTIFICATION_TYPE,FoodonetDBProvider.NotificationsDB.NOTIFICATION_NAME,
+                FoodonetDBProvider.NotificationsDB.NOTIFICATION_RECEIVED_TIME);
+        sqLiteDatabase.execSQL(sql);
 
         /** add the rows of the latest places, since they won't be inserted again */
         ContentValues values;

@@ -96,6 +96,16 @@ public class FoodonetDBProvider extends ContentProvider {
         static final Uri CONTENT_URI = Uri.parse("content://"+AUTHORITY+"/"+TABLE_NAME);
     }
 
+    public static class NotificationsDB{
+        static final String TABLE_NAME = "notifications";
+        static final String _ID_COLUMN = "_id";
+        static final String ITEM_ID = "item_id";
+        static final String NOTIFICATION_TYPE = "notification_type";
+        static final String NOTIFICATION_NAME = "notification_name";
+        static final String NOTIFICATION_RECEIVED_TIME = "notification_received_time";
+        static final Uri CONTENT_URI = Uri.parse("content://"+AUTHORITY+"/"+TABLE_NAME);
+    }
+
     @Override
     public boolean onCreate() {
         helper = new FoodonetDBHelper(getContext());

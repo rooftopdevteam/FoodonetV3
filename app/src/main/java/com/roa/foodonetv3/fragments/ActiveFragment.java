@@ -22,11 +22,10 @@ import android.widget.Toast;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.activities.MainActivity;
 import com.roa.foodonetv3.adapters.PublicationsRecyclerAdapter;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
+import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.FoodonetDBProvider;
-import com.roa.foodonetv3.model.Publication;
-
-import java.util.ArrayList;
 
 public class ActiveFragment extends Fragment {
     private static final String TAG = "ActiveFragment";
@@ -55,7 +54,7 @@ public class ActiveFragment extends Fragment {
         /** set the recycler view and adapter for all publications */
         RecyclerView activePubRecycler = (RecyclerView) v.findViewById(R.id.activePubRecycler);
         activePubRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new PublicationsRecyclerAdapter(getContext());
+        adapter = new PublicationsRecyclerAdapter(getContext(), CommonConstants.PUBLICATION_SORT_TYPE_RECENT);
         activePubRecycler.setAdapter(adapter);
         return v;
     }
@@ -124,7 +123,7 @@ public class ActiveFragment extends Fragment {
                         }
                     }
                     break;
-                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
                     if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
                         // TODO: 01/04/2017 add logic if fails
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
@@ -133,6 +132,10 @@ public class ActiveFragment extends Fragment {
                             adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS);
                         }
                     }
+                    break;
+                case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
+                    OnGotMyUserImageListener onGotMyUserImageListener = (OnGotMyUserImageListener) getContext();
+                    onGotMyUserImageListener.gotMyUserImage();
                     break;
             }
         }
