@@ -97,8 +97,8 @@
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
                 <category android:name="com.roa.foodonetv3" />
             </intent-filter>
         </receiver>
@@ -138,7 +138,9 @@
             android:exported="false" />
         <service
             android:name=".services.GetMyUserImageService"
-            android:exported="false"/>
+            android:exported="false" />
+        <service
+            android:name=".services.GetLocationService"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

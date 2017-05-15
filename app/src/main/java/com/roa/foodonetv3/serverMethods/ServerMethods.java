@@ -5,17 +5,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.roa.foodonetv3.R;
+import com.roa.foodonetv3.asyncTasks.UpdatePublicationTask;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
-import com.roa.foodonetv3.db.GroupMembersDBHandler;
+import com.roa.foodonetv3.db.PublicationsDBHandler;
 import com.roa.foodonetv3.model.Feedback;
 import com.roa.foodonetv3.model.Group;
 import com.roa.foodonetv3.model.GroupMember;
@@ -26,15 +26,30 @@ import com.roa.foodonetv3.model.User;
 import com.roa.foodonetv3.services.FoodonetService;
 import com.roa.foodonetv3.services.GetMyUserImageService;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class ServerMethods {
     private static final String TAG = "ServerMethods";
 
     public static void getPublications(Context context) {
+        getPublicPublications(context);
+        updateNonPublicPublications(context);
+    }
+
+    private static void getPublicPublications(Context context){
         Intent getPublicationsIntent = new Intent(context, FoodonetService.class);
         getPublicationsIntent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_GET_PUBLICATIONS);
         context.startService(getPublicationsIntent);
+    }
+
+    private static void updateNonPublicPublications(Context context){
+        PublicationsDBHandler publicationsDBHandler = new PublicationsDBHandler(context);
+        ArrayList<Long> publicationToUpdate = publicationsDBHandler.getOnlinePublicationsToUpdateIDs();
+        UpdatePublicationTask task = new UpdatePublicationTask(context);
+        task.execute(publicationToUpdate);
     }
 
     public static void addPublication(Context context, Publication publication){
@@ -59,6 +74,10 @@ public class ServerMethods {
         context.startService(i);
     }
 
+    /**
+     * removes publication from foodonet server
+     * @param publicationID publication to remove
+     */
     public static void deletePublication(Context context, long publicationID){
         String[] args = {String.valueOf(publicationID)};
         Intent deleteIntent = new Intent(context,FoodonetService.class);
@@ -67,14 +86,30 @@ public class ServerMethods {
         context.startService(deleteIntent);
     }
 
-    public static void getPublication(Context context, long publicationID, boolean notifyUser){
-        String notifyUserString;
-        if(notifyUser){
-            notifyUserString = String.valueOf(CommonConstants.VALUE_TRUE);
-        } else{
-            notifyUserString = String.valueOf(CommonConstants.VALUE_FALSE);
+    /**
+     * @deprecated
+     * @param publicationID publication to delete
+     */
+    public static void takePublicationOffline(Context context, long publicationID){
+        String[] args = {String.valueOf(publicationID)};
+        Intent intent = new Intent(context,FoodonetService.class);
+        intent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE);
+        intent.putExtra(ReceiverConstants.ADDRESS_ARGS,args);
+        JSONObject publicationJsonRoot = new JSONObject();
+        JSONObject publicationJson = new JSONObject();
+        try {
+            publicationJson.put(Publication.PUBLICATION_IS_ON_AIR_KEY, false);
+            publicationJsonRoot.put(Publication.PUBLICATION_KEY,publicationJson);
+        } catch (JSONException e) {
+            Log.e(TAG,e.getMessage());
         }
-        String[] args = {String.valueOf(publicationID),notifyUserString};
+        String jsonString = publicationJson.toString();
+        intent.putExtra(ReceiverConstants.JSON_TO_SEND,jsonString);
+        context.startService(intent);
+    }
+
+    public static void getPublication(Context context, long publicationID){
+        String[] args = {String.valueOf(publicationID)};
         Intent getPublicationIntent = new Intent(context, FoodonetService.class);
         getPublicationIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_PUBLICATION);
         getPublicationIntent.putExtra(ReceiverConstants.ADDRESS_ARGS,args);

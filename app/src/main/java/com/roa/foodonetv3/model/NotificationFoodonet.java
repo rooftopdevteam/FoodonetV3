@@ -92,7 +92,6 @@ public class NotificationFoodonet {
     }
 
     public int getNotificationTypeImageResource(){
-        // TODO: 03/04/2017 change to actual drawables
         switch (typeNotification){
             case NOTIFICATION_TYPE_NEW_PUBLICATION:
                 return R.drawable.notif_new;
@@ -104,6 +103,22 @@ public class NotificationFoodonet {
                 return R.drawable.notif_report;
             case NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
                 return R.drawable.notif_group;
+        }
+        return -1;
+    }
+
+    public int getNotificationTextColor(){
+        switch (typeNotification){
+            case NOTIFICATION_TYPE_NEW_PUBLICATION:
+                return R.color.fooLightBlue;
+            case NOTIFICATION_TYPE_PUBLICATION_DELETED:
+                return R.color.fooRed;
+            case NOTIFICATION_TYPE_NEW_REGISTERED_USER:
+                return R.color.fooGreen;
+            case NOTIFICATION_TYPE_NEW_PUBLICATION_REPORT:
+                return R.color.fooPurple;
+            case NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
+                return R.color.fooYellow;
         }
         return -1;
     }

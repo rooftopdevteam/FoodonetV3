@@ -1,11 +1,13 @@
 package com.roa.foodonetv3.commonMethods;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
@@ -15,6 +17,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -39,7 +42,7 @@ import com.roa.foodonetv3.model.GroupMember;
 import com.roa.foodonetv3.model.NotificationFoodonet;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
 import com.roa.foodonetv3.services.GetDataService;
-import com.roa.foodonetv3.services.GetMyUserImageService;
+import com.roa.foodonetv3.services.GetLocationService;
 import com.roa.foodonetv3.services.NotificationsDismissService;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +56,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TreeMap;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 public class CommonMethods {
     private static final String TAG = "CommonMethods";
@@ -149,7 +154,7 @@ public class CommonMethods {
     /**
      * returns a string of time difference between two times in epoch time seconds (NOT MILLIS!) with a changing perspective according to the duration
      */
-    public static String getTimeDifference(Context context, Double earlierTimeInSeconds, Double laterTimeInSeconds) {
+    public static String getTimeDifference(Context context, Double earlierTimeInSeconds, Double laterTimeInSeconds, int type) {
         long timeDiff = (long) (laterTimeInSeconds - earlierTimeInSeconds) / 60; // minutes as start
         StringBuilder message = new StringBuilder();
         if (timeDiff < 0) {
@@ -174,6 +179,14 @@ public class CommonMethods {
                 /** only add hours if the difference is less than a week, otherwise just show days */
                 message.append(String.format(Locale.US, "%1$d%2$s", (timeDiff % 1440) / 60, context.getResources().getString(R.string.h_hours)));
             }
+        }
+        switch (type){
+            case CommonConstants.TIME_TYPE_REMAINING:
+                message.append(String.format(" %1$s",context.getString(R.string.remaining)));
+                break;
+            case CommonConstants.TIME_TYPE_AGO:
+                message.append(String.format(" %1$s",context.getString(R.string.ago)));
+                break;
         }
         return message.toString();
     }
@@ -209,6 +222,13 @@ public class CommonMethods {
         Intent getDataIntent = new Intent(context, GetDataService.class);
         getDataIntent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_GET_DATA);
         context.startService(getDataIntent);
+        CommonMethods.setLastUpdated(context);
+    }
+
+    public static void signOffUser(Context context){
+        Intent intent = new Intent(context,GetDataService.class);
+        intent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_SIGN_OUT);
+        context.startService(intent);
     }
 
     public static boolean isMyUserInitialized(Context context){
@@ -265,10 +285,33 @@ public class CommonMethods {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.key_prefs_user_phone), null);
     }
 
+    public static void setLastLocation(Context context, LatLng latlng){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putString(context.getString(R.string.key_prefs_user_lat),String.valueOf(latlng.latitude))
+                .putString(context.getString(R.string.key_prefs_user_lng),String.valueOf(latlng.longitude))
+                .apply();
+    }
+
+    public static void setLastUpdated(Context context){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putLong(context.getString(R.string.key_prefs_last_updated),System.currentTimeMillis()).apply();
+    }
+
+    public static boolean isDataUpToDate(Context context){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        long lastUpdate = preferences.getLong(context.getString(R.string.key_prefs_last_updated),-1);
+        return !(lastUpdate == -1 || System.currentTimeMillis() - lastUpdate > CommonConstants.UP_TO_DATE_PERIOD_MILLIS);
+    }
+
     public static LatLng getLastLocation(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return new LatLng(Double.valueOf(preferences.getString(context.getString(R.string.key_prefs_user_lat), String.valueOf(CommonConstants.LATLNG_ERROR))),
                 Double.valueOf(preferences.getString(context.getString(R.string.key_prefs_user_lng), String.valueOf(CommonConstants.LATLNG_ERROR))));
+    }
+
+    public static boolean isNotificationTurnedOn(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(context.getString(R.string.key_prefs_get_notifications),true);
     }
 
     /**
@@ -645,13 +688,39 @@ public class CommonMethods {
         return false;
     }
 
-    public static boolean isGpsEnabled(Context context){
-        final LocationManager manager = (LocationManager) context.getSystemService( Context.LOCATION_SERVICE );
-
-        if (manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-            return true;
-        }else {
-            return false;
+    public static String getAvailableLocationType(Context context){
+        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        String locationType;
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            locationType = LocationManager.NETWORK_PROVIDER;
+        } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            locationType = LocationManager.GPS_PROVIDER;
+        } else {
+            locationType = CommonConstants.LOCATION_TYPE_LOCATION_DISABLED;
         }
+        return locationType;
+    }
+
+    public static boolean isLocationPermissionGranted(Context context){
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void startGetLocationService(Context context, boolean getNewData, String locationType, int actionType){
+        Intent getLocationIntent = new Intent(context, GetLocationService.class);
+        getLocationIntent.putExtra(GetLocationService.LOCATION_TYPE,locationType);
+        getLocationIntent.putExtra(GetLocationService.GET_DATA,getNewData);
+        getLocationIntent.putExtra(GetLocationService.ACTION_TYPE,actionType);
+        context.startService(getLocationIntent);
+    }
+
+    public static boolean isEventInNotificationRadius(Context context, LatLng notificationLatLng){
+        LatLng userLocation = CommonMethods.getLastLocation(context);
+        String keyListNotificationRadius = context.getString(R.string.key_prefs_list_notification_radius);
+        String[] notificationRadiusListKMValues = context.getResources().getStringArray(R.array.prefs_notification_radius_values_km);
+        String currentValueNotificationRadiusListKM = PreferenceManager.getDefaultSharedPreferences(context).getString(keyListNotificationRadius,
+                notificationRadiusListKMValues[CommonConstants.DEFAULT_NOTIFICATION_RADIUS_ITEM]);
+        return (currentValueNotificationRadiusListKM.equals("-1") ||
+                CommonMethods.distance(userLocation.latitude,userLocation.longitude,notificationLatLng.latitude,notificationLatLng.longitude)
+                        <= Integer.valueOf(currentValueNotificationRadiusListKM));
     }
 }

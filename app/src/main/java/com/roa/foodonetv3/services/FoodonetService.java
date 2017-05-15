@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.google.android.gms.maps.model.LatLng;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
@@ -144,6 +145,7 @@ public class FoodonetService extends IntentService {
             GroupsDBHandler groupsDBHandler;
             RegisteredUsersDBHandler registeredUsersDBHandler;
             GroupMembersDBHandler groupMembersDBHandler;
+
             if(actionType == ReceiverConstants.ACTION_GET_PUBLICATIONS){
                 // get the users groups id, as we don't care about the others */
                 groupsDBHandler = new GroupsDBHandler(this);
@@ -152,7 +154,8 @@ public class FoodonetService extends IntentService {
                 JSONArray rootGetPublications;
                 rootGetPublications = new JSONArray(responseRoot);
 
-                long id,audience;
+                // as for now, the server only returns public publications to "get all publications" method
+                long id,audience, publisherID;
                 String title,subtitle,address,startingDate,endingDate,contactInfo,activeDeviceDevUUID,photoURL,identityProviderUserName,priceDescription;
                 short typeOfCollecting;
                 Double lat,lng,price;
@@ -164,7 +167,7 @@ public class FoodonetService extends IntentService {
                     audience = publication.getLong("audience");
 
                     if(audience == 0 || groupsIDs.contains(audience)){
-                        long publisherID = publication.getLong("publisher_id");
+                        publisherID = publication.getLong("publisher_id");
                         id = publication.getLong("id");
                         version = publication.getInt("version");
                         title = publication.getString("title");
@@ -188,7 +191,7 @@ public class FoodonetService extends IntentService {
                     }
                 }
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                publicationsDBHandler.replaceAllPublications(publications);
+                publicationsDBHandler.updatePublicPublicationsData(publications);
                 Intent getDataIntent = new Intent(this,GetDataService.class);
                 getDataIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_ALL_PUBLICATIONS_REGISTERED_USERS);
                 startService(getDataIntent);
@@ -259,7 +262,7 @@ public class FoodonetService extends IntentService {
 
             else if(actionType == ReceiverConstants.ACTION_DELETE_PUBLICATION){
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                publicationsDBHandler.deletePublication(Long.parseLong(args[0]));
+                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
                 intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
             }
@@ -280,6 +283,7 @@ public class FoodonetService extends IntentService {
                 activeDeviceDevUUID = publicationObject.getString("active_device_dev_uuid");
                 boolean updateData = false;
 
+                // get public or user group but not current user device created publication
                 if((audience == 0 || groupsIDs.contains(audience)) && !activeDeviceDevUUID.equals(CommonMethods.getDeviceUUID(this))){
                     long publisherID = publicationObject.getLong("publisher_id");
                     id = publicationObject.getLong("id");
@@ -303,7 +307,7 @@ public class FoodonetService extends IntentService {
                             activeDeviceDevUUID, photoURL, publisherID, audience, identityProviderUserName, price, priceDescription);
                     publicationsDBHandler.insertPublication(publication);
 
-                    boolean notifyUser = args[1].equals(String.valueOf(CommonConstants.VALUE_TRUE));
+                    boolean notifyUser = CommonMethods.isNotificationTurnedOn(this) && CommonMethods.isEventInNotificationRadius(this,new LatLng(lat,lng));
                     boolean userNotAdmin = publisherID != CommonMethods.getMyUserID(this);
                     if(userNotAdmin){
                         NotificationsDBHandler notificationsDBHandler = new NotificationsDBHandler(this);
@@ -317,6 +321,13 @@ public class FoodonetService extends IntentService {
                     updateData = true;
                 }
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,updateData);
+            }
+
+            else if(actionType == ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE){
+                publicationsDBHandler = new PublicationsDBHandler(this);
+                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
+                intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
+                intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
             }
 
             else if(actionType == ReceiverConstants.ACTION_GET_REPORTS){
@@ -396,7 +407,7 @@ public class FoodonetService extends IntentService {
                 ArrayList<RegisteredUser> registeredUsers = new ArrayList<>();
 
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                ArrayList<Long> publicationsIDs = publicationsDBHandler.getPublicationsIDs();
+                ArrayList<Long> publicationsIDs = publicationsDBHandler.getOnlinePublicationsIDs();
 
                 long publicationID, collectorUserID;
                 int publicationVersion;

@@ -31,6 +31,7 @@ public class GetDataService extends IntentService {
         if (intent != null) {
             Log.d(TAG,"entered "+ intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1 ));
 
+            PublicationsDBHandler publicationsDBHandler;
             switch (intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1)){
                 case ReceiverConstants.ACTION_SIGN_OUT:
                     // TODO: 05/12/2016 check if it is written as it should...
@@ -61,6 +62,9 @@ public class GetDataService extends IntentService {
                     // if the user is not registered yet, with userID -1, skip getting the groups and get the publications (which will get only the 'audience 0 - public' group) */
 
                 case ReceiverConstants.ACTION_GET_PUBLICATIONS:
+                    // clear old non - user publications from db
+                    publicationsDBHandler = new PublicationsDBHandler(this);
+                    publicationsDBHandler.clearOldPublications();
                     // get publications */
                     ServerMethods.getPublications(this);
                     break;
@@ -71,9 +75,9 @@ public class GetDataService extends IntentService {
                     // continue to clean unused images
 
                 case ReceiverConstants.ACTION_CLEAN_IMAGES:
+                    publicationsDBHandler = new PublicationsDBHandler(this);
                     File directoryPictures = (getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS));
                     if(directoryPictures!= null) {
-                        PublicationsDBHandler publicationsDBHandler = new PublicationsDBHandler(this);
                         ArrayList<String> fileNames = publicationsDBHandler.getPublicationImagesFileNames();
 
                         File[] files = directoryPictures.listFiles();

@@ -55,7 +55,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     public static final int TYPE_EDIT_PUBLICATION = 2;
     private EditText editTextTitleAddPublication, editTextPriceAddPublication, editTextDetailsAddPublication;
     private Spinner spinnerShareWith;
-    private TextView textLocationAddPublication;
+    private TextView textLocationAddPublication, textPublicationPriceType;
     private double endingDate;
     private String mCurrentPhotoPath, pickPhotoPath;
     private ImageView imagePictureAddPublication;
@@ -130,6 +130,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         v.findViewById(R.id.imageTakePictureAddPublication).setOnClickListener(this);
         imagePictureAddPublication = (ImageView) v.findViewById(R.id.imagePictureAddPublication);
 
+        // currently only supporting NIS
+        textPublicationPriceType = (TextView) v.findViewById(R.id.textPublicationPriceType);
+        textPublicationPriceType.setText(getString(R.string.currency_nis));
+
         if(isEdit){
             spinnerShareWith.setEnabled(false);
             mCurrentPhotoPath = CommonMethods.getFilePathFromPublicationID(getContext(),publication.getId(),publication.getVersion());
@@ -147,7 +151,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         }
 
         layoutInfo = v.findViewById(R.id.layoutInfo);
-        layoutInfo.setBackgroundColor(getResources().getColor(R.color.fooLightGrey));
+//        layoutInfo.setBackgroundColor(getResources().getColor(R.color.fooLightGrey));
         layoutInfo.setVisibility(View.GONE);
         TextView textInfo = (TextView) v.findViewById(R.id.textInfo);
         textInfo.setText(R.string.start_sharing_by_adding_an_image_of_the_food_you_wish_to_share);
@@ -179,6 +183,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
 
         if (mCurrentPhotoPath == null|| mCurrentPhotoPath.equals("")) {
             layoutInfo.setVisibility(View.VISIBLE);
+
             imagePictureAddPublication.setVisibility(View.GONE);
         } else{
             layoutInfo.setVisibility(View.GONE);

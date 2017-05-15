@@ -11,6 +11,7 @@
     <string name="key_prefs_notification_token">notification_token</string>
     <string name="key_prefs_initialized">initialized</string>
     <string name="key_prefs_unread_notification_id">unread_notification_id</string>
+    <string name="key_prefs_last_updated">last_updated</string>
 
 
     <string-array name="prefs_notification_radius_entries_km">

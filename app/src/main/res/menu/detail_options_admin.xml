@@ -2,8 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="@string/edit"
         android:id="@+id/detail_edit"/>
-    <item android:title="@string/take_offline"
-        android:id="@+id/detail_take_offline"/>
     <item android:title="@string/delete"
         android:id="@+id/detail_delete"/>
 </menu>

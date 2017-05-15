@@ -31,7 +31,7 @@ public class ClosestFragment extends Fragment{
     private static final String TAG = "ClosestFragment";
 
     private PublicationsRecyclerAdapter adapter;
-    private ClosestFragment.FoodonetReceiver receiver;
+    private FoodonetReceiver receiver;
 
     public ClosestFragment() {
         // Required empty public constructor
@@ -119,7 +119,7 @@ public class ClosestFragment extends Fragment{
                         }
                     }
                     break;
-                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
                     if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
                         // TODO: 01/04/2017 add logic if fails
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();

@@ -1,6 +1,7 @@
 package com.roa.foodonetv3.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.roa.foodonetv3.activities.PublicationActivity;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
+import com.roa.foodonetv3.db.FoodonetDBProvider;
 import com.roa.foodonetv3.db.PublicationsDBHandler;
 import com.roa.foodonetv3.db.RegisteredUsersDBHandler;
 import com.roa.foodonetv3.model.Publication;
@@ -60,8 +62,13 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         if(publicationsDBHandler == null){
             publicationsDBHandler = new PublicationsDBHandler(context);
         }
+        ArrayList<Publication> publications;
         RegisteredUsersDBHandler registeredUsersDBHandler = new RegisteredUsersDBHandler(context);
-        ArrayList<Publication> publications = publicationsDBHandler.getPublications(typePublicationFilter, sortType);
+        if(typePublicationFilter == FoodonetDBProvider.PublicationsDB.TYPE_GET_USER_PUBLICATIONS){
+            publications = publicationsDBHandler.getUserPublications(sortType);
+        } else{
+            publications = publicationsDBHandler.getOnlineNonUserPublications(sortType);
+        }
         registeredUsersArray = registeredUsersDBHandler.getAllRegisteredUsersCount();
         filteredPublications.clear();
         filteredPublications.addAll(publications);
@@ -119,10 +126,9 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         private Publication publication;
         private ImageView imagePublicationGroup;
         private CircleImageView imagePublication;
-        private TextView textPublicationTitle, textPublicationAddressDistance, textPublicationUsers;
+        private TextView textPublicationTitle, textPublicationAddressDistance, textPublicationUsers, textPublicationTimeRemaining;
         private File mCurrentPhotoFile;
         private int observerId;
-        private int publicationImageSize;
 
 
         PublicationHolder(View itemView, int viewType) {
@@ -133,7 +139,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
                 textPublicationTitle = (TextView) itemView.findViewById(R.id.textPublicationTitle);
                 textPublicationAddressDistance = (TextView) itemView.findViewById(R.id.textPublicationAddressDistance);
                 textPublicationUsers = (TextView) itemView.findViewById(R.id.textPublicationUsers);
-                publicationImageSize = (int) context.getResources().getDimension(R.dimen.image_size_68);
+                textPublicationTimeRemaining = (TextView) itemView.findViewById(R.id.textPublicationTimeRemaining);
                 itemView.setOnClickListener(this);
             }
         }
@@ -141,6 +147,16 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         private void bindPublication(Publication publication) {
             this.publication = publication;
             textPublicationTitle.setText(publication.getTitle());
+            Glide.with(context).load(R.drawable.camera_xxh).into(imagePublication);
+            imagePublicationGroup.setImageResource(publication.getGroupImageResource());
+            if(publication.isOnAir() && Double.valueOf(publication.getEndingDate()) > CommonMethods.getCurrentTimeSeconds()){
+                textPublicationTimeRemaining.setText(CommonMethods.getTimeDifference(context,CommonMethods.getCurrentTimeSeconds(),
+                        Double.valueOf(publication.getEndingDate()),CommonConstants.TIME_TYPE_REMAINING));
+                textPublicationTimeRemaining.setTextColor(ContextCompat.getColor(context,R.color.fooGrey));
+            } else{
+                textPublicationTimeRemaining.setText(context.getString(R.string.ended));
+                textPublicationTimeRemaining.setTextColor(ContextCompat.getColor(context,R.color.fooRed));
+            }
             if (userLatLng.latitude != CommonConstants.LATLNG_ERROR && userLatLng.longitude != CommonConstants.LATLNG_ERROR) {
                 double distance = CommonMethods.distance(userLatLng.latitude, userLatLng.longitude, publication.getLat(), publication.getLng());
                 String addressDistance = String.format(Locale.US, "%1$s %2$s", CommonMethods.getRoundedStringFromNumber(distance), context.getResources().getString(R.string.km));

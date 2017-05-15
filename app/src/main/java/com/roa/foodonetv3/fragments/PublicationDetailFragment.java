@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +38,7 @@ import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.activities.PublicationActivity;
 import com.roa.foodonetv3.activities.SignInActivity;
 import com.roa.foodonetv3.adapters.ReportsRecyclerAdapter;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnFabChangeListener;
 import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
@@ -59,7 +61,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     private static final String TAG = "PublicationDetailFrag";
 
     private TextView textCategory,textTimeRemaining,textJoined,textTitlePublication,textPublicationAddress,textPublicationRating,
-            textPublisherName,textPublicationPrice,textPublicationDetails;
+            textPublisherName,textPublicationPrice,textPublicationDetails, textPublicationPriceType;
     private ImageView imagePicturePublication;
     private CircleImageView imagePublisherUser;
     private View layoutAdminDetails, layoutRegisteredDetails;
@@ -78,6 +80,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     private OnDeletePublicationListener onDeletePublicationListener;
     private OnReplaceFragListener onReplaceFragListener;
     private String userImagePath;
+    private ImageView imagePublicationGroup;
 
     public PublicationDetailFragment() {
         // Required empty public constructor
@@ -110,7 +113,9 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             // the user is not the admin, check if he's a registered user for the publication */
             isRegistered = registeredUsersDBHandler.isUserRegistered(publication.getId());
         }
-        setHasOptionsMenu(true);
+        if(publication.isOnAir()) {
+            setHasOptionsMenu(true);
+        }
 
         receiver = new FoodonetReceiver();
     }
@@ -145,14 +150,20 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         imagePicturePublication = (ImageView) v.findViewById(R.id.imagePicturePublication);
         imagePicturePublication.setOnClickListener(this);
         imagePublisherUser = (CircleImageView) v.findViewById(R.id.imagePublisherUser);
+        imagePublicationGroup = (ImageView) v.findViewById(R.id.imagePublicationGroup);
+        textPublicationPriceType = (TextView) v.findViewById(R.id.textPublicationPriceType);
 
-        // TODO: 05/05/2017 test
         userImagePath = CommonMethods.getFilePathFromUserID(getContext(),publication.getPublisherID());
         if(userImagePath != null){
             File userImageFile = new File(userImagePath);
-            TransferObserver observer = CommonMethods.getS3TransferUtility(getContext()).download(getContext().getResources().getString(R.string.amazon_users_bucket),
-                    CommonMethods.getFileNameFromUserID(publication.getPublisherID()), userImageFile);
-            observer.setTransferListener(this);
+            if(userImageFile.isFile()){
+                Glide.with(getContext()).load(userImageFile).into(imagePublisherUser);
+            } else {
+                String userImageFIleName = CommonMethods.getFileNameFromUserID(publication.getPublisherID());
+                TransferObserver observer = CommonMethods.getS3TransferUtility(getContext()).download(getContext().getResources().getString(R.string.amazon_users_bucket),
+                        userImageFIleName, userImageFile);
+                observer.setTransferListener(this);
+            }
         }
         //
 
@@ -170,12 +181,10 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
 
     @Override
     public void onResume() {
-        // TODO: 21/11/2016 load from server every resume?
         super.onResume();
         IntentFilter filter = new IntentFilter(ReceiverConstants.BROADCAST_FOODONET);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
 
-        // TODO: 21/12/2016 should be from db
         ServerMethods.getReports(getContext(),publication.getId(),publication.getVersion());
 
         // initialize the views */
@@ -211,10 +220,6 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             case R.id.detail_edit:
                 onReplaceFragListener.onReplaceFrags(PublicationActivity.EDIT_PUBLICATION_TAG,publication.getId());
                 return true;
-            case R.id.detail_take_offline:
-                // TODO: 19/12/2016 add logic
-                Toast.makeText(getContext(), "take offline", Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.detail_delete:
                 AlertDialog.Builder alertDialogDeletePublication = new AlertDialog.Builder(getContext())
                         .setTitle(R.string.dialog_are_you_sure)
@@ -248,20 +253,27 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     /** set the views */
     private void initViews(){
         // if the user is the admin, registered user, or a non registered user, show different layouts */
-        if (isAdmin) {
-            layoutAdminDetails.setVisibility(View.VISIBLE);
-            layoutRegisteredDetails.setVisibility(View.GONE);
+        if(publication.isOnAir()) {
+            if (isAdmin) {
+                layoutAdminDetails.setVisibility(View.VISIBLE);
+                layoutRegisteredDetails.setVisibility(View.GONE);
 
-        } else if(isRegistered) {
-            layoutAdminDetails.setVisibility(View.GONE);
-            layoutRegisteredDetails.setVisibility(View.VISIBLE);
+            } else if (isRegistered) {
+                layoutAdminDetails.setVisibility(View.GONE);
+                layoutRegisteredDetails.setVisibility(View.VISIBLE);
 
+            } else {
+                layoutAdminDetails.setVisibility(View.GONE);
+                layoutRegisteredDetails.setVisibility(View.GONE);
+            }
         } else{
             layoutAdminDetails.setVisibility(View.GONE);
             layoutRegisteredDetails.setVisibility(View.GONE);
         }
-        onFabChangeListener.onFabChange(PublicationActivity.PUBLICATION_DETAIL_TAG,!isAdmin && !isRegistered);
+        boolean showFAB = !isAdmin && !isRegistered && publication.isOnAir();
+        onFabChangeListener.onFabChange(PublicationActivity.PUBLICATION_DETAIL_TAG,showFAB);
 
+        imagePublicationGroup.setImageResource(publication.getGroupImageResource());
         if(publication.getAudience()==0){
             // audience is public */
             textCategory.setText(getResources().getString(R.string.audience_public));
@@ -277,9 +289,14 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         }
 
         String timeRemaining = String.format(Locale.US, "%1$s",
-                CommonMethods.getTimeDifference(getContext(),CommonMethods.getCurrentTimeSeconds(),Double.parseDouble(publication.getEndingDate())));
+                CommonMethods.getTimeDifference(getContext(),CommonMethods.getCurrentTimeSeconds(),
+                        Double.parseDouble(publication.getEndingDate()), CommonConstants.TIME_TYPE_REMAINING));
 
-        textTimeRemaining.setText(timeRemaining);
+        if(publication.isOnAir()){
+            textTimeRemaining.setText(timeRemaining);
+        } else{
+            textTimeRemaining.setText(getString(R.string.ended));
+        }
         // get the number of users registered for this publication */
         countRegisteredUsers = registeredUsersDBHandler.getPublicationRegisteredUsersCount(publication.getId());
         textJoined.setText(String.format(Locale.US,"%1$s : %2$d",getResources().getString(R.string.joined),countRegisteredUsers));
@@ -287,12 +304,18 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         textPublicationAddress.setText(publication.getAddress());
         textPublisherName.setText(publication.getIdentityProviderUserName());
 
+        // currently only supporting NIS
+        textPublicationPriceType.setText(getString(R.string.currency_nis));
 
         String priceS;
         if(publication.getPrice()==0){
             priceS = getResources().getString(R.string.free);
+            textPublicationPrice.setTextColor(ContextCompat.getColor(getContext(),R.color.fooLightBlue));
+            textPublicationPriceType.setVisibility(View.GONE);
         } else{
             priceS = String.valueOf(publication.getPrice());
+            textPublicationPrice.setTextColor(ContextCompat.getColor(getContext(),R.color.fooYellow));
+            textPublicationPriceType.setVisibility(View.VISIBLE);
         }
         textPublicationPrice.setText(priceS);
         textPublicationDetails.setText(publication.getSubtitle());
@@ -503,7 +526,9 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     @Override
     public void onStateChanged(int id, TransferState state) {
         if (state== TransferState.COMPLETED){
-            Glide.with(getContext()).load(userImagePath).into(imagePublisherUser);
+            if(getContext()!= null){
+                Glide.with(getContext()).load(userImagePath).into(imagePublisherUser);
+            }
         } else{
             // TODO: 06/05/2017 add
         }

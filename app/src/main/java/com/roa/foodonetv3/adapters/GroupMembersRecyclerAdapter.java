@@ -98,10 +98,10 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
             textMemberName.setText(member.getName());
             if(member.getUserID()== CommonConstants.NON_FOODONET_MEMBER_ID){
                 // TODO: 02/03/2017 change to non foodonet user image
-                imageMember.setImageResource(R.drawable.minus);
+                imageMember.setImageResource(R.drawable.groups_pending_user);
             } else{
                 // TODO: 02/03/2017 change to foodonet user image
-                imageMember.setImageResource(R.drawable.user);
+                imageMember.setImageResource(R.drawable.groups_user);
             }
             if(member.isAdmin()){
                 textAdmin.setVisibility(View.VISIBLE);

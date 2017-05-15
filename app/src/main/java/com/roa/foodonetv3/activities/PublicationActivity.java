@@ -189,7 +189,11 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                     bundle.putParcelable(Publication.PUBLICATION_KEY, publication);
                     publicationDetailFragment.setArguments(bundle);
                     updateContainer(isAddNewFragment, publicationDetailFragment, "publicationDetailFrag");
-                    animateFab(openFragType, true, duration);
+                    if(publication.isOnAir()){
+                        animateFab(openFragType, false, duration);
+                    } else{
+                        animateFab(openFragType, true, duration);
+                    }
                 }
                 break;
             case MY_PUBLICATIONS_TAG:
@@ -213,20 +217,20 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
         // TODO: 13/02/2017 add different fab icons and colors
         switch (fragmentTag){
             case ADD_PUBLICATION_TAG:
-                imgResource = R.drawable.user;
+                imgResource = R.drawable.fab_check;
                 color = getResources().getColor(R.color.fooGreen);
                 break;
             case EDIT_PUBLICATION_TAG:
-                imgResource = R.drawable.user;
-                color = getResources().getColor(R.color.fooGreen);
+                imgResource = R.drawable.fab_check;
+                color = getResources().getColor(R.color.fooRed);
                 break;
             case PUBLICATION_DETAIL_TAG:
-                imgResource = R.drawable.user;
-                color = getResources().getColor(R.color.fooGreen);
+                imgResource = R.drawable.fab_register;
+                color = getResources().getColor(R.color.colorPrimary);
                 break;
             case MY_PUBLICATIONS_TAG:
-                imgResource = R.drawable.user;
-                color = getResources().getColor(R.color.fooGreen);
+                imgResource = R.drawable.fab_plus;
+                color = getResources().getColor(R.color.colorPrimary);
                 break;
         }
         FabAnimation.animateFAB(this,fab,duration,imgResource,color,setVisible);

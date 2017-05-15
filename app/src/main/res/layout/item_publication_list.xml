@@ -17,10 +17,9 @@
         android:layout_marginRight="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16" />
 
-
     <ImageView
-        android:layout_width="@dimen/image_size_16"
-        android:layout_height="@dimen/image_size_16"
+        android:layout_width="@dimen/image_size_24"
+        android:layout_height="@dimen/image_size_24"
         android:id="@+id/imagePublicationGroup"
         app:srcCompat="@drawable/camera_xxh"
         android:layout_alignBottom="@+id/textPublicationTitle"
@@ -37,8 +36,8 @@
         android:layout_marginTop="@dimen/margin_8"
         android:layout_toRightOf="@+id/imagePublicationGroup"
         android:layout_toEndOf="@+id/imagePublicationGroup"
-        android:layout_marginStart="@dimen/margin_16"
-        android:layout_marginLeft="@dimen/margin_16" />
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginLeft="@dimen/margin_8" />
 
     <TextView
         android:text="Tel Aviv , 15.6 km"
@@ -61,6 +60,19 @@
         android:layout_toEndOf="@+id/imagePublication"
         android:layout_marginTop="@dimen/margin_4"
         style="@style/FooXS" />
+
+    <TextView
+        android:text="5 hours ago"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/textPublicationTimeRemaining"
+        android:layout_alignBaseline="@id/textPublicationUsers"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="@dimen/margin_16"
+        android:layout_marginEnd="@dimen/margin_16"
+        style="@style/FooXS"
+        />
 
     <View
         android:layout_width="match_parent"
