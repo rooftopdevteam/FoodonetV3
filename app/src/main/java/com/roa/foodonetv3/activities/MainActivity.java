@@ -193,10 +193,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case LocationManager.NETWORK_PROVIDER:
                 if(CommonMethods.isLocationPermissionGranted(this)){
                     CommonMethods.startGetLocationService(this,getNewData, locationType, actionType);
-                    Toast.makeText(this, "have permissions", Toast.LENGTH_SHORT).show();
+//                    hText(this, "have permissions", Toast.LENGTH_SHORT).show();
                     Log.d(TAG,"have permissions");
                 } else{
-                    Toast.makeText(this, "ask permissions", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "ask permissions", Toast.LENGTH_SHORT).show();
                     Log.d(TAG,"ask permissions");
                     ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},CommonConstants.PERMISSION_REQUEST_LOCATION);
                 }
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     // request denied, give the user a message */
                     CommonMethods.setLastUpdated(this);
-                    Toast.makeText(this, getResources().getString(R.string.toast_needs_location_permission), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, getResources().getString(R.string.toast_needs_location_permission), Toast.LENGTH_SHORT).show();
                     Log.d(TAG,getResources().getString(R.string.toast_needs_location_permission));
                 }
                 break;

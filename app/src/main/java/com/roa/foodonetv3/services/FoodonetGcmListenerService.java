@@ -1,14 +1,11 @@
 package com.roa.foodonetv3.services;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
-import com.google.android.gms.maps.model.LatLng;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
@@ -25,7 +22,6 @@ import org.json.JSONObject;
 
 public class FoodonetGcmListenerService extends GcmListenerService {
     private static final String TAG = "GcmListenerService";
-
     private static final String PUSH_OBJECT_MSG = "message";
 
     @Override
@@ -45,8 +41,7 @@ public class FoodonetGcmListenerService extends GcmListenerService {
     }
 
     private void handleMessage(JSONObject msgRoot) throws JSONException {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean sendNotifications = sharedPreferences.getBoolean(getString(R.string.key_prefs_get_notifications),true);
+        boolean sendNotifications = CommonMethods.isNotificationTurnedOn(this);
         NotificationsDBHandler notificationsDBHandler;
         PublicationsDBHandler publicationsDBHandler;
         String type = msgRoot.getString("type");
@@ -72,7 +67,6 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                     }
                 }
                 publicationsDBHandler.takePublicationOffline(publicationID);
-//            publicationsDBHandler.deletePublication(publicationID);
                 Intent intent = new Intent(ReceiverConstants.BROADCAST_FOODONET);
                 intent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE);
                 intent.putExtra(ReceiverConstants.SERVICE_ERROR, false);

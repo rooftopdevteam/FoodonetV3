@@ -309,6 +309,11 @@ public class CommonMethods {
                 Double.valueOf(preferences.getString(context.getString(R.string.key_prefs_user_lng), String.valueOf(CommonConstants.LATLNG_ERROR))));
     }
 
+    public static boolean isNotificationTurnedOn(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(context.getString(R.string.key_prefs_get_notifications),true);
+    }
+
     /**
      * should increment negatively for a unique id until the server gives us a server unique publication id to replace it
      */

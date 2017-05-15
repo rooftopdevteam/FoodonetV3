@@ -207,12 +207,12 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
         // TODO: 13/02/2017 add different fab icons and colors
         switch (fragmentTag){
             case GROUPS_OVERVIEW_TAG:
-                imgResource = R.drawable.user;
+                imgResource = R.drawable.fab_plus;
                 color = getResources().getColor(R.color.fooGreen);
                 break;
             case ADMIN_GROUP_TAG:
-                imgResource = R.drawable.user;
-                color = getResources().getColor(R.color.fooGreen);
+                imgResource = R.drawable.fab_plus_user;
+                color = getResources().getColor(R.color.colorPrimary);
                 break;
             case NON_ADMIN_GROUP_TAG:
                 break;

@@ -307,7 +307,7 @@ public class FoodonetService extends IntentService {
                             activeDeviceDevUUID, photoURL, publisherID, audience, identityProviderUserName, price, priceDescription);
                     publicationsDBHandler.insertPublication(publication);
 
-                    boolean notifyUser = CommonMethods.isEventInNotificationRadius(this,new LatLng(lat,lng));
+                    boolean notifyUser = CommonMethods.isNotificationTurnedOn(this) && CommonMethods.isEventInNotificationRadius(this,new LatLng(lat,lng));
                     boolean userNotAdmin = publisherID != CommonMethods.getMyUserID(this);
                     if(userNotAdmin){
                         NotificationsDBHandler notificationsDBHandler = new NotificationsDBHandler(this);
