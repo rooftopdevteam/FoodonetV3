@@ -290,7 +290,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
 
         String timeRemaining = String.format(Locale.US, "%1$s",
                 CommonMethods.getTimeDifference(getContext(),CommonMethods.getCurrentTimeSeconds(),
-                        Double.parseDouble(publication.getEndingDate()), CommonConstants.TIME_TYPE_REMAINING));
+                        Double.parseDouble(publication.getEndingDate()), null));
 
         if(publication.isOnAir()){
             textTimeRemaining.setText(timeRemaining);

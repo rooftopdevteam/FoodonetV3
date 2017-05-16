@@ -102,7 +102,8 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
             textNotificationType.setText(notification.getTypeNotificationString(context));
             textNotificationType.setTextColor(ContextCompat.getColor(context,notification.getNotificationTextColor()));
             textNotificationName.setText(notification.getNameNotification());
-            String timeAgo = CommonMethods.getTimeDifference(context,notification.getReceivedTime(),CommonMethods.getCurrentTimeSeconds(), CommonConstants.TIME_TYPE_AGO);
+            String timeAgo = CommonMethods.getTimeDifference(context,notification.getReceivedTime(),
+                    CommonMethods.getCurrentTimeSeconds(), context.getString(R.string.ago));
             textNotificationTime.setText(timeAgo);
             Glide.with(context).load(notification.getNotificationTypeImageResource()).into(imageNotificationType);
             switch (notification.getTypeNotification()){
@@ -127,7 +128,7 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
                     }
                     break;
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
-                    Glide.with(context).load(R.drawable.group_blue).centerCrop().into(imageNotification);
+                    Glide.with(context).load(R.drawable.added_to_group).centerCrop().into(imageNotification);
                     break;
             }
         }

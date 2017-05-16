@@ -18,8 +18,8 @@
             android:layout_weight="1"
             >
             <ImageView
-                android:layout_width="@dimen/image_size_24"
-                android:layout_height="@dimen/image_size_24"
+                android:layout_width="@dimen/image_size_16"
+                android:layout_height="@dimen/image_size_16"
                 android:id="@+id/imagePublicationGroup"
                 android:src="@drawable/public_blue"
                 android:layout_margin="@dimen/margin_4"
@@ -43,15 +43,15 @@
             android:layout_weight="1"
             >
             <ImageView
-                android:layout_width="@dimen/image_size_24"
-                android:layout_height="@dimen/image_size_24"
+                android:layout_width="@dimen/image_size_16"
+                android:layout_height="@dimen/image_size_16"
                 android:id="@+id/imagePublicationRemaining"
                 android:src="@drawable/clock"
                 android:layout_margin="@dimen/margin_4"
                 android:layout_centerVertical="true"
                 />
             <TextView
-                android:text="12h 35min remaining"
+                android:text="12h 35min"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textTimeRemaining"
@@ -67,8 +67,8 @@
             android:layout_weight="1"
             >
             <ImageView
-                android:layout_width="@dimen/image_size_24"
-                android:layout_height="@dimen/image_size_24"
+                android:layout_width="@dimen/image_size_16"
+                android:layout_height="@dimen/image_size_16"
                 android:id="@+id/imagePublicationJoined"
                 android:src="@drawable/user"
                 android:layout_margin="@dimen/margin_4"
@@ -244,9 +244,10 @@
             android:layout_weight="1">
 
             <ImageView
-                android:layout_width="@dimen/image_size_50"
-                android:layout_height="@dimen/image_size_50"
-                android:src="@drawable/join"
+                android:layout_width="@dimen/image_size_48"
+                android:layout_height="@dimen/image_size_48"
+                android:padding="@dimen/margin_12"
+                android:src="@drawable/fab_report"
                 android:id="@+id/imageActionPublicationReport"
                 android:layout_centerHorizontal="true" />
         </RelativeLayout>
@@ -257,9 +258,10 @@
             android:layout_weight="1">
 
             <ImageView
-                android:layout_width="@dimen/image_size_50"
-                android:layout_height="@dimen/image_size_50"
-                android:src="@drawable/sms"
+                android:layout_width="@dimen/image_size_48"
+                android:layout_height="@dimen/image_size_48"
+                android:padding="@dimen/margin_12"
+                android:src="@drawable/fab_sms"
                 android:id="@+id/imageActionPublicationSMS"
                 android:layout_centerHorizontal="true" />
 
@@ -271,9 +273,10 @@
             android:layout_weight="1">
 
             <ImageView
-                android:layout_width="@dimen/image_size_50"
-                android:layout_height="@dimen/image_size_50"
-                android:src="@drawable/call"
+                android:layout_width="@dimen/image_size_48"
+                android:layout_height="@dimen/image_size_48"
+                android:padding="@dimen/margin_12"
+                android:src="@drawable/fab_call"
                 android:id="@+id/imageActionPublicationPhone"
                 android:layout_centerHorizontal="true" />
         </RelativeLayout>
@@ -284,9 +287,10 @@
             android:layout_weight="1">
 
             <ImageView
-                android:layout_width="@dimen/image_size_50"
-                android:layout_height="@dimen/image_size_50"
-                android:src="@drawable/navigate"
+                android:layout_width="@dimen/image_size_48"
+                android:layout_height="@dimen/image_size_48"
+                android:padding="@dimen/margin_12"
+                android:src="@drawable/fab_navigate"
                 android:id="@+id/imageActionPublicationMap"
                 android:layout_centerHorizontal="true" />
 
@@ -305,9 +309,10 @@
             android:layout_weight="1">
 
             <ImageView
-                android:layout_width="@dimen/image_size_50"
-                android:layout_height="@dimen/image_size_50"
-                android:src="@drawable/facebook"
+                android:layout_width="@dimen/image_size_48"
+                android:layout_height="@dimen/image_size_48"
+                android:padding="@dimen/margin_12"
+                android:src="@drawable/fab_facebook"
                 android:id="@+id/imageActionAdminShareFacebook"
                 android:layout_centerHorizontal="true" />
         </RelativeLayout>
@@ -318,9 +323,10 @@
             android:layout_weight="1">
 
             <ImageView
-                android:layout_width="@dimen/image_size_50"
-                android:layout_height="@dimen/image_size_50"
-                android:src="@drawable/twitter"
+                android:layout_width="@dimen/image_size_48"
+                android:layout_height="@dimen/image_size_48"
+                android:padding="@dimen/margin_12"
+                android:src="@drawable/fab_twitter"
                 android:id="@+id/imageActionAdminShareTwitter"
                 android:layout_centerHorizontal="true" />
 
@@ -332,9 +338,10 @@
             android:layout_weight="1">
 
             <ImageView
-                android:layout_width="@dimen/image_size_50"
-                android:layout_height="@dimen/image_size_50"
-                android:src="@drawable/sms"
+                android:layout_width="@dimen/image_size_48"
+                android:layout_height="@dimen/image_size_48"
+                android:padding="@dimen/margin_12"
+                android:src="@drawable/fab_sms"
                 android:id="@+id/imageActionAdminSMS"
                 android:layout_centerHorizontal="true" />
         </RelativeLayout>
@@ -345,9 +352,10 @@
             android:layout_weight="1">
 
             <ImageView
-                android:layout_width="@dimen/image_size_50"
-                android:layout_height="@dimen/image_size_50"
-                android:src="@drawable/call"
+                android:layout_width="@dimen/image_size_48"
+                android:layout_height="@dimen/image_size_48"
+                android:padding="@dimen/margin_12"
+                android:src="@drawable/fab_call"
                 android:id="@+id/imageActionAdminPhone"
                 android:layout_centerHorizontal="true" />
 

@@ -5,8 +5,8 @@
     android:layout_height="@dimen/layout_size_80">
 
     <ImageView
-        android:layout_width="@dimen/image_size_50"
-        android:layout_height="@dimen/image_size_50"
+        android:layout_width="@dimen/image_size_48"
+        android:layout_height="@dimen/image_size_48"
         app:srcCompat="@drawable/group_blue"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"

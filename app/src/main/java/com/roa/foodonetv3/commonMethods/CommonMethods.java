@@ -154,7 +154,7 @@ public class CommonMethods {
     /**
      * returns a string of time difference between two times in epoch time seconds (NOT MILLIS!) with a changing perspective according to the duration
      */
-    public static String getTimeDifference(Context context, Double earlierTimeInSeconds, Double laterTimeInSeconds, int type) {
+    public static String getTimeDifference(Context context, Double earlierTimeInSeconds, Double laterTimeInSeconds, String suffix) {
         long timeDiff = (long) (laterTimeInSeconds - earlierTimeInSeconds) / 60; // minutes as start
         StringBuilder message = new StringBuilder();
         if (timeDiff < 0) {
@@ -180,13 +180,8 @@ public class CommonMethods {
                 message.append(String.format(Locale.US, "%1$d%2$s", (timeDiff % 1440) / 60, context.getResources().getString(R.string.h_hours)));
             }
         }
-        switch (type){
-            case CommonConstants.TIME_TYPE_REMAINING:
-                message.append(String.format(" %1$s",context.getString(R.string.remaining)));
-                break;
-            case CommonConstants.TIME_TYPE_AGO:
-                message.append(String.format(" %1$s",context.getString(R.string.ago)));
-                break;
+        if(suffix!= null){
+            message.append(String.format(" %1$s", suffix));
         }
         return message.toString();
     }
@@ -380,7 +375,7 @@ public class CommonMethods {
                 .setAutoCancel(true)
                 .setDeleteIntent(dismissNotificationsPendingIntent)
                 .setContentIntent(resultPendingIntent)
-                .setSmallIcon(R.drawable.drawer_notifications)
+                .setSmallIcon(R.drawable.status_bar)
                 .setGroup("foodonet")
                 .setGroupSummary(true);
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle()

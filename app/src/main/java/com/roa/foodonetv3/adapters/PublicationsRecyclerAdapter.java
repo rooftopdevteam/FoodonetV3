@@ -151,7 +151,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
             imagePublicationGroup.setImageResource(publication.getGroupImageResource());
             if(publication.isOnAir() && Double.valueOf(publication.getEndingDate()) > CommonMethods.getCurrentTimeSeconds()){
                 textPublicationTimeRemaining.setText(CommonMethods.getTimeDifference(context,CommonMethods.getCurrentTimeSeconds(),
-                        Double.valueOf(publication.getEndingDate()),CommonConstants.TIME_TYPE_REMAINING));
+                        Double.valueOf(publication.getEndingDate()),context.getString(R.string.remaining)));
                 textPublicationTimeRemaining.setTextColor(ContextCompat.getColor(context,R.color.fooGrey));
             } else{
                 textPublicationTimeRemaining.setText(context.getString(R.string.ended));
