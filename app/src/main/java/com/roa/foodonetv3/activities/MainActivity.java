@@ -3,7 +3,6 @@ package com.roa.foodonetv3.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,7 +32,7 @@ import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
-import com.roa.foodonetv3.fragments.ActiveFragment;
+import com.roa.foodonetv3.fragments.LatestFragment;
 import com.roa.foodonetv3.fragments.ClosestFragment;
 import com.roa.foodonetv3.model.Publication;
 import com.roa.foodonetv3.services.GetLocationService;
@@ -77,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // set the view pager */
         tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this,R.color.fooBlue));
-        tabLayout.setSelectedTabIndicatorHeight((int) (7 * getResources().getDisplayMetrics().density));
+        tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this,R.color.colorAccent));
+        tabLayout.setSelectedTabIndicatorHeight((int) (5 * getResources().getDisplayMetrics().density));
         tabLayout.setTabTextColors(ContextCompat.getColor(this,R.color.fooGrey),ContextCompat.getColor(this,R.color.fooWhite));
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -255,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case 0:
                     return new ClosestFragment();
                 case 1:
-                    return new ActiveFragment();
+                    return new LatestFragment();
             }
             return null;
         }
@@ -265,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case 0:
                     return getString(R.string.view_pager_tab_closest);
                 case 1:
-                    return getString(R.string.view_pager_tab_active);
+                    return getString(R.string.view_pager_tab_latest);
             }
 
             return null;

@@ -27,13 +27,13 @@ import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.FoodonetDBProvider;
 
-public class ActiveFragment extends Fragment {
-    private static final String TAG = "ActiveFragment";
+public class LatestFragment extends Fragment {
+    private static final String TAG = "LatestFragment";
 
     private PublicationsRecyclerAdapter adapter;
     private FoodonetReceiver receiver;
 
-    public ActiveFragment() {
+    public LatestFragment() {
         // Required empty public constructor
     }
 
@@ -49,7 +49,7 @@ public class ActiveFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View v = inflater.inflate(R.layout.fragment_active, container, false);
+        View v = inflater.inflate(R.layout.fragment_latest, container, false);
 
         /** set the recycler view and adapter for all publications */
         RecyclerView activePubRecycler = (RecyclerView) v.findViewById(R.id.activePubRecycler);

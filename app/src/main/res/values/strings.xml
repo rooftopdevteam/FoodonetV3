@@ -99,7 +99,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="pick_new_location">Pick new location</string>
-    <string name="view_pager_tab_active">Active</string>
+    <string name="view_pager_tab_latest">Latest</string>
     <string name="view_pager_tab_recent">Recent</string>
     <string name="view_pager_tab_closest">Closest</string>
     <string name="not_signed_in">Not signed in</string>
