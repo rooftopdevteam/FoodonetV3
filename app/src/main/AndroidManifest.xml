@@ -78,7 +78,7 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.PlacesActivity"
+            android:name=".activities.LatestPlacesActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity

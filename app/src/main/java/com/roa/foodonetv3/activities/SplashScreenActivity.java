@@ -21,7 +21,7 @@ public class SplashScreenActivity extends AppCompatActivity  {
     private static final String TAG = "SplashScreenActivity";
 
     private SharedPreferences sharedPreferences;
-    private static final long TIME_TO_SHOW_SPLASH_MILLIS = 500 + CommonConstants.TIME_SWITCH_TO_FUSED_MILLIS;
+    private static final long TIME_TO_SHOW_SPLASH_MILLIS = 1000 + CommonConstants.TIME_SWITCH_TO_FUSED_MILLIS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

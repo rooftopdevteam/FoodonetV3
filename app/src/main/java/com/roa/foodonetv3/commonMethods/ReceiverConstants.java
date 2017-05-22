@@ -22,6 +22,7 @@ public class ReceiverConstants {
     public static final int ACTION_DELETE_PUBLICATION = 4;
     public static final int ACTION_GET_PUBLICATION = 5;
     public static final int ACTION_TAKE_PUBLICATION_OFFLINE = 6;
+    public static final int ACTION_REPUBLISH_PUBLICATION = 7;
     public static final int ACTION_GET_REPORTS = 10;
     public static final int ACTION_ADD_REPORT = 11;
     public static final int ACTION_ADD_USER = 20;
@@ -37,6 +38,7 @@ public class ReceiverConstants {
     public static final int ACTION_POST_FEEDBACK = 60;
     public static final int ACTION_ACTIVE_DEVICE_NEW_USER = 70;
     public static final int ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION = 71;
+    public static final int ACTION_GET_GROUP_ADMIN_IMAGE = 80;
 
 
     /** Local types */
@@ -63,4 +65,5 @@ public class ReceiverConstants {
     public static final int FAB_TYPE_ADD_NEW_PUBLICATION = 3;
     public static final int FAB_TYPE_EDIT_PUBLICATION = 4;
     public static final int FAB_TYPE_REGISTER_TO_PUBLICATION = 5;
+    public static final int FAB_TYPE_REPUBLISH_PUBLICATION = 6;
 }

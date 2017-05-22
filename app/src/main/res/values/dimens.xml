@@ -21,6 +21,7 @@
     <dimen name="image_size_16">16dp</dimen>
     <dimen name="image_size_24">24dp</dimen>
     <dimen name="image_size_36">36dp</dimen>
+    <dimen name="image_size_48">48dp</dimen>
     <dimen name="image_size_50">50dp</dimen>
     <dimen name="image_size_68">68dp</dimen>
     <dimen name="image_size_86">86dp</dimen>

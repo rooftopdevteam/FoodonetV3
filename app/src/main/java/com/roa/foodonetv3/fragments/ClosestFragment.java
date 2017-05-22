@@ -45,12 +45,12 @@ public class ClosestFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View v = inflater.inflate(R.layout.fragment_active, container, false);
+        View v = inflater.inflate(R.layout.fragment_latest, container, false);
 
         /** set the recycler view and adapter for all publications */
         RecyclerView activePubRecycler = (RecyclerView) v.findViewById(R.id.activePubRecycler);
         activePubRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new PublicationsRecyclerAdapter(getContext(), CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
+        adapter = new PublicationsRecyclerAdapter(getContext(), CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST,this);
         activePubRecycler.setAdapter(adapter);
         return v;
     }

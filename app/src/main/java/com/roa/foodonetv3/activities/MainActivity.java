@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -31,7 +32,7 @@ import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
 import com.roa.foodonetv3.commonMethods.OnReplaceFragListener;
-import com.roa.foodonetv3.fragments.ActiveFragment;
+import com.roa.foodonetv3.fragments.LatestFragment;
 import com.roa.foodonetv3.fragments.ClosestFragment;
 import com.roa.foodonetv3.model.Publication;
 import com.roa.foodonetv3.services.GetLocationService;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ViewPager viewPager;
     private CircleImageView circleImageView;
     private TextView headerTxt;
-
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +74,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         // set the view pager */
-        TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this,R.color.colorAccent));
+        tabLayout.setSelectedTabIndicatorHeight((int) (5 * getResources().getDisplayMetrics().density));
+        tabLayout.setTabTextColors(ContextCompat.getColor(this,R.color.fooGrey),ContextCompat.getColor(this,R.color.fooWhite));
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         ViewHolderAdapter adapter = new ViewHolderAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
-        tabs.setOnTabSelectedListener(this);
-        tabs.setupWithViewPager(viewPager);
 
+        tabLayout.setupWithViewPager(viewPager);
 
         // set the floating action button, since it only serves one fragment, no need to animate or change the view */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -119,10 +123,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             headerTxt.setText(getResources().getString(R.string.not_signed_in));
         }
 
+        tabLayout.addOnTabSelectedListener(this);
+
         // check if the data last checked was more than the time specified, start getting new data if it did
         if (!CommonMethods.isDataUpToDate(this)){
             getNewLocation(true,GetLocationService.TYPE_NORMAL);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tabLayout.removeOnTabSelectedListener(this);
     }
 
     @Override
@@ -242,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case 0:
                     return new ClosestFragment();
                 case 1:
-                    return new ActiveFragment();
+                    return new LatestFragment();
             }
             return null;
         }
@@ -252,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case 0:
                     return getString(R.string.view_pager_tab_closest);
                 case 1:
-                    return getString(R.string.view_pager_tab_active);
+                    return getString(R.string.view_pager_tab_latest);
             }
 
             return null;

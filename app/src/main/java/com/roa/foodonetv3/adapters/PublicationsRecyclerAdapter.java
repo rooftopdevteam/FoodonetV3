@@ -1,6 +1,7 @@
 package com.roa.foodonetv3.adapters;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
@@ -39,6 +42,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
     private static final int PUBLICATION_SPACER = 2;
 
     private Context context;
+    private Fragment fragment;
     private ArrayList<Publication> filteredPublications = new ArrayList<>();
     private ArrayList<Publication> publications = new ArrayList<>();
     private LongSparseArray<Integer> registeredUsersArray = new LongSparseArray<>();
@@ -48,9 +52,10 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
     private OnReplaceFragListener onReplaceFragListener;
     private int sortType;
 
-    public PublicationsRecyclerAdapter(Context context, int sortType) {
+    public PublicationsRecyclerAdapter(Context context, int sortType, Fragment fragment) {
         this.context = context;
         this.sortType = sortType;
+        this.fragment = fragment;
         onReplaceFragListener = (OnReplaceFragListener) context;
         /** get the S3 utility */
         transferUtility = CommonMethods.getS3TransferUtility(context);
@@ -67,7 +72,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         if(typePublicationFilter == FoodonetDBProvider.PublicationsDB.TYPE_GET_USER_PUBLICATIONS){
             publications = publicationsDBHandler.getUserPublications(sortType);
         } else{
-            publications = publicationsDBHandler.getOnlineNonUserPublications(sortType);
+            publications = publicationsDBHandler.getOnlineNonEndedNonUserPublications(sortType);
         }
         registeredUsersArray = registeredUsersDBHandler.getAllRegisteredUsersCount();
         filteredPublications.clear();
@@ -129,6 +134,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         private TextView textPublicationTitle, textPublicationAddressDistance, textPublicationUsers, textPublicationTimeRemaining;
         private File mCurrentPhotoFile;
         private int observerId;
+        private int failCount;
 
 
         PublicationHolder(View itemView, int viewType) {
@@ -145,13 +151,13 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         }
 
         private void bindPublication(Publication publication) {
+            failCount = 3;
             this.publication = publication;
             textPublicationTitle.setText(publication.getTitle());
-            Glide.with(context).load(R.drawable.camera_xxh).into(imagePublication);
             imagePublicationGroup.setImageResource(publication.getGroupImageResource());
             if(publication.isOnAir() && Double.valueOf(publication.getEndingDate()) > CommonMethods.getCurrentTimeSeconds()){
                 textPublicationTimeRemaining.setText(CommonMethods.getTimeDifference(context,CommonMethods.getCurrentTimeSeconds(),
-                        Double.valueOf(publication.getEndingDate()),CommonConstants.TIME_TYPE_REMAINING));
+                        Double.valueOf(publication.getEndingDate()),context.getString(R.string.remaining)));
                 textPublicationTimeRemaining.setTextColor(ContextCompat.getColor(context,R.color.fooGrey));
             } else{
                 textPublicationTimeRemaining.setText(context.getString(R.string.ended));
@@ -174,14 +180,17 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
             if(mCurrentPhotoFileString!= null){
                 mCurrentPhotoFile = new File(mCurrentPhotoFileString);
                 if (mCurrentPhotoFile.isFile()) {
-                    Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(imagePublication);
+                    Glide.with(fragment).load(mCurrentPhotoFile).centerCrop().into(imagePublication);
                 } else {
+                    Glide.with(fragment).load(R.drawable.camera_xxh).into(imagePublication);
                     String s3FileName = CommonMethods.getFileNameFromPublicationID(publication.getId(), publication.getVersion());
                     TransferObserver observer = transferUtility.download(context.getResources().getString(R.string.amazon_publications_bucket),
                             s3FileName, mCurrentPhotoFile);
                     observer.setTransferListener(this);
                     observerId = observer.getId();
                 }
+            } else{
+                Glide.with(fragment).load(R.drawable.camera_xxh).into(imagePublication);
             }
         }
 
@@ -191,7 +200,12 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
             Log.d(TAG, "amazon onStateChanged " + id + " " + state.toString());
             if (state == TransferState.COMPLETED) {
                 if (observerId == id) {
-                    Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(imagePublication);
+                    Glide.with(fragment).load(mCurrentPhotoFile).centerCrop().into(imagePublication);
+                }
+            } else if(state == TransferState.FAILED){
+                if(failCount >= 0){
+                    failCount--;
+                    transferUtility.resume(observerId);
                 }
             }
         }

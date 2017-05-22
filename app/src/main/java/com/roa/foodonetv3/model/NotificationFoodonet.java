@@ -17,12 +17,14 @@ public class NotificationFoodonet {
     private String nameNotification;
     private long itemID;
     private double receivedTime;
+    private String imageFileName;
 
-    public NotificationFoodonet(int typeNotification, long itemID, String nameNotification, double receivedTime) {
+    public NotificationFoodonet(int typeNotification, long itemID, String nameNotification, double receivedTime, String imageFileName) {
         this.typeNotification = typeNotification;
         this.itemID = itemID;
         this.nameNotification = nameNotification;
         this.receivedTime = receivedTime;
+        this.imageFileName = imageFileName;
     }
 
     public int getTypeNotification() {
@@ -55,6 +57,14 @@ public class NotificationFoodonet {
 
     public void setReceivedTime(double timeMillisNotification) {
         this.receivedTime = timeMillisNotification;
+    }
+
+    public String getImageFileName() {
+        return imageFileName;
+    }
+
+    public void setImageFileName(String imageFileName) {
+        this.imageFileName = imageFileName;
     }
 
     public String getTypeNotificationString(Context context){

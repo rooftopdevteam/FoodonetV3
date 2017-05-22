@@ -6,6 +6,7 @@
     <color name="fooBlack">#FF202020</color>
     <color name="fooGreen">#4CAF50</color>
     <color name="fooLightBlue">#2196F3</color>
+    <color name="fooBlue">#2979ff</color>
     <color name="fooGrey">#707070</color>
     <color name="fooLightGrey">#B0B0B0</color>
     <color name="fooDivider">#979797</color>

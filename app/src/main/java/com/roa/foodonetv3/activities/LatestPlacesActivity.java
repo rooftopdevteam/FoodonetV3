@@ -21,7 +21,7 @@ import com.roa.foodonetv3.model.SavedPlace;
 
 import java.util.ArrayList;
 
-public class PlacesActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class LatestPlacesActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     public static final int REQUEST_PLACE_PICKER = 10;
     private Intent intentForResult;
@@ -38,7 +38,7 @@ public class PlacesActivity extends AppCompatActivity implements AdapterView.OnI
         /** set the ListView */
         ListView recentPlacesList = (ListView) findViewById(R.id.recentPlacesList);
         recentPlacesList.setOnItemClickListener(this);
-        findViewById(R.id.textPickNewLocation).setOnClickListener(this);
+        findViewById(R.id.buttonPickNewLocation).setOnClickListener(this);
 
         /** load latest places from db, and make a new String[] for use of the ArrayAdapter */
         handler = new LatestPlacesDBHandler(this);
