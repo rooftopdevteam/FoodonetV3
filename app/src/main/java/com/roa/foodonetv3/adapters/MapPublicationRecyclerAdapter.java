@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
@@ -59,11 +62,11 @@ public class MapPublicationRecyclerAdapter extends RecyclerView.Adapter<MapPubli
         return publications.size();
     }
 
-    class PublicationHolder extends RecyclerView.ViewHolder {
+    class PublicationHolder extends RecyclerView.ViewHolder implements TransferListener {
 
         private ImageView mapRecyclerImageView;
         private File mCurrentPhotoFile;
-        private int observerId;
+        private int observerId, failCount;
 
         PublicationHolder(View itemView) {
             super(itemView);
@@ -77,6 +80,7 @@ public class MapPublicationRecyclerAdapter extends RecyclerView.Adapter<MapPubli
         }
 
         void bindPublication(Publication publication){
+            failCount = 3;
             String mCurrentPhotoFileString = CommonMethods.getFilePathFromPublicationID(context,publication.getId(),publication.getVersion());
             if(mCurrentPhotoFileString!= null){
                 File mCurrentPhotoFile = new File(mCurrentPhotoFileString);
@@ -86,36 +90,36 @@ public class MapPublicationRecyclerAdapter extends RecyclerView.Adapter<MapPubli
                     Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(mapRecyclerImageView);
             }
             } else{
+                String s3FileName = CommonMethods.getFileNameFromPublicationID(publication.getId(), publication.getVersion());
+                TransferObserver observer = transferUtility.download(context.getResources().getString(R.string.amazon_publications_bucket),
+                        s3FileName, mCurrentPhotoFile);
+                observer.setTransferListener(this);
+                observerId = observer.getId();
                 // load default image */
                 Glide.with(context).load(R.drawable.foodonet_image).centerCrop().into(mapRecyclerImageView);
             }
         }
 
-//        @Override
-//        public void onStateChanged(int id, TransferState state) {
-//            /** listener for the s3 server download, needs to be class wide since it's currently keeps using the same image in different layout */
-//            // TODO: 09/11/2016 check picasso adapter for the images and using the s3 observer on an adapter scale
-//            Log.d(TAG,"amazon onStateChanged " + id + " "  + state.toString());
-//            if(state == TransferState.COMPLETED){
-//                if(observerId==id){
-//                    Picasso.with(context)
-//                            .load(mCurrentPhotoFile)
-//                            .resize(publicationImageSize,publicationImageSize)
-//                            .centerCrop()
-//                            .into(mapRecyclerImageView);
-//                }
-//
-//            }
-//        }
-//
-//        @Override
-//        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-//        }
-//        @Override
-//        public void onError(int id, Exception ex) {
-//            Log.d(TAG,"amazon onError" + id + " " + ex.toString());
-//        }
-
+        @Override
+        public void onStateChanged(int id, TransferState state) {
+            Log.d(TAG, "amazon onStateChanged " + id + " " + state.toString());
+            if (state == TransferState.COMPLETED) {
+                if (observerId == id) {
+                    Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(mapRecyclerImageView);
+                } else if(state == TransferState.FAILED){
+                    if(failCount >= 0){
+                        failCount--;
+                        transferUtility.resume(observerId);
+                    }
+                }
+            }
+        }
+        @Override
+        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+        }
+        @Override
+        public void onError(int id, Exception ex) {
+        }
     }
     public interface OnImageAdapterClickListener{
         void onImageAdapterClicked(LatLng latLng);

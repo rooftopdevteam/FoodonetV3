@@ -54,7 +54,7 @@ public class ActiveFragment extends Fragment {
         /** set the recycler view and adapter for all publications */
         RecyclerView activePubRecycler = (RecyclerView) v.findViewById(R.id.activePubRecycler);
         activePubRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new PublicationsRecyclerAdapter(getContext(), CommonConstants.PUBLICATION_SORT_TYPE_RECENT);
+        adapter = new PublicationsRecyclerAdapter(getContext(), CommonConstants.PUBLICATION_SORT_TYPE_RECENT,this);
         activePubRecycler.setAdapter(adapter);
         return v;
     }

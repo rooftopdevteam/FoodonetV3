@@ -48,7 +48,7 @@ public class MyPublicationsFragment extends Fragment{
         // set recycler view */
         recyclerMyPublications = (RecyclerView) v.findViewById(R.id.recyclerMyPublications);
         recyclerMyPublications.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new PublicationsRecyclerAdapter(getContext(), CommonConstants.PUBLICATION_SORT_TYPE_RECENT);
+        adapter = new PublicationsRecyclerAdapter(getContext(), CommonConstants.PUBLICATION_SORT_TYPE_RECENT,this);
         recyclerMyPublications.setAdapter(adapter);
 
         // set info screen for when there are no user publication yet */

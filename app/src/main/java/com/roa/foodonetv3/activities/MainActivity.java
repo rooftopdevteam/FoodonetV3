@@ -3,6 +3,7 @@ package com.roa.foodonetv3.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ViewPager viewPager;
     private CircleImageView circleImageView;
     private TextView headerTxt;
-
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +75,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         // set the view pager */
-        TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this,R.color.fooBlue));
+        tabLayout.setSelectedTabIndicatorHeight((int) (7 * getResources().getDisplayMetrics().density));
+        tabLayout.setTabTextColors(ContextCompat.getColor(this,R.color.fooGrey),ContextCompat.getColor(this,R.color.fooWhite));
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         ViewHolderAdapter adapter = new ViewHolderAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
-        tabs.setOnTabSelectedListener(this);
-        tabs.setupWithViewPager(viewPager);
 
+        tabLayout.setupWithViewPager(viewPager);
 
         // set the floating action button, since it only serves one fragment, no need to animate or change the view */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -119,10 +124,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             headerTxt.setText(getResources().getString(R.string.not_signed_in));
         }
 
+        tabLayout.addOnTabSelectedListener(this);
+
         // check if the data last checked was more than the time specified, start getting new data if it did
         if (!CommonMethods.isDataUpToDate(this)){
             getNewLocation(true,GetLocationService.TYPE_NORMAL);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tabLayout.removeOnTabSelectedListener(this);
     }
 
     @Override

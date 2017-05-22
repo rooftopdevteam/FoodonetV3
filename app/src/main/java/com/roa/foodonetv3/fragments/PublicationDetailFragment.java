@@ -38,7 +38,6 @@ import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.activities.PublicationActivity;
 import com.roa.foodonetv3.activities.SignInActivity;
 import com.roa.foodonetv3.adapters.ReportsRecyclerAdapter;
-import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnFabChangeListener;
 import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
@@ -77,7 +76,6 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     private RegisteredUsersDBHandler registeredUsersDBHandler;
     private OnFabChangeListener onFabChangeListener;
     private OnReceiveResponseListener onReceiveResponseListener;
-    private OnDeletePublicationListener onDeletePublicationListener;
     private OnReplaceFragListener onReplaceFragListener;
     private String userImagePath;
     private ImageView imagePublicationGroup;
@@ -91,9 +89,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         super.onAttach(context);
         onFabChangeListener = (OnFabChangeListener) context;
         onReceiveResponseListener = (OnReceiveResponseListener) context;
-        onDeletePublicationListener = (OnDeletePublicationListener) context;
         onReplaceFragListener = (OnReplaceFragListener) context;
-
     }
 
     @Override
@@ -113,9 +109,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             // the user is not the admin, check if he's a registered user for the publication */
             isRegistered = registeredUsersDBHandler.isUserRegistered(publication.getId());
         }
-        if(publication.isOnAir()) {
-            setHasOptionsMenu(true);
-        }
+        setHasOptionsMenu(true);
 
         receiver = new FoodonetReceiver();
     }
@@ -157,9 +151,9 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         if(userImagePath != null){
             File userImageFile = new File(userImagePath);
             if(userImageFile.isFile()){
-                Glide.with(getContext()).load(userImageFile).into(imagePublisherUser);
+                Glide.with(this).load(userImageFile).into(imagePublisherUser);
             } else {
-                String userImageFIleName = CommonMethods.getFileNameFromUserID(publication.getPublisherID());
+                String userImageFIleName = CommonMethods.getFileNameFromUserID(getContext(),publication.getPublisherID());
                 TransferObserver observer = CommonMethods.getS3TransferUtility(getContext()).download(getContext().getResources().getString(R.string.amazon_users_bucket),
                         userImageFIleName, userImageFile);
                 observer.setTransferListener(this);
@@ -207,7 +201,11 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         if(isAdmin){
-            inflater.inflate(R.menu.detail_options_admin,menu);
+            if(publication.isOnAir()){
+                inflater.inflate(R.menu.detail_options_admin_online,menu);
+            } else{
+                inflater.inflate(R.menu.detail_options_admin_offline,menu);
+            }
         } else {
             inflater.inflate(R.menu.detail_options_registered,menu);
         }
@@ -220,6 +218,22 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             case R.id.detail_edit:
                 onReplaceFragListener.onReplaceFrags(PublicationActivity.EDIT_PUBLICATION_TAG,publication.getId());
                 return true;
+
+            case R.id.detail_offline:
+                AlertDialog.Builder alertDialogTakeOffline= new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.dialog_are_you_sure)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                publication.setOnAir(false);
+                                publication.setPhotoURL(CommonMethods.getFilePathFromPublicationID(getContext(),publication.getId(),publication.getVersion()));
+                                ServerMethods.takePublicationOffline(getContext(),publication);
+                            }
+                        })
+                        .setNegativeButton(R.string.no, null);
+                alertDialog = alertDialogTakeOffline.show();
+                return true;
+
             case R.id.detail_delete:
                 AlertDialog.Builder alertDialogDeletePublication = new AlertDialog.Builder(getContext())
                         .setTitle(R.string.dialog_are_you_sure)
@@ -232,6 +246,11 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         .setNegativeButton(R.string.no, null);
                 alertDialog = alertDialogDeletePublication.show();
                 return true;
+
+            case R.id.detail_republish:
+                onReplaceFragListener.onReplaceFrags(PublicationActivity.REPUBLISH_PUBLICATION_TAG,publication.getId());
+                return true;
+
             case R.id.detail_unregister:
                 if(isRegistered){
                     AlertDialog.Builder alertDialogUnregisterPublication = new AlertDialog.Builder(getContext())
@@ -527,7 +546,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     public void onStateChanged(int id, TransferState state) {
         if (state== TransferState.COMPLETED){
             if(getContext()!= null){
-                Glide.with(getContext()).load(userImagePath).into(imagePublisherUser);
+                Glide.with(this).load(userImagePath).into(imagePublisherUser);
             }
         } else{
             // TODO: 06/05/2017 add
@@ -625,6 +644,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
 
                 // publication deleted
                 case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
                     if(alertDialog!=null && alertDialog.isShowing()){
                         alertDialog.dismiss();
                     }
@@ -632,9 +652,8 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         // TODO: 19/12/2016 add logic if fails
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     } else{
-                        if(intent.getLongExtra(Publication.PUBLICATION_ID,-1)==publication.getId()){
-                            Toast.makeText(context, getResources().getString(R.string.deleted), Toast.LENGTH_SHORT).show();
-                            onDeletePublicationListener.onDeletePublication();
+                        if(publication.getId()==intent.getLongExtra(Publication.PUBLICATION_ID,-1)){
+                            onReplaceFragListener.onReplaceFrags(PublicationActivity.NEW_STACK_TAG,-1);
                         }
                     }
                     break;
@@ -659,9 +678,5 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                     break;
             }
         }
-    }
-
-    public interface OnDeletePublicationListener {
-        void onDeletePublication();
     }
 }

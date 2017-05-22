@@ -2,6 +2,7 @@ package com.roa.foodonetv3.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -36,12 +37,14 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
 
     private ArrayList<NotificationFoodonet> notifications;
     private Context context;
+    private Fragment fragment;
     private TransferUtility transferUtility;
     private NotificationsDBHandler notificationsDBHandler;
     private PublicationsDBHandler publicationsDBHandler;
 
-    public NotificationsRecyclerAdapter(Context context) {
+    public NotificationsRecyclerAdapter(Context context, Fragment fragment) {
         this.context = context;
+        this.fragment = fragment;
         notifications = new ArrayList<>();
         transferUtility = CommonMethods.getS3TransferUtility(context);
         notificationsDBHandler = new NotificationsDBHandler(context);
@@ -80,8 +83,7 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
         private TextView textNotificationType, textNotificationName, textNotificationTime;
         private NotificationFoodonet notification;
         private File mCurrentPhotoFile;
-        private int observerId, publicationVersion;
-        private boolean isItemOnline;
+        private int observerId, failCount;
 
         NotificationHolder(View itemView) {
             super(itemView);
@@ -95,8 +97,7 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
 
         void bindNotification(int position){
             mCurrentPhotoFile = null;
-            publicationVersion = -1;
-            isItemOnline = false;
+            failCount = 3;
             notification = notifications.get(position);
             Glide.with(context).load(R.drawable.camera_xxh).into(imageNotification);
             textNotificationType.setText(notification.getTypeNotificationString(context));
@@ -111,24 +112,38 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_REGISTERED_USER:
                 case NotificationFoodonet.NOTIFICATION_TYPE_PUBLICATION_DELETED:
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_PUBLICATION_REPORT:
-                    publicationVersion = publicationsDBHandler.getPublicationVersion(notification.getItemID());
-                    isItemOnline = publicationVersion != -1;
-                    String mCurrentPhotoFileString = CommonMethods.getFilePathFromPublicationID(context, notification.getItemID(), publicationVersion);
-                    if (mCurrentPhotoFileString!= null){
-                        mCurrentPhotoFile = new File(mCurrentPhotoFileString);
+                    String currentPublicationImageFile = CommonMethods.getFilePathFromFileName(context,notification.getImageFileName(),CommonConstants.FILE_TYPE_PUBLICATIONS);
+                    if (currentPublicationImageFile!= null){
+                        mCurrentPhotoFile = new File(currentPublicationImageFile);
                         if (mCurrentPhotoFile.isFile()) {
-                            Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(imageNotification);
+                            Glide.with(fragment).load(mCurrentPhotoFile).centerCrop().into(imageNotification);
+                        }else {
+                            String s3FileName = notification.getImageFileName();
+                            if(s3FileName!= null){
+                                TransferObserver observer = transferUtility.download(context.getResources().getString(R.string.amazon_publications_bucket),
+                                        s3FileName, mCurrentPhotoFile);
+                                observer.setTransferListener(this);
+                                observerId = observer.getId();
+                            }
                         }
-                    } else {
-                        String s3FileName = CommonMethods.getFileNameFromPublicationID(notification.getItemID(), publicationVersion);
-                        TransferObserver observer = transferUtility.download(context.getResources().getString(R.string.amazon_publications_bucket),
-                                s3FileName, mCurrentPhotoFile);
-                        observer.setTransferListener(this);
-                        observerId = observer.getId();
                     }
                     break;
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
-                    Glide.with(context).load(R.drawable.added_to_group).centerCrop().into(imageNotification);
+                    String currentUserImageFile = CommonMethods.getFilePathFromFileName(context,notification.getImageFileName(),CommonConstants.FILE_TYPE_USERS);
+                    if(currentUserImageFile!= null){
+                        mCurrentPhotoFile = new File(currentUserImageFile);
+                        if(mCurrentPhotoFile.isFile()){
+                            Glide.with(fragment).load(mCurrentPhotoFile).into(imageNotification);
+                        } else{
+                            String s3FileName = notification.getImageFileName();
+                            if(s3FileName!= null){
+                                TransferObserver observer = transferUtility.download(context.getResources().getString(R.string.amazon_users_bucket),
+                                        s3FileName, mCurrentPhotoFile);
+                                observer.setTransferListener(this);
+                                observerId = observer.getId();
+                            }
+                        }
+                    }
                     break;
             }
         }
@@ -140,11 +155,16 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_REGISTERED_USER:
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_PUBLICATION_REPORT:
                 case NotificationFoodonet.NOTIFICATION_TYPE_PUBLICATION_DELETED:
-                    Intent newPublicationIntent = new Intent(context, PublicationActivity.class);
-                    newPublicationIntent.putExtra(PublicationActivity.ACTION_OPEN_PUBLICATION,PublicationActivity.PUBLICATION_DETAIL_TAG);
-                    newPublicationIntent.putExtra(Publication.PUBLICATION_KEY,notification.getItemID());
-                    newPublicationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    context.startActivity(newPublicationIntent);
+                    if(publicationsDBHandler.isPublicationOnline(notification.getItemID())) {
+                        Intent newPublicationIntent = new Intent(context, PublicationActivity.class);
+                        newPublicationIntent.putExtra(PublicationActivity.ACTION_OPEN_PUBLICATION, PublicationActivity.PUBLICATION_DETAIL_TAG);
+                        newPublicationIntent.putExtra(Publication.PUBLICATION_KEY, notification.getItemID());
+                        newPublicationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        context.startActivity(newPublicationIntent);
+                    } else{
+                        // TODO: 18/05/2017 add real message dialog
+                        Toast.makeText(context, R.string.event_no_longer_online, Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case NotificationFoodonet.NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
                     Intent openGroupIntent = new Intent(context, GroupsActivity.class);
@@ -160,7 +180,12 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
             Log.d(TAG, "amazon onStateChanged " + id + " " + state.toString());
             if (state == TransferState.COMPLETED) {
                 if (observerId == id) {
-                    Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(imageNotification);
+                    Glide.with(fragment).load(mCurrentPhotoFile).centerCrop().into(imageNotification);
+                } else if(state == TransferState.FAILED){
+                    if(failCount >= 0){
+                        failCount--;
+                        transferUtility.resume(observerId);
+                    }
                 }
             }
         }

@@ -7,11 +7,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
+import com.roa.foodonetv3.commonMethods.CommonMethods;
 
 class FoodonetDBHelper extends SQLiteOpenHelper {
+    private Context context;
 
     FoodonetDBHelper(Context context) {
         super(context, "foodonet.db", null, context.getResources().getInteger(R.integer.db_version));
+        this.context = context;
     }
 
     @Override
@@ -50,10 +53,10 @@ class FoodonetDBHelper extends SQLiteOpenHelper {
                 FoodonetDBProvider.RegisteredUsersDB.REGISTERED_USER_ACTIVE_DEVICE_UUID,FoodonetDBProvider.RegisteredUsersDB.REGISTERED_USER_NAME,
                 FoodonetDBProvider.RegisteredUsersDB.REGISTERED_USER_PHONE);
         sqLiteDatabase.execSQL(sql);
-        sql = String.format("CREATE TABLE %1$s(%2$s INTEGER PRIMARY KEY AUTOINCREMENT,%3$s INTEGER,%4$s INTEGER,%5$s TEXT,%6$s INTEGER)",
+        sql = String.format("CREATE TABLE %1$s(%2$s INTEGER PRIMARY KEY AUTOINCREMENT,%3$s INTEGER,%4$s INTEGER,%5$s TEXT,%6$s INTEGER, %7$s TEXT)",
                 FoodonetDBProvider.NotificationsDB.TABLE_NAME,FoodonetDBProvider.NotificationsDB._ID_COLUMN,FoodonetDBProvider.NotificationsDB.ITEM_ID,
                 FoodonetDBProvider.NotificationsDB.NOTIFICATION_TYPE,FoodonetDBProvider.NotificationsDB.NOTIFICATION_NAME,
-                FoodonetDBProvider.NotificationsDB.NOTIFICATION_RECEIVED_TIME);
+                FoodonetDBProvider.NotificationsDB.NOTIFICATION_RECEIVED_TIME,FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME);
         sqLiteDatabase.execSQL(sql);
 
         /** add the rows of the latest places, since they won't be inserted again */
@@ -68,6 +71,11 @@ class FoodonetDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        if(i==1){
+            String sql = String.format("ALTER TABLE %1$s ADD COLUMN %2$s TEXT",
+                    FoodonetDBProvider.NotificationsDB.TABLE_NAME,FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME);
+            sqLiteDatabase.execSQL(sql);
+        }
+        CommonMethods.signOffUser(context);
     }
 }

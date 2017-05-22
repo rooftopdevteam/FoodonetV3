@@ -95,6 +95,7 @@ public class FoodonetService extends IntentService {
                     case CommonConstants.HTTP_DELETE:
                         connection.setRequestMethod("DELETE");
                         break;
+
                     default:
                         serviceError = true;
                 }
@@ -145,6 +146,7 @@ public class FoodonetService extends IntentService {
             GroupsDBHandler groupsDBHandler;
             RegisteredUsersDBHandler registeredUsersDBHandler;
             GroupMembersDBHandler groupMembersDBHandler;
+            NotificationsDBHandler notificationsDBHandler;
 
             if(actionType == ReceiverConstants.ACTION_GET_PUBLICATIONS){
                 // get the users groups id, as we don't care about the others */
@@ -192,9 +194,6 @@ public class FoodonetService extends IntentService {
                 }
                 publicationsDBHandler = new PublicationsDBHandler(this);
                 publicationsDBHandler.updatePublicPublicationsData(publications);
-                Intent getDataIntent = new Intent(this,GetDataService.class);
-                getDataIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_ALL_PUBLICATIONS_REGISTERED_USERS);
-                startService(getDataIntent);
             }
 
             else if(actionType == ReceiverConstants.ACTION_ADD_PUBLICATION){
@@ -262,7 +261,7 @@ public class FoodonetService extends IntentService {
 
             else if(actionType == ReceiverConstants.ACTION_DELETE_PUBLICATION){
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
+                publicationsDBHandler.deletePublication(Long.parseLong(args[0]));
                 intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
             }
@@ -310,9 +309,9 @@ public class FoodonetService extends IntentService {
                     boolean notifyUser = CommonMethods.isNotificationTurnedOn(this) && CommonMethods.isEventInNotificationRadius(this,new LatLng(lat,lng));
                     boolean userNotAdmin = publisherID != CommonMethods.getMyUserID(this);
                     if(userNotAdmin){
-                        NotificationsDBHandler notificationsDBHandler = new NotificationsDBHandler(this);
+                        notificationsDBHandler = new NotificationsDBHandler(this);
                         notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_NEW_PUBLICATION,
-                                id,title,CommonMethods.getCurrentTimeSeconds()));
+                                id,title,CommonMethods.getCurrentTimeSeconds(),CommonMethods.getFileNameFromPublicationID(id,version)));
                         if(notifyUser){
                             CommonMethods.sendNotification(this);
                         }
@@ -324,10 +323,80 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE){
-                publicationsDBHandler = new PublicationsDBHandler(this);
-                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
-                intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
-                intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
+//                publicationsDBHandler = new PublicationsDBHandler(this);
+//                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
+//                intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
+//                intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
+                JSONObject root = new JSONObject(responseRoot);
+                long publicationID = root.getLong("id");
+                int publicationVersion = root.getInt("version");
+                if(data!= null){
+                    Publication publication = (Publication) data.get(0);
+                    publication.setVersion(publicationVersion);
+                    publicationsDBHandler = new PublicationsDBHandler(this);
+                    publicationsDBHandler.updatePublication(publication);
+
+                    intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
+                    intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
+
+                    // instantiate the transfer utility for the s3*/
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
+                    // if there is an image to upload */
+                    if(publication.getPhotoURL()!=null && !publication.getPhotoURL().equals("")){
+                        File file = new File(publication.getPhotoURL());
+                        String destFileString = CommonMethods.getFilePathFromPublicationID(this,publicationID,publicationVersion);
+                        if(destFileString!= null) {
+                            File destFile = new File(destFileString);
+                            String s3FileName = CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion);
+                            boolean renamed = file.renameTo(destFile);
+                            if(renamed){
+                                transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket),s3FileName,destFile);
+                            }else{
+                                Log.d(TAG,"Rename failed");
+                            }
+                            // TODO: 05/03/2017 currently not checking if the upload was successful or not
+                        }
+                    }
+                }
+            }
+
+            else if(actionType == ReceiverConstants.ACTION_REPUBLISH_PUBLICATION){
+                JSONObject root = new JSONObject(responseRoot);
+                long publicationID = root.getLong("id");
+                int publicationVersion = root.getInt("version");
+                intent.putExtra(Publication.PUBLICATION_ID,publicationID);
+                intent.putExtra(Publication.PUBLICATION_VERSION,publicationVersion);
+                if(data!= null) {
+                    Publication publication = (Publication) data.get(0);
+                    publication.setId(publicationID);
+                    publication.setVersion(publicationVersion);
+                    publicationsDBHandler = new PublicationsDBHandler(this);
+                    publicationsDBHandler.insertPublication(publication);
+
+                    Intent deleteOldPublicationIntent = new Intent(this,GetDataService.class);
+                    deleteOldPublicationIntent.putExtra(ReceiverConstants.ACTION_TYPE,actionType);
+                    deleteOldPublicationIntent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
+                    startService(deleteOldPublicationIntent);
+
+                    // instantiate the transfer utility for the s3*/
+                    TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
+                    // if there is an image to upload */
+                    if (publication.getPhotoURL() != null && !publication.getPhotoURL().equals("")) {
+                        File file = new File(publication.getPhotoURL());
+                        String destFileString = CommonMethods.getFilePathFromPublicationID(this, publicationID, publicationVersion);
+                        if (destFileString != null) {
+                            File destFile = new File(destFileString);
+                            String s3FileName = CommonMethods.getFileNameFromPublicationID(publicationID, publicationVersion);
+                            boolean renamed = file.renameTo(destFile);
+                            if (renamed) {
+                                transferUtility.upload(getResources().getString(R.string.amazon_publications_bucket), s3FileName, destFile);
+                            } else {
+                                Log.d(TAG, "Rename failed");
+                            }
+                            // TODO: 25/01/2017 currently not checking if the upload was successful or not
+                        }
+                    }
+                }
             }
 
             else if(actionType == ReceiverConstants.ACTION_GET_REPORTS){
@@ -377,7 +446,7 @@ public class FoodonetService extends IntentService {
                 if(filePath!= null && !filePath.equals("")){
                     File file = new File(filePath);
                     TransferUtility transferUtility = CommonMethods.getS3TransferUtility(this);
-                    transferUtility.upload(getResources().getString(R.string.amazon_users_bucket),CommonMethods.getFileNameFromUserID(userID),file);
+                    transferUtility.upload(getResources().getString(R.string.amazon_users_bucket),CommonMethods.getFileNameFromUserID(this,userID),file);
                 }
             }
 
@@ -407,7 +476,7 @@ public class FoodonetService extends IntentService {
                 ArrayList<RegisteredUser> registeredUsers = new ArrayList<>();
 
                 publicationsDBHandler = new PublicationsDBHandler(this);
-                ArrayList<Long> publicationsIDs = publicationsDBHandler.getOnlinePublicationsIDs();
+                ArrayList<Long> publicationsIDs = publicationsDBHandler.getOnlineNonEndedPublicationsIDs();
 
                 long publicationID, collectorUserID;
                 int publicationVersion;
@@ -551,7 +620,25 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION){
-                Log.d(TAG,responseRoot);
+            }
+
+            else if(actionType == ReceiverConstants.ACTION_GET_GROUP_ADMIN_IMAGE){
+                JSONObject root = new JSONObject(responseRoot);
+                JSONArray members = root.getJSONArray("members");
+                JSONObject member;
+                for(int i = 0; i < members.length(); i++){
+                    member = members.getJSONObject(i);
+                    if(member.getBoolean("is_admin")){
+                        notificationsDBHandler = new NotificationsDBHandler(this);
+                        notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP,
+                                Long.valueOf(args[0]), args[1], CommonMethods.getCurrentTimeSeconds(),
+                                CommonMethods.getFileNameFromUserID(this,member.getLong("user_id"))));
+                        if(CommonMethods.isNotificationTurnedOn(this)){
+                            CommonMethods.sendNotification(this);
+                        }
+                        break;
+                    }
+                }
             }
         } catch (JSONException e){
             Log.e(TAG,e.getMessage());

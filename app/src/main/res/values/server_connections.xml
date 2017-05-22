@@ -9,6 +9,8 @@
     <!--<string name="amazon_publications_bucket">foodcollector</string>-->
     <!--<string name="amazon_users_bucket">foodonetusers</string>-->
 
+    <string name="amazon_user_image_prefix">fduser</string>
+
     <string name="foodonet_publications">/publications</string>
     <string name="foodonet_reports_version">/publication_reports?publication_version=</string>
     <string name="foodonet_publication_reports">/publication_reports</string>

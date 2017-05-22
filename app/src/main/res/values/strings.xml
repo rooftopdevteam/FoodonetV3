@@ -59,7 +59,7 @@
     <string name="report_added">Report added</string>
     <string name="search_title">Search</string>
     <string name="rotate_the_phone">Rotate the phone</string>
-    <string name="send">send</string>
+    <string name="send">Send</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
 
@@ -149,5 +149,8 @@
     <string name="ended">Ended</string>
     <string name="remaining">remaining</string>
     <string name="currency_nis">₪</string>
+    <string name="republish">Republish</string>
+    <string name="stop_event">Stop event</string>
+    <string name="ready_to_get_started">Ready to get started?</string>
 
 </resources>

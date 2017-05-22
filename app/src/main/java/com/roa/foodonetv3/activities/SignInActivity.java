@@ -50,6 +50,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_sign_in);
 
+        setTitle(R.string.sign_in);
+
         //initialize Facebook login
         // TODO: 07/05/2017 disabling facebook login until fixed
 //        mFacebookCallbackManager = CallbackManager.Factory.create();

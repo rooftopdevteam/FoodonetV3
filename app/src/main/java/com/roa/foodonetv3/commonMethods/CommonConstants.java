@@ -59,4 +59,5 @@ public class CommonConstants {
 
     public static final long UP_TO_DATE_PERIOD_MILLIS = 300000; //5 minutes
     public static final long TIME_SWITCH_TO_FUSED_MILLIS = 1000; // 1 second
+    public static final double TIME_SECONDS_NORMAL_PUBLICATION_DURATION = 172800; // two days
 }

@@ -499,9 +499,18 @@ public class CommonMethods {
     }
 
     /** @return String file name from userID */
-    public static String getFileNameFromUserID(long userID){
-        return String.format(Locale.US,"%1$d.jpg",
-                userID);
+    public static String getFileNameFromUserID(Context context, long userID){
+        return String.format(Locale.US,"%1$s%2$d.jpg",
+                context.getString(R.string.amazon_user_image_prefix),userID);
+    }
+
+    public static String getFilePathFromFileName(Context context, String imageFileName, String fileType){
+        File directory = (context.getExternalFilesDir(fileType));
+        if(directory!= null && imageFileName != null){
+            String storageDir = directory.getPath();
+            return String.format(Locale.US,"%1$s/%2$s",storageDir,imageFileName);
+        }
+        return null;
     }
 
     /** Creates a local image file name for downloaded images from s3 server of a specific publication */
@@ -517,7 +526,7 @@ public class CommonMethods {
 
     /** Creates a local image file name for a specific userID to work with s3 server */
     public static String getFilePathFromUserID(Context context, long userID){
-        String imageFileName = getFileNameFromUserID(userID);
+        String imageFileName = getFileNameFromUserID(context,userID);
         File directoryUsers = context.getExternalFilesDir(CommonConstants.FILE_TYPE_USERS);
         if(directoryUsers != null){
             String storageDir = directoryUsers.getPath();
