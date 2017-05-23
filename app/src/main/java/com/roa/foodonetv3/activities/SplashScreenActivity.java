@@ -30,7 +30,9 @@ public class SplashScreenActivity extends AppCompatActivity  {
 
         setTitle(R.string.foodonet);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPreferences== null){
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        }
 
         if (!sharedPreferences.getBoolean(getString(R.string.key_prefs_initialized), false)) {
             init();

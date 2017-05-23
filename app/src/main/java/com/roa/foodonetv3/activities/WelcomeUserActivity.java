@@ -38,7 +38,6 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
     private FirebaseUser mFirebaseUser;
     private FirebaseAuth mFirebaseAuth;
     private EditText userPhoneNumber;
-    private String userName = "";
     private CircleImageView circleImageView;
     private FoodonetReceiver receiver;
     private ProgressDialog dialog;
@@ -61,8 +60,8 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (mFirebaseUser != null && mFirebaseUser.getPhotoUrl()!= null) {
             //load the photo from file
-           ServerMethods.getMyUserImage(this);
-            userName = mFirebaseUser.getDisplayName();
+            ServerMethods.getMyUserImage(this);
+            String userName = mFirebaseUser.getDisplayName();
             if (userName != null) {
                 editUserName.setText(userName);
             } else {

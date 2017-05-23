@@ -72,8 +72,8 @@ public class PublicationsDBHandler {
         String where = String.format("%1$s != ? AND %2$s > ? AND %3$s = ?" ,
                 FoodonetDBProvider.PublicationsDB.PUBLISHER_ID_COLUMN,FoodonetDBProvider.PublicationsDB.ENDING_TIME_COLUMN,
                 FoodonetDBProvider.PublicationsDB.IS_ON_AIR_COLUMN);
-        double currentTimeSeconds = CommonMethods.getCurrentTimeSeconds();
-        String[] whereArgs = {String.valueOf(userID), BigDecimal.valueOf(currentTimeSeconds).toString(),String.valueOf(CommonConstants.VALUE_TRUE)};
+//        double currentTimeSeconds = CommonMethods.getCurrentTimeSeconds();
+        String[] whereArgs = {String.valueOf(userID), CommonMethods.getCurrentTimeSecondsString(),String.valueOf(CommonConstants.VALUE_TRUE)};
         return getPublications(where,whereArgs,sortType);
     }
 
@@ -149,7 +149,7 @@ public class PublicationsDBHandler {
         String[] projection = {FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN};
         String where = String.format("%1$s = ? AND %2$s > ?",
                 FoodonetDBProvider.PublicationsDB.IS_ON_AIR_COLUMN,FoodonetDBProvider.PublicationsDB.ENDING_TIME_COLUMN);
-        String[] whereArgs = {String.valueOf(CommonConstants.VALUE_TRUE),String.valueOf(CommonMethods.getCurrentTimeSeconds())};
+        String[] whereArgs = {String.valueOf(CommonConstants.VALUE_TRUE),CommonMethods.getCurrentTimeSecondsString()};
         Cursor c = context.getContentResolver().query(FoodonetDBProvider.PublicationsDB.CONTENT_URI,projection,where,whereArgs,null);
         while(c!= null && c.moveToNext()){
             publicationsIDs.add(c.getLong(c.getColumnIndex(FoodonetDBProvider.PublicationsDB.PUBLICATION_ID_COLUMN)));

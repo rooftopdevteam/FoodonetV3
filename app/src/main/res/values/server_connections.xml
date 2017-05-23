@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- preview server -->
-    <string name="foodonet_server">https://prv-fd-server.herokuapp.com</string>
-    <string name="amazon_publications_bucket">foodcollectordev</string>
-    <string name="amazon_users_bucket">foodonetusersdev</string>
+    <!--<string name="foodonet_server">https://prv-fd-server.herokuapp.com</string>-->
+    <!--<string name="amazon_publications_bucket">foodcollectordev</string>-->
+    <!--<string name="amazon_users_bucket">foodonetusersdev</string>-->
     <!-- final server -->
-    <!--<string name="foodonet_server">https://fd-server.herokuapp.com</string>-->
-    <!--<string name="amazon_publications_bucket">foodcollector</string>-->
-    <!--<string name="amazon_users_bucket">foodonetusers</string>-->
+    <string name="foodonet_server">https://fd-server.herokuapp.com</string>
+    <string name="amazon_publications_bucket">foodcollector</string>
+    <string name="amazon_users_bucket">foodonetusers</string>
 
     <string name="amazon_user_image_prefix">fduser</string>
 

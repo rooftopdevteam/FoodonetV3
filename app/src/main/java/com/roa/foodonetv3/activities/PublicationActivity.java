@@ -52,6 +52,10 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
     public static final String BACK_IN_STACK_TAG = "backInStack";
     public static final String NEW_STACK_TAG = "newStack";
 
+    private static final String STATE_FRAG_STACK = "stateFragStack";
+    private static final String STATE_PUBLICATION = "statePublication";
+    private static final String STATE_WAIT_FOR_SERVER_RESPONSE = "stateWaitForServerResponse";
+
     private FloatingActionButton fab;
     private Stack<String> fragStack;
     private CircleImageView circleImageView;
@@ -73,15 +77,11 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
         // set the fragment manager */
         fragmentManager = getSupportFragmentManager();
 
-        fragStack = new Stack<>();
-
         publicationsDBHandler = new PublicationsDBHandler(this);
 
         // set the floating action button */
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
-
-        waitForServerResponse = false;
 
         // set the drawer */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -98,11 +98,17 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
 
         // get which fragment should be opened from the intent, and open it */
         Intent intent = getIntent();
-        publication = publicationsDBHandler.getPublication(getIntent().getLongExtra(Publication.PUBLICATION_KEY,-1));
         String openFragType = intent.getStringExtra(ACTION_OPEN_PUBLICATION);
         if(savedInstanceState==null){
+            publication = publicationsDBHandler.getPublication(getIntent().getLongExtra(Publication.PUBLICATION_KEY,-1));
+            waitForServerResponse = false;
+            fragStack = new Stack<>();
             fragStack.push(openFragType);
             replaceFrags(openFragType,true);
+        } else{
+            publication = savedInstanceState.getParcelable(STATE_PUBLICATION);
+            fragStack = (Stack<String>) savedInstanceState.getSerializable(STATE_FRAG_STACK);
+            waitForServerResponse = savedInstanceState.getBoolean(STATE_WAIT_FOR_SERVER_RESPONSE);
         }
     }
 
@@ -117,6 +123,14 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
             Glide.with(this).load(android.R.drawable.sym_def_app_icon).into(circleImageView);
             headerTxt.setText(getResources().getString(R.string.not_signed_in));
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_FRAG_STACK,fragStack);
+        outState.putParcelable(STATE_PUBLICATION,publication);
+        outState.putBoolean(STATE_WAIT_FOR_SERVER_RESPONSE,waitForServerResponse);
     }
 
     @Override

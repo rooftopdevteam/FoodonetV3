@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         // trying to update the location returns a 404, disabling for now
-        // TODO: 24/04/2017 temp test
         // CommonMethods.updateUserLocationToServer(this);
     }
 

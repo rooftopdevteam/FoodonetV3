@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -147,8 +148,11 @@ public class CommonMethods {
      * returns current epoch time in seconds(NOT MILLIS!)
      */
     public static double getCurrentTimeSeconds() {
-        long currentTime = System.currentTimeMillis() / 1000;
-        return currentTime;
+        return System.currentTimeMillis() / 1000;
+    }
+
+    public static String getCurrentTimeSecondsString(){
+        return BigInteger.valueOf(System.currentTimeMillis()/1000).toString();
     }
 
     /**
@@ -341,6 +345,12 @@ public class CommonMethods {
 
     public static String getRoundedStringFromNumber(double num) {
         DecimalFormat df = new DecimalFormat("####0.00");
+        return df.format(num);
+    }
+
+    public static String getNoDecimalStringFromNumber(double num){
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(0);
         return df.format(num);
     }
 

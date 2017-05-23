@@ -46,6 +46,10 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
     public static final String BACK_IN_STACK_TAG = "backInStack";
 
     public static final int CONTACT_PICKER = 1;
+    private static final String STATE_FRAG_STACK = "stateFragStack";
+    private static final String STATE_ADMIN_GROUP_ID = "stateAdminGroupID";
+    private static final String STATE_NON_ADMIN_GROUP_ID = "stateNonAdminGroupID";
+
 
     private Stack<String> fragStack;
     private NewGroupDialog newGroupDialog;
@@ -67,10 +71,6 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
 
         /** set the fragment manager */
         fragmentManager = getSupportFragmentManager();
-
-        fragStack = new Stack<>();
-        adminGroupID = -1;
-        nonAdminGroupID = -1;
 
         groupsDBHandler = new GroupsDBHandler(this);
 
@@ -95,8 +95,15 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
 
         if(savedInstanceState== null){
             /** if new activity, open the overview group fragment */
+            adminGroupID = -1;
+            nonAdminGroupID = -1;
+            fragStack = new Stack<>();
             fragStack.push(GROUPS_OVERVIEW_TAG);
             replaceFrags(GROUPS_OVERVIEW_TAG,true);
+        } else{
+            adminGroupID = savedInstanceState.getLong(STATE_ADMIN_GROUP_ID);
+            nonAdminGroupID = savedInstanceState.getLong(STATE_NON_ADMIN_GROUP_ID);
+            fragStack = (Stack<String>) savedInstanceState.getSerializable(STATE_FRAG_STACK);
         }
     }
 
@@ -121,6 +128,14 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
         if(newGroupDialog!= null){
             newGroupDialog.dismiss();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_FRAG_STACK,fragStack);
+        outState.putLong(STATE_ADMIN_GROUP_ID,adminGroupID);
+        outState.putLong(STATE_NON_ADMIN_GROUP_ID,nonAdminGroupID);
     }
 
     @Override
