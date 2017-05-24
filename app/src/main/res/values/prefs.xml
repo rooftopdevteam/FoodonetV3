@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="key_prefs_list_notification_radius">list_notification_radius</string>
-    <string name="key_prefs_user_id">user_id</string>
-    <string name="key_prefs_user_name">user_name</string>
-    <string name="key_prefs_user_phone">user_phone</string>
-    <string name="key_prefs_device_uuid">device_uuid</string>
-    <string name="key_prefs_user_lat">user_lat</string>
-    <string name="key_prefs_user_lng">user_lng</string>
-    <string name="key_prefs_get_notifications">prefs_get_notifications</string>
-    <string name="key_prefs_notification_token">notification_token</string>
-    <string name="key_prefs_initialized">initialized</string>
-    <string name="key_prefs_unread_notification_id">unread_notification_id</string>
-    <string name="key_prefs_last_updated">last_updated</string>
+    <string name="key_prefs_list_notification_radius" translatable="false">list_notification_radius</string>
+    <string name="key_prefs_user_id" translatable="false">user_id</string>
+    <string name="key_prefs_user_name" translatable="false">user_name</string>
+    <string name="key_prefs_user_phone" translatable="false">user_phone</string>
+    <string name="key_prefs_device_uuid" translatable="false">device_uuid</string>
+    <string name="key_prefs_user_lat" translatable="false">user_lat</string>
+    <string name="key_prefs_user_lng" translatable="false">user_lng</string>
+    <string name="key_prefs_get_notifications" translatable="false">prefs_get_notifications</string>
+    <string name="key_prefs_notification_token" translatable="false">notification_token</string>
+    <string name="key_prefs_initialized" translatable="false">initialized</string>
+    <string name="key_prefs_unread_notification_id" translatable="false">unread_notification_id</string>
+    <string name="key_prefs_last_updated" translatable="false">last_updated</string>
+    <string name="key_prefs_sign_out" translatable="false">prefs_sign_out</string>
 
 
-    <string-array name="prefs_notification_radius_entries_km">
-        <item>10km</item>
-        <item>20km</item>
-        <item>30km</item>
-        <item>50km</item>
+    <string-array name="prefs_notification_radius_entries_km" translatable="false">
+        <item>@string/prefs_10km</item>
+        <item>@string/prefs_20km</item>
+        <item>@string/prefs_30km</item>
+        <item>@string/prefs_50km</item>
         <item>@string/prefs_all</item>
     </string-array>
-    <string-array name="prefs_notification_radius_values_km">
+    <string-array name="prefs_notification_radius_values_km" translatable="false">
         <item>10</item>
         <item>20</item>
         <item>30</item>

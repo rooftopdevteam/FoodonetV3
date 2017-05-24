@@ -17,7 +17,6 @@
         <SwitchPreference
             android:title="@string/prefs_get_notifications"
             android:key="@string/key_prefs_get_notifications"/>
-
         <ListPreference
             android:title="@string/prefs_notification_radius"
             android:key="@string/key_prefs_list_notification_radius"
@@ -29,7 +28,7 @@
 
     <Preference
         android:title="@string/sign_out"
-        android:key="@string/prefs_sign_out" />
+        android:key="@string/key_prefs_sign_out" />
 
 
 </PreferenceScreen>

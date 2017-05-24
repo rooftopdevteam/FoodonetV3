@@ -57,7 +57,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
         this.sortType = sortType;
         this.fragment = fragment;
         onReplaceFragListener = (OnReplaceFragListener) context;
-        /** get the S3 utility */
+        // get the S3 utility
         transferUtility = CommonMethods.getS3TransferUtility(context);
         userLatLng = CommonMethods.getLastLocation(context);
     }

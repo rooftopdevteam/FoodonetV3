@@ -214,7 +214,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         if(isAdmin){
-            if(publication.isOnAir()){
+            if(publication.isOnAir() && Double.valueOf(publication.getEndingDate()) > CommonMethods.getCurrentTimeSeconds()){
                 inflater.inflate(R.menu.detail_options_admin_online,menu);
             } else{
                 inflater.inflate(R.menu.detail_options_admin_offline,menu);

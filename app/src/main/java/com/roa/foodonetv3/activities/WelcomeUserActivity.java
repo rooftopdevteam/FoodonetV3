@@ -62,7 +62,8 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
             //load the photo from file
             ServerMethods.getMyUserImage(this);
             String userName = mFirebaseUser.getDisplayName();
-            if (userName != null) {
+            if(userName!= null){
+                userName = userName.replace("\n","");
                 editUserName.setText(userName);
             } else {
                 // TODO: 28/11/2016 add logic

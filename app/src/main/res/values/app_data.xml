@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="foodonet">Foodonet</string>
-    <string name="app_version">2.0</string>
+    <string name="app_version" translatable="false">2.0</string>
     <integer name="db_version">2</integer>
 </resources>

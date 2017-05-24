@@ -135,7 +135,7 @@ public class GroupFragment extends Fragment {
                     break;
             }
         } else {
-            Log.e(TAG, getString(R.string.failed_to_pick_contact));
+            Log.e(TAG, getString(R.string.log_failed_to_pick_contact));
         }
     }
 
