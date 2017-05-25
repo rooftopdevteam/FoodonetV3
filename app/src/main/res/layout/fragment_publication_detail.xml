@@ -109,6 +109,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/textTitlePublication"
+        android:gravity="start"
+        android:textAlignment="viewStart"
         android:layout_marginEnd="@dimen/margin_16"
         android:layout_marginStart="@dimen/margin_16"
         android:text="Rice with meat"
@@ -135,6 +137,8 @@
         android:layout_toEndOf="@+id/imagePublisherUser"
         android:id="@+id/textPublicationAddress"
         style="@style/FooBlackSmall"
+        android:gravity="start"
+        android:textAlignment="viewStart"
         android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginTop="@dimen/margin_8" />
@@ -172,6 +176,8 @@
         android:layout_toEndOf="@+id/textPublicationRating"
         android:id="@+id/textPublisherName"
         android:maxLines="1"
+        android:gravity="start"
+        android:textAlignment="viewStart"
         android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginTop="@dimen/margin_8" />
@@ -217,12 +223,12 @@
         android:text="Lorem ipsum dolor sit amet, conserctetur adipiscing elit."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textGroupName"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:id="@+id/textPublicationDetails"
-        android:layout_marginLeft="@dimen/margin_16"
-        android:layout_marginStart="@dimen/margin_16" />
+        android:gravity="start"
+        android:textAlignment="viewStart"
+        android:layout_below="@+id/textGroupName"
+        android:layout_alignLeft="@+id/textGroupName"
+        android:layout_alignStart="@+id/textGroupName" />
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

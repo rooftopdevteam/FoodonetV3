@@ -48,7 +48,7 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_user);
 
-        setTitle(R.string.foodonet);
+        setTitle(R.string.app_name);
 
         finishRegistrationButton = (Button) findViewById(R.id.buttonFinishRegistration);
         editUserName = (EditText) findViewById(R.id.editUserName);

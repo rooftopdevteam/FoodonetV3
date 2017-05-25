@@ -78,18 +78,11 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
 
         MemberHolder(View itemView, int viewType) {
             super(itemView);
-            // TODO: 21/12/2016 add imageMember logic to show if the member is a foodonet user or not
             if(viewType == GROUP_MEMBER_VIEW){
                 imageMember = (ImageView) itemView.findViewById(R.id.imageMember);
                 textMemberName = (TextView) itemView.findViewById(R.id.textMemberName);
                 textAdmin = (TextView) itemView.findViewById(R.id.textAdmin);
                 imageRemoveMember = (ImageView) itemView.findViewById(R.id.imageRemoveMember);
-                if(isUserGroupAdmin){
-                    imageRemoveMember.setOnClickListener(this);
-                    imageRemoveMember.setVisibility(View.VISIBLE);
-                } else{
-                    imageRemoveMember.setVisibility(View.GONE);
-                }
             }
         }
 
@@ -97,19 +90,26 @@ public class GroupMembersRecyclerAdapter extends RecyclerView.Adapter<GroupMembe
             this.member = member;
             textMemberName.setText(member.getName());
             if(member.getUserID()== CommonConstants.NON_FOODONET_MEMBER_ID){
-                // TODO: 02/03/2017 change to non foodonet user image
                 imageMember.setImageResource(R.drawable.groups_pending_user);
             } else{
-                // TODO: 02/03/2017 change to foodonet user image
                 imageMember.setImageResource(R.drawable.groups_user);
             }
             if(member.isAdmin()){
                 textAdmin.setVisibility(View.VISIBLE);
-                if(isUserGroupAdmin){
-                    imageRemoveMember.setVisibility(View.GONE);
-                }
+                imageRemoveMember.setVisibility(View.INVISIBLE);
+                imageRemoveMember.setClickable(false);
+                imageRemoveMember.setOnClickListener(null);
             } else{
                 textAdmin.setVisibility(View.GONE);
+                if(isUserGroupAdmin) {
+                    imageRemoveMember.setVisibility(View.VISIBLE);
+                    imageRemoveMember.setClickable(true);
+                    imageRemoveMember.setOnClickListener(this);
+                } else{
+                    imageRemoveMember.setVisibility(View.INVISIBLE);
+                    imageRemoveMember.setClickable(false);
+                    imageRemoveMember.setOnClickListener(null);
+                }
             }
         }
 

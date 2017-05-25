@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">פודונט</string>
     <string name="about_us_info">פודונט היא יוזמה חברתית השואפת לצמצום בזבוז המזון.\nפודונט מפתחת פלטפורמה אישית וניידת המאפשרת לאנשים לתרום שאריות מזון בין האחד לשני.\nפודונט מחברת יצרני מזון ישירות לצרכנים הפרטיים ללא מתווכים אשר מאפשר חסכון כספי</string>
     <string name="action_settings">הגדרות</string>
     <string name="active_shares">שיתופים פעילים</string>
@@ -40,17 +39,16 @@
     <string name="ended">הסתיים</string>
     <string name="event_no_longer_online">שיתוף אינו בתוקף</string>
     <string name="feedback_share_your_thoughts_or_anything_else">שתף את מחשבותיך או כל דבר אחר</string>
-    <string name="foodonet">פודונט</string>
     <string name="free">חינם</string>
     <string name="gallery">גלריה</string>
-    <string name="got_a_new_report">התקבל דווח חדש</string>
+    <string name="got_a_new_report">התקבל דיווח חדש</string>
     <string name="group">קבוצה</string>
     <string name="group_members">חבר קבוצה</string>
     <string name="group_name">שם קבוצה</string>
     <string name="h_hours">ש\'</string>
     <string name="hi_what_would_you_like_to_share">שלום, מה ברצונך לשתף?</string>
     <string name="hours">שעות</string>
-    <string name="invalid_phone_number">מספר טלפון לא חוקי</string>
+    <string name="invalid_phone_number">מספר טלפון לא תקין</string>
     <string name="item_price">מחיר מוצר:</string>
     <string name="joined">הצטרפו</string>
     <string name="km">ק\"מ</string>

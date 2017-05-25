@@ -185,7 +185,12 @@ public class CommonMethods {
             }
         }
         if(suffix!= null){
-            message.append(String.format(" %1$s", suffix));
+            String deviceLocale=Locale.getDefault().getISO3Language();
+            if(deviceLocale.equals("heb")){
+                return String.format("%1$s %2$s",suffix,message.toString());
+            } else {
+                message.append(String.format(" %1$s", suffix));
+            }
         }
         return message.toString();
     }
@@ -379,7 +384,7 @@ public class CommonMethods {
         }
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setContentTitle(context.getString(R.string.foodonet))
+                .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(contentText)
                 .setSound(defaultSoundUri)
                 .setAutoCancel(true)
@@ -389,7 +394,7 @@ public class CommonMethods {
                 .setGroup("foodonet")
                 .setGroupSummary(true);
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle()
-                .setBigContentTitle(context.getString(R.string.foodonet))
+                .setBigContentTitle(context.getString(R.string.app_name))
                 .setSummaryText(contentText);
         NotificationFoodonet notification;
         for(int i = 0; i < notificationsToDisplaySize && i < 7; i++){

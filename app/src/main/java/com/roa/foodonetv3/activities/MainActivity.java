@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // toolbar set up */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.foodonet);
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         // set the drawer */
