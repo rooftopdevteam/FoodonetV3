@@ -1,7 +1,6 @@
 package com.roa.foodonetv3.commonMethods;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -66,7 +65,7 @@ public class CommonMethods {
     /**
      * we only need one instance of the clients and credentials provider
      */
-    private static AmazonS3Client sS3Client;
+    private static AmazonS3Client s3Client;
     private static CognitoCachingCredentialsProvider sCredProvider;
     private static TransferUtility sTransferUtility;
 
@@ -76,59 +75,36 @@ public class CommonMethods {
         switch (id) {
             case R.id.nav_my_shares:
                 intent = new Intent(context, PublicationActivity.class);
-                if (!(context instanceof MainActivity)) {
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                }
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra(PublicationActivity.ACTION_OPEN_PUBLICATION, PublicationActivity.MY_PUBLICATIONS_TAG);
                 context.startActivity(intent);
-                if (!(context instanceof MainActivity)) {
-                    ((Activity) context).finish();
-                }
                 break;
             case R.id.nav_all_events:
-                if (!(context instanceof MainActivity)) {
-                    intent = new Intent(context, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    context.startActivity(intent);
-                    break;
-                }
+                intent = new Intent(context, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                context.startActivity(intent);
                 break;
             case R.id.nav_map_view:
                 intent = new Intent(context, MapActivity.class);
-                if (context instanceof MainActivity) {
-                    context.startActivity(intent);
-                } else {
-                    context.startActivity(intent);
-                    ((Activity) context).finish();
-
-                }
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                context.startActivity(intent);
                 break;
             case R.id.nav_notifications:
                 intent = new Intent(context, NotificationActivity.class);
-//                if(context instanceof  NotificationActivity){
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    context.startActivity(intent);
-//                } else{
                 context.startActivity(intent);
-//                }
-
                 break;
             case R.id.nav_groups:
                 intent = new Intent(context, GroupsActivity.class);
-                if (context instanceof GroupsActivity || context instanceof MainActivity) {
-                    // TODO: 06/12/2016 test
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    context.startActivity(intent);
-                } else {
-                    context.startActivity(intent);
-                }
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                context.startActivity(intent);
                 break;
             case R.id.nav_settings:
                 if (getMyUserID(context) == -1) {
-                    /** if the user is not signed in yet, open the sign in activity */
+                    // if the user is not signed in yet, open the sign in activity
                     intent = new Intent(context, SignInActivity.class);
                 } else {
-                    /** open the preferences fragment activity */
+                    // open the preferences fragment activity
                     intent = new Intent(context, PrefsActivity.class);
                 }
                 context.startActivity(intent);
@@ -663,10 +639,10 @@ public class CommonMethods {
      * @return A default S3 client.
      */
     public static AmazonS3Client getS3Client(Context context) {
-        if (sS3Client == null) {
-            sS3Client = new AmazonS3Client(getCredProvider(context.getApplicationContext()));
+        if (s3Client == null) {
+            s3Client = new AmazonS3Client(getCredProvider(context.getApplicationContext()));
         }
-        return sS3Client;
+        return s3Client;
     }
 
     /**

@@ -51,18 +51,16 @@ public class NotificationsDBHandler{
     }
 
     public ArrayList<String> getNotificationPublicationImagesFileNames() {
-        ArrayList<String> publicationImagesFileNames = new ArrayList<>();
+        ArrayList<String> notificationsImagesFileNames = new ArrayList<>();
         String[] projection = {FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME};
-        String selection = String.format("%1$s != ?",FoodonetDBProvider.NotificationsDB.NOTIFICATION_TYPE);
-        String[] selectionArgs = {String.valueOf(NotificationFoodonet.NOTIFICATION_TYPE_NEW_REGISTERED_USER)};
-        Cursor c = context.getContentResolver().query(FoodonetDBProvider.NotificationsDB.CONTENT_URI,projection,selection,selectionArgs,null);
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.NotificationsDB.CONTENT_URI,projection,null,null,null);
         while(c!= null && c.moveToNext()){
-            publicationImagesFileNames.add(c.getString(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME)));
+            notificationsImagesFileNames.add(c.getString(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME)));
         }
         if(c!= null){
             c.close();
         }
-        return publicationImagesFileNames;
+        return notificationsImagesFileNames;
     }
 
     public ArrayList<NotificationFoodonet> getUnreadNotification(long loadNotificationsFromID) {

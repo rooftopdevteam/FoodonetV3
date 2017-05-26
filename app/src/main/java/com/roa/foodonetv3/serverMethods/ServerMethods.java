@@ -195,11 +195,11 @@ public class ServerMethods {
     public static void registerToPublication(Context context, RegisteredUser registeredUser){
         String registration = registeredUser.getJsonForRegistration().toString();
         String[] registrationArgs = {String.valueOf(registeredUser.getPublicationID())};
-        Intent i = new Intent(context,FoodonetService.class);
-        i.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_REGISTER_TO_PUBLICATION);
-        i.putExtra(ReceiverConstants.ADDRESS_ARGS,registrationArgs);
-        i.putExtra(ReceiverConstants.JSON_TO_SEND,registration);
-        context.startService(i);
+        Intent intent = new Intent(context,FoodonetService.class);
+        intent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_REGISTER_TO_PUBLICATION);
+        intent.putExtra(ReceiverConstants.ADDRESS_ARGS,registrationArgs);
+        intent.putExtra(ReceiverConstants.JSON_TO_SEND,registration);
+        context.startService(intent);
     }
 
     public static void getAllRegisteredUsers(Context context){

@@ -199,7 +199,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
             /** listener for the s3 server download */
             Log.d(TAG, "amazon onStateChanged " + id + " " + state.toString());
             if (state == TransferState.COMPLETED) {
-                if (observerId == id) {
+                if (observerId == id && fragment.isVisible()) {
                     Glide.with(fragment).load(mCurrentPhotoFile).centerCrop().into(imagePublication);
                 }
             } else if(state == TransferState.FAILED){

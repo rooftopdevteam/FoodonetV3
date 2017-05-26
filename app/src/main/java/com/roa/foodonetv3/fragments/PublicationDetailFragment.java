@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -498,7 +497,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                                 });
                         alertDialog = smsDialog.show();
                     } else{
-                        Snackbar.make(imagePicturePublication,R.string.toast_there_are_no_registered_users,Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), R.string.toast_there_are_no_registered_users, Toast.LENGTH_SHORT).show();
                     }
                     break;
 
@@ -533,7 +532,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         alertDialog = callDialog.show();
 
                     } else{
-                        Snackbar.make(imagePicturePublication, R.string.toast_there_are_no_registered_users,Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), R.string.toast_there_are_no_registered_users, Toast.LENGTH_SHORT).show();
                     }
                     break;
 
@@ -628,7 +627,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     } else{
                         // registered successfully */
-                        Snackbar.make(imagePicturePublication,getResources().getString(R.string.successfully_registered),Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.successfully_registered, Toast.LENGTH_SHORT).show();
                         isRegistered = true;
                         initViews();
                     }
@@ -640,7 +639,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         // TODO: 28/01/2017 add logic
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     }else{
-                        Snackbar.make(imagePicturePublication,getResources().getString(R.string.unregistered),Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.unregistered, Toast.LENGTH_SHORT).show();
                         isRegistered = false;
                         initViews();
                     }
@@ -653,7 +652,12 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     } else{
                         // report registered successfully */
-                        Snackbar.make(imagePicturePublication,getResources().getString(R.string.report_added),Snackbar.LENGTH_LONG).show();
+                        PublicationReport publicationReport = intent.getParcelableExtra(PublicationReport.REPORT_KEY);
+                        if(publicationReport.getPublicationID()==publication.getId()){
+                            reports.add(publicationReport);
+                            adapter.updateReports(reports);
+                            Toast.makeText(context, R.string.report_added, Toast.LENGTH_SHORT).show();
+                        }
                     }
                     break;
 

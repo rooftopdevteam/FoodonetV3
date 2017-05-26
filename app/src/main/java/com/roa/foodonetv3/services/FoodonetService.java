@@ -38,6 +38,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import javax.net.ssl.HttpsURLConnection;
 
+import static android.R.attr.rating;
+
 /** main service to communicate with foodonet server */
 public class FoodonetService extends IntentService {
     private static final String TAG = "FoodonetService";
@@ -434,6 +436,21 @@ public class FoodonetService extends IntentService {
 
             else if(actionType == ReceiverConstants.ACTION_ADD_REPORT){
                 // TODO: 27/11/2016 add logic
+                JSONObject root = new JSONObject(responseRoot);
+                long reportID = root.getLong("id");
+                long publicationID = root.getLong("publication_id");
+                int publicationVersion = root.getInt("publication_version");
+                short reportType = (short) root.getInt("report");
+                String activeDeviceUUID = root.getString("active_device_dev_uuid");
+                String dateOfReport = root.getString("date_of_report");
+                String reportUserName = root.getString("report_user_name");
+                String reportContactInfo = root.getString("report_contact_info");
+                long reportUserID = root.getLong("reporter_user_id");
+                int rating = root.getInt("rating");
+
+                PublicationReport publicationReport = new PublicationReport(reportID,publicationID,publicationVersion,reportType,
+                        activeDeviceUUID,dateOfReport,reportUserName,reportContactInfo,reportUserID,rating);
+                intent.putExtra(PublicationReport.REPORT_KEY,publicationReport);
             }
 
             else if(actionType == ReceiverConstants.ACTION_ADD_USER){
@@ -458,16 +475,17 @@ public class FoodonetService extends IntentService {
                 JSONObject rootRegistered = new JSONObject(responseRoot);
                 long publicationID, collectorUserID;
                 int publicationVersion;
-                String activeDeviceUUID, name, phone;
+                String activeDeviceUUID, name, phone, dateOfRegistration;
 
                 publicationID = rootRegistered.getLong("publication_id");
+                dateOfRegistration = rootRegistered.getString("date_of_registration");
                 publicationVersion = rootRegistered.getInt("publication_version");
                 collectorUserID = rootRegistered.getLong("collector_user_id");
                 activeDeviceUUID = rootRegistered.getString("active_device_dev_uuid");
                 name = rootRegistered.getString("collector_name");
                 phone = rootRegistered.getString("collector_contact_info");
 
-                RegisteredUser registeredUser = new RegisteredUser(publicationID,(double)-1,activeDeviceUUID,publicationVersion,name,phone,collectorUserID);
+                RegisteredUser registeredUser = new RegisteredUser(publicationID,Double.valueOf(dateOfRegistration),activeDeviceUUID,publicationVersion,name,phone,collectorUserID);
                 registeredUsersDBHandler = new RegisteredUsersDBHandler(this);
                 registeredUsersDBHandler.insertRegisteredUser(registeredUser);
             }
