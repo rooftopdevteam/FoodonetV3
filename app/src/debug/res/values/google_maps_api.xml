@@ -17,8 +17,6 @@
     -->
 
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
-        <!--AIzaSyCYWHCySc8G9IYnl6m79QXFgqZAydLHozs-->
-        <!--Alon's key down-->
         AIzaSyBxTg9dZcFmbgoau0YaIkHJHr1v8O_KLHs
     </string>
 </resources>

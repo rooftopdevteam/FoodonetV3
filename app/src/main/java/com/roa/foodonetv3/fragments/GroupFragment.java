@@ -39,12 +39,13 @@ public class GroupFragment extends Fragment {
     private static final String TAG = "GroupFragment";
     private static final long UNKNOWN_USER_ID = 0;
 
+    private static final String STATE_GROUP = "stateGroup";
+
     private GroupMembersRecyclerAdapter adapter;
-//    private TextView textGroupName;
-    private Group group;
     private FoodonetReceiver receiver;
     private OnReplaceFragListener onReplaceFragListener;
     private GroupMembersDBHandler groupMembersDBHandler;
+    private Group group;
 
     public GroupFragment() {
         // Required empty public constructor
@@ -60,7 +61,11 @@ public class GroupFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groupMembersDBHandler = new GroupMembersDBHandler(getContext());
-        group = getArguments().getParcelable(Group.GROUP);
+        if(savedInstanceState==null){
+            group = getArguments().getParcelable(Group.GROUP);
+        } else{
+            group = savedInstanceState.getParcelable(STATE_GROUP);
+        }
         setHasOptionsMenu(true);
     }
 
@@ -98,6 +103,12 @@ public class GroupFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(STATE_GROUP,group);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.group_menu,menu);
@@ -124,7 +135,7 @@ public class GroupFragment extends Fragment {
                     break;
             }
         } else {
-            Log.e(TAG, getString(R.string.failed_to_pick_contact));
+            Log.e(TAG, getString(R.string.log_failed_to_pick_contact));
         }
     }
 

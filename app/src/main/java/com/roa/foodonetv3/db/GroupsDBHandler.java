@@ -57,6 +57,9 @@ public class GroupsDBHandler {
     }
 
     public Group getGroup(long groupID){
+        if(groupID == 0){
+            return new Group(context.getString(R.string.audience_public),-1,groupID);
+        }
         String where = String.format("%1$s = ?",FoodonetDBProvider.GroupsDB.GROUP_ID_COLUMN);
         String[] whereArgs = {String.valueOf(groupID)};
         Cursor c = context.getContentResolver().query(FoodonetDBProvider.GroupsDB.CONTENT_URI,null,where,whereArgs,null);

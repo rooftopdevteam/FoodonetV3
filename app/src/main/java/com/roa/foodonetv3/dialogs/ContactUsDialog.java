@@ -24,7 +24,7 @@ public class ContactUsDialog extends Dialog implements View.OnClickListener {
         setContentView(R.layout.dialog_contact_us);
         this.context = context;
         contactEditText = (EditText) findViewById(R.id.contactEditText);
-        setTitle(context.getResources().getString(R.string.feedback_feedback));
+        setTitle(context.getResources().getString(R.string.drawer_contact_us));
         findViewById(R.id.buttonCancel).setOnClickListener(this);
         findViewById(R.id.buttonSend).setOnClickListener(this);
 

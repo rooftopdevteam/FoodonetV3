@@ -25,6 +25,8 @@
         android:layout_below="@+id/textView3"
         android:id="@+id/editUserName"
         style="@style/FooBoldMedium"
+        android:maxLines="1"
+        android:maxLength="12"
         android:layout_centerHorizontal="true" />
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -67,12 +69,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/textWithoutRegistration"
-        android:layout_marginBottom="@dimen/margin_32"
+        android:layout_marginBottom="@dimen/margin_16"
         android:layout_marginLeft="@dimen/margin_32"
         android:layout_marginStart="@dimen/margin_32"
         android:layout_marginRight="@dimen/margin_32"
         android:layout_marginEnd="@dimen/margin_32"
         android:id="@+id/buttonFinishRegistration"
+        style="@style/foodonetButton"
         />
 
     <TextView
@@ -80,8 +83,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
+        android:padding="@dimen/margin_8"
         android:id="@+id/textWithoutRegistration"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
 </RelativeLayout>

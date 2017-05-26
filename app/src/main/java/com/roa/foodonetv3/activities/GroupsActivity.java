@@ -7,6 +7,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -46,6 +48,10 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
     public static final String BACK_IN_STACK_TAG = "backInStack";
 
     public static final int CONTACT_PICKER = 1;
+    private static final String STATE_FRAG_STACK = "stateFragStack";
+    private static final String STATE_ADMIN_GROUP_ID = "stateAdminGroupID";
+    private static final String STATE_NON_ADMIN_GROUP_ID = "stateNonAdminGroupID";
+
 
     private Stack<String> fragStack;
     private NewGroupDialog newGroupDialog;
@@ -67,10 +73,6 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
 
         /** set the fragment manager */
         fragmentManager = getSupportFragmentManager();
-
-        fragStack = new Stack<>();
-        adminGroupID = -1;
-        nonAdminGroupID = -1;
 
         groupsDBHandler = new GroupsDBHandler(this);
 
@@ -95,8 +97,15 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
 
         if(savedInstanceState== null){
             /** if new activity, open the overview group fragment */
+            adminGroupID = -1;
+            nonAdminGroupID = -1;
+            fragStack = new Stack<>();
             fragStack.push(GROUPS_OVERVIEW_TAG);
-            replaceFrags(GROUPS_OVERVIEW_TAG,true);
+            replaceFrags(GROUPS_OVERVIEW_TAG,true,false);
+        } else{
+            adminGroupID = savedInstanceState.getLong(STATE_ADMIN_GROUP_ID);
+            nonAdminGroupID = savedInstanceState.getLong(STATE_NON_ADMIN_GROUP_ID);
+            fragStack = (Stack<String>) savedInstanceState.getSerializable(STATE_FRAG_STACK);
         }
     }
 
@@ -124,6 +133,14 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_FRAG_STACK,fragStack);
+        outState.putLong(STATE_ADMIN_GROUP_ID,adminGroupID);
+        outState.putLong(STATE_NON_ADMIN_GROUP_ID,nonAdminGroupID);
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -133,7 +150,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
             if(fragStack.isEmpty()){
                 super.onBackPressed();
             } else{
-                replaceFrags(fragStack.peek(),false);
+                replaceFrags(fragStack.peek(),false,true);
             }
         }
     }
@@ -145,7 +162,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
             if(!fragStack.peek().equals(GROUPS_OVERVIEW_TAG)){
                 fragStack = new Stack<>();
                 fragStack.push(GROUPS_OVERVIEW_TAG);
-                replaceFrags(GROUPS_OVERVIEW_TAG,false);
+                replaceFrags(GROUPS_OVERVIEW_TAG,false,true);
             }
         } else{
             CommonMethods.navigationItemSelectedAction(this,item.getItemId());
@@ -156,7 +173,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
         return true;
     }
 
-    public void replaceFrags(String openFragType, boolean isAddNewFragment) {
+    public void replaceFrags(String openFragType, boolean isAddNewFragment, boolean isBackPress) {
         // get the values for the fab animation */
         long duration;
         if(isAddNewFragment){
@@ -169,7 +186,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
         switch (openFragType) {
             case GROUPS_OVERVIEW_TAG:
                 GroupsOverviewFragment groupsOverviewFragment = new GroupsOverviewFragment();
-                updateContainer(isAddNewFragment,groupsOverviewFragment,GROUPS_OVERVIEW_TAG);
+                updateContainer(isAddNewFragment,groupsOverviewFragment,GROUPS_OVERVIEW_TAG,isBackPress);
                 animateFab(openFragType, true, duration);
                 break;
             case ADMIN_GROUP_TAG:
@@ -178,7 +195,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
                 Bundle bundleAdmin = new Bundle();
                 bundleAdmin.putParcelable(Group.GROUP,adminGroup);
                 groupFragment.setArguments(bundleAdmin);
-                updateContainer(isAddNewFragment, groupFragment, ADMIN_GROUP_TAG);
+                updateContainer(isAddNewFragment, groupFragment, ADMIN_GROUP_TAG,isBackPress);
                 animateFab(openFragType, true, duration);
                 break;
             case NON_ADMIN_GROUP_TAG:
@@ -187,18 +204,25 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
                 Bundle bundleNonAdmin = new Bundle();
                 bundleNonAdmin.putParcelable(Group.GROUP,nonAdminGroup);
                 groupFragment2.setArguments(bundleNonAdmin);
-                updateContainer(isAddNewFragment, groupFragment2, ADMIN_GROUP_TAG);
+                updateContainer(isAddNewFragment, groupFragment2, ADMIN_GROUP_TAG,isBackPress);
                 animateFab(openFragType, false, duration);
                 break;
         }
     }
 
-    private void updateContainer(boolean isAddNewFragment, Fragment fragment, String fragmentTag){
-        if(isAddNewFragment){
-            fragmentManager.beginTransaction().add(R.id.containerGroups, fragment, fragmentTag).commit();
+    private void updateContainer(boolean isAddNewFragment, Fragment fragment, String fragmentTag, boolean isBackPress){
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if(isAddNewFragment || isBackPress){
+            transaction.setCustomAnimations(R.anim.anim_slide_in_from_end, R.anim.anim_slide_out_from_start);
         } else{
-            fragmentManager.beginTransaction().replace(R.id.containerGroups, fragment, fragmentTag).commit();
+            transaction.setCustomAnimations(R.anim.anim_slide_in_from_start, R.anim.anim_slide_out_from_end);
         }
+        if(isAddNewFragment){
+            transaction.add(R.id.containerGroups, fragment, fragmentTag);
+        } else{
+            transaction.replace(R.id.containerGroups, fragment, fragmentTag);
+        }
+        transaction.commit();
     }
 
     private void animateFab(String fragmentTag, boolean setVisible, long duration){
@@ -208,11 +232,11 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
         switch (fragmentTag){
             case GROUPS_OVERVIEW_TAG:
                 imgResource = R.drawable.fab_plus;
-                color = getResources().getColor(R.color.fooGreen);
+                color = ContextCompat.getColor(this,R.color.fooGreen);
                 break;
             case ADMIN_GROUP_TAG:
                 imgResource = R.drawable.fab_plus_user;
-                color = getResources().getColor(R.color.colorPrimary);
+                color = ContextCompat.getColor(this,R.color.colorPrimary);
                 break;
             case NON_ADMIN_GROUP_TAG:
                 break;
@@ -263,7 +287,9 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public void onReplaceFrags(String openFragType, long id) {
+        boolean isBackPress = false;
         if (openFragType.equals(BACK_IN_STACK_TAG)) {
+            isBackPress = true;
             fragStack.pop();
             try {
                 openFragType = fragStack.peek();
@@ -281,7 +307,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
                 nonAdminGroupID = id;
             }
         }
-        replaceFrags(openFragType, false);
+        replaceFrags(openFragType, false,isBackPress);
     }
 
     @Override

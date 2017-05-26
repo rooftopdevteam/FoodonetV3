@@ -53,22 +53,26 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                 break;
             }
             case CommonConstants.NOTIF_TYPE_DELETED_PUBLICATION: {
-                publicationsDBHandler = new PublicationsDBHandler(this);
+                // TODO: 20/05/2017 message received both for offline and deleted events...
+//                publicationsDBHandler = new PublicationsDBHandler(this);
                 RegisteredUsersDBHandler registeredUsersDBHandler = new RegisteredUsersDBHandler(this);
                 long publicationID = msgRoot.getLong("id");
+                // since the server returns an incremented version - there won't be an image, therefor we subtract 1 to get the latest version available
+                int publicationVersion = msgRoot.getInt("version")-1;
                 String publicationTitle = msgRoot.getString("title");
                 boolean isUserRegistered = registeredUsersDBHandler.isUserRegistered(publicationID);
                 if (isUserRegistered) {
+                    CommonMethods.getNewData(this);
                     notificationsDBHandler = new NotificationsDBHandler(this);
                     notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_PUBLICATION_DELETED,
-                            publicationID, publicationTitle, CommonMethods.getCurrentTimeSeconds()));
+                            publicationID, publicationTitle, CommonMethods.getCurrentTimeSeconds(),CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion)));
                     if (sendNotifications) {
                         CommonMethods.sendNotification(this);
                     }
                 }
-                publicationsDBHandler.takePublicationOffline(publicationID);
+//                publicationsDBHandler.deletePublication(publicationID);
                 Intent intent = new Intent(ReceiverConstants.BROADCAST_FOODONET);
-                intent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE);
+                intent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_DELETE_PUBLICATION);
                 intent.putExtra(ReceiverConstants.SERVICE_ERROR, false);
                 intent.putExtra(ReceiverConstants.UPDATE_DATA, true);
                 intent.putExtra(Publication.PUBLICATION_ID, publicationID);
@@ -77,15 +81,17 @@ public class FoodonetGcmListenerService extends GcmListenerService {
             }
             case CommonConstants.NOTIF_TYPE_REGISTRATION_FOR_PUBLICATION: {
                 long publicationID = msgRoot.getLong("id");
+                int publicationVersion = msgRoot.getInt("version");
                 publicationsDBHandler = new PublicationsDBHandler(this);
                 boolean isUserAdmin = publicationsDBHandler.isUserAdmin(publicationID);
                 if (isUserAdmin) {
                     ServerMethods.getAllRegisteredUsers(this);
+                    // TODO: 20/05/2017 check what if received while the publication is not yet in the db
                     String publicationTitle = publicationsDBHandler.getPublicationTitle(publicationID);
                     double timeRegistered = msgRoot.getDouble("date");
                     notificationsDBHandler = new NotificationsDBHandler(this);
                     notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_NEW_REGISTERED_USER,
-                            publicationID, publicationTitle, timeRegistered));
+                            publicationID, publicationTitle, timeRegistered,CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion)));
                     if (sendNotifications) {
                         CommonMethods.sendNotification(this);
                     }
@@ -94,6 +100,7 @@ public class FoodonetGcmListenerService extends GcmListenerService {
             }
             case CommonConstants.NOTIF_TYPE_PUBLICATION_REPORT: {
                 long publicationID = msgRoot.getLong("publication_id");
+                int publicationVersion = msgRoot.getInt("publication_version");
                 publicationsDBHandler = new PublicationsDBHandler(this);
                 boolean isUserAdmin = publicationsDBHandler.isUserAdmin(publicationID);
                 if (isUserAdmin) {
@@ -101,7 +108,7 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                     double timeRegistered = msgRoot.getDouble("date_of_report");
                     notificationsDBHandler = new NotificationsDBHandler(this);
                     notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_NEW_PUBLICATION_REPORT,
-                            publicationID, publicationTitle, timeRegistered));
+                            publicationID, publicationTitle, timeRegistered, CommonMethods.getFileNameFromPublicationID(publicationID,publicationVersion)));
                     if (sendNotifications) {
                         CommonMethods.sendNotification(this);
                     }
@@ -115,14 +122,16 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                 break;
             }
             case CommonConstants.NOTIF_TYPE_GROUP_MEMBERS:
-                notificationsDBHandler = new NotificationsDBHandler(this);
+//                notificationsDBHandler = new NotificationsDBHandler(this);
                 long groupID = msgRoot.getLong("id");
                 String title = msgRoot.getString("title");
-                notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP,
-                        groupID, title, CommonMethods.getCurrentTimeSeconds()));
-                if (sendNotifications) {
-                    CommonMethods.sendNotification(this);
-                }
+                ServerMethods.getGroupAdminImage(this,groupID,title);
+//                // TODO: 18/05/2017 null for file image for now
+//                notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP,
+//                        groupID, title, CommonMethods.getCurrentTimeSeconds(),null));
+//                if (sendNotifications) {
+//                    CommonMethods.sendNotification(this);
+//                }
                 CommonMethods.getNewData(this);
                 break;
         }

@@ -13,7 +13,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="@dimen/image_size_height_180"
-            app:srcCompat="@drawable/camera"
+            app:srcCompat="@drawable/camera_xxh"
             android:id="@+id/imagePictureAddPublication" />
 
         <include layout="@layout/layout_info_add_publication"

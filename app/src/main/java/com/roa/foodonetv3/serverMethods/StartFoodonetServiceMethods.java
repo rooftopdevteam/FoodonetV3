@@ -20,6 +20,7 @@ public class StartFoodonetServiceMethods {
      * edit publication - add args[0] = (String) publication id
      * delete publication - add args[0] = (String) publication id
      * take publication offline - args[0] = (String) publication id
+     * republish publication - args[0] - (String) old publication id
      * get publication - add args[0] = (String) publication id
      * get reports - add args[0] = (String) publication id, args[1] = (String) publication version
      * add report - add args[0] = (String) publication id
@@ -31,6 +32,7 @@ public class StartFoodonetServiceMethods {
      * get groups - add args[0] = (String) user id
      * add group member - add args[0] = (String) group id
      * delete group member - add args[0] = (String) uniqueID, args[1] - String "1" or "0" - isUserExitingGroup, args[2] - String groupID
+     * get group admin image - args[0] - (String) group id, args[1] - String group name
      */
     public static String getUrlAddress(Context context, int actionType, String[] args) {
         /** prepares the url address according to the action intended */
@@ -64,6 +66,10 @@ public class StartFoodonetServiceMethods {
             case ReceiverConstants.ACTION_GET_PUBLICATION:
                 builder.append(context.getResources().getString(R.string.foodonet_publications));
                 builder.append(String.format(Locale.US,"/%1$s",args[0]));
+                builder.append(context.getResources().getString(R.string._json));
+                break;
+            case ReceiverConstants.ACTION_REPUBLISH_PUBLICATION:
+                builder.append(context.getResources().getString(R.string.foodonet_publications));
                 builder.append(context.getResources().getString(R.string._json));
                 break;
             case ReceiverConstants.ACTION_GET_REPORTS:
@@ -137,6 +143,11 @@ public class StartFoodonetServiceMethods {
             case ReceiverConstants.ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION:
                 builder.append(context.getResources().getString(R.string.foodonet_active_devices_put));
                 break;
+            case ReceiverConstants.ACTION_GET_GROUP_ADMIN_IMAGE:
+                builder.append(context.getString(R.string.foodonet_groups));
+                builder.append(String.format("/%1$s/",args[0]));
+                builder.append(context.getResources().getString(R.string.foodonet_group_members));
+                break;
         }
         return builder.toString();
     }
@@ -150,17 +161,19 @@ public class StartFoodonetServiceMethods {
                 return CommonConstants.HTTP_GET;
             case ReceiverConstants.ACTION_ADD_PUBLICATION:
                 return CommonConstants.HTTP_POST;
-            case ReceiverConstants.ACTION_EDIT_PUBLICATION: // not tested
+            case ReceiverConstants.ACTION_EDIT_PUBLICATION:
                 return CommonConstants.HTTP_PUT;
             case ReceiverConstants.ACTION_DELETE_PUBLICATION:
                 return CommonConstants.HTTP_DELETE;
-            case ReceiverConstants.ACTION_GET_PUBLICATION:
-                return CommonConstants.HTTP_GET;
             case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
                 return CommonConstants.HTTP_PUT;
+            case ReceiverConstants.ACTION_GET_PUBLICATION:
+                return CommonConstants.HTTP_GET;
+            case ReceiverConstants.ACTION_REPUBLISH_PUBLICATION:
+                return CommonConstants.HTTP_POST;
             case ReceiverConstants.ACTION_GET_REPORTS:
                 return CommonConstants.HTTP_GET;
-            case ReceiverConstants.ACTION_ADD_REPORT: // not tested
+            case ReceiverConstants.ACTION_ADD_REPORT:
                 return CommonConstants.HTTP_POST;
             case ReceiverConstants.ACTION_ADD_USER:
                 return CommonConstants.HTTP_POST;
@@ -188,6 +201,8 @@ public class StartFoodonetServiceMethods {
                 return CommonConstants.HTTP_POST;
             case ReceiverConstants.ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION:
                 return CommonConstants.HTTP_PUT;
+            case ReceiverConstants.ACTION_GET_GROUP_ADMIN_IMAGE:
+                return CommonConstants.HTTP_GET;
         }
         return -1;
     }

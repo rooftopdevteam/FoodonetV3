@@ -27,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.roa.foodonetv3.R;
-import com.roa.foodonetv3.activities.PlacesActivity;
+import com.roa.foodonetv3.activities.LatestPlacesActivity;
 import com.roa.foodonetv3.activities.PublicationActivity;
 import com.roa.foodonetv3.activities.SplashForCamera;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
@@ -51,21 +51,26 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     public static final String TAG = "AddEditPublicationFrag";
     private static final int INTENT_TAKE_PICTURE = 1;
     private static final int INTENT_PICK_PICTURE = 2;
-    public static final int TYPE_NEW_PUBLICATION = 1;
-    public static final int TYPE_EDIT_PUBLICATION = 2;
+
+    private static final String STATE_CURRENT_PHOTO_PATH = "stateCurrentPhotoPath";
+    private static final String STATE_PICK_PHOTO_PATH = "statePickPhotoPath";
+    private static final String STATE_PUBLICATION = "statePublication";
+    private static final String STATE_EDIT_TYPE = "stateEditType";
+    private static final String STATE_PLACE = "statePlace";
+
     private EditText editTextTitleAddPublication, editTextPriceAddPublication, editTextDetailsAddPublication;
     private Spinner spinnerShareWith;
     private TextView textLocationAddPublication, textPublicationPriceType;
-    private double endingDate;
-    private String mCurrentPhotoPath, pickPhotoPath;
     private ImageView imagePictureAddPublication;
+    private View layoutInfo;
+
+    private String mCurrentPhotoPath, pickPhotoPath;
     private SavedPlace place;
     private Publication publication;
-    private boolean isEdit;
+    private String editType;
     private ArrayList<Group> groups;
     private ArrayAdapter<String> spinnerAdapter;
     private FoodonetReceiver receiver;
-    private View layoutInfo;
     private OnReceiveResponseListener onReceiveResponseListener;
     private OnReplaceFragListener onReplaceFragListener;
 
@@ -84,24 +89,24 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        /** instantiate the transfer utility for the s3*/
-//        transferUtility = CommonMethods.getS3TransferUtility(getContext());
 
         // local image path that will be used for saving locally and uploading the file name to the server*/
-        mCurrentPhotoPath = "";
 
         receiver = new FoodonetReceiver();
-        isEdit = getArguments().getInt(TAG, TYPE_NEW_PUBLICATION) != TYPE_NEW_PUBLICATION;
 
-        if (isEdit) {
-            // if there's a publication in the intent - it is an edit of an existing publication */
-            if (savedInstanceState == null) {
-                // also check if there's a savedInstanceState, if there isn't - load the publication, if there is - load from savedInstanceState */
+        if(savedInstanceState == null){
+            editType = getArguments().getString(TAG,PublicationActivity.ADD_PUBLICATION_TAG);
+            if(editType.equals(PublicationActivity.EDIT_PUBLICATION_TAG) || editType.equals(PublicationActivity.REPUBLISH_PUBLICATION_TAG)) {
                 publication = getArguments().getParcelable(Publication.PUBLICATION_KEY);
                 place = new SavedPlace(publication.getAddress(),publication.getLat(),publication.getLng());
-            } else {
-                // TODO: 19/11/2016 add savedInstanceState reader
+                mCurrentPhotoPath = CommonMethods.getFilePathFromPublicationID(getContext(),publication.getId(),publication.getVersion());
             }
+        }else {
+            editType = savedInstanceState.getString(STATE_EDIT_TYPE);
+            publication = savedInstanceState.getParcelable(STATE_PUBLICATION);
+            place = savedInstanceState.getParcelable(STATE_PLACE);
+            mCurrentPhotoPath = savedInstanceState.getString(STATE_CURRENT_PHOTO_PATH);
+            pickPhotoPath = savedInstanceState.getString(STATE_PICK_PHOTO_PATH);
         }
     }
 
@@ -112,10 +117,6 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         View v = inflater.inflate(R.layout.fragment_add_edit_publication, container, false);
 
         String title = getString(R.string.new_share);
-        if(isEdit){
-            title = publication.getTitle();
-        }
-        getActivity().setTitle(title);
 
         // set layouts */
         editTextTitleAddPublication = (EditText) v.findViewById(R.id.editTextTitleAddPublication);
@@ -134,30 +135,33 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         textPublicationPriceType = (TextView) v.findViewById(R.id.textPublicationPriceType);
         textPublicationPriceType.setText(getString(R.string.currency_nis));
 
-        if(isEdit){
+        if(editType.equals(PublicationActivity.EDIT_PUBLICATION_TAG) || editType.equals(PublicationActivity.REPUBLISH_PUBLICATION_TAG)){
+            title = publication.getTitle();
             spinnerShareWith.setEnabled(false);
-            mCurrentPhotoPath = CommonMethods.getFilePathFromPublicationID(getContext(),publication.getId(),publication.getVersion());
-            File mCurrentPhotoFile = null;
-            if (mCurrentPhotoPath != null) {
-                mCurrentPhotoFile = new File(mCurrentPhotoPath);
-                if(mCurrentPhotoFile.isFile()){
-                    // there's an image path, try to load from file */
-                    Glide.with(this).load(mCurrentPhotoFile).centerCrop().into(imagePictureAddPublication);
-            }
-            } else{
-                // load default image */
-                Glide.with(this).load(R.drawable.foodonet_image).centerCrop().into(imagePictureAddPublication);
-            }
         }
+        File mCurrentPhotoFile = null;
+        if (mCurrentPhotoPath != null) {
+            mCurrentPhotoFile = new File(mCurrentPhotoPath);
+            if(mCurrentPhotoFile.isFile()){
+                // there's an image path, try to load from file */
+                Glide.with(this).load(mCurrentPhotoFile).centerCrop().into(imagePictureAddPublication);
+            }
+        } else{
+            // load default image */
+            Glide.with(this).load(R.drawable.foodonet_image).centerCrop().into(imagePictureAddPublication);
+        }
+        getActivity().setTitle(title);
 
         layoutInfo = v.findViewById(R.id.layoutInfo);
-//        layoutInfo.setBackgroundColor(getResources().getColor(R.color.fooLightGrey));
         layoutInfo.setVisibility(View.GONE);
         TextView textInfo = (TextView) v.findViewById(R.id.textInfo);
         textInfo.setText(R.string.start_sharing_by_adding_an_image_of_the_food_you_wish_to_share);
         textInfo.setTextSize(getResources().getDimension(R.dimen.text_size_12));
-        if (isEdit) {
+        if (editType.equals(PublicationActivity.EDIT_PUBLICATION_TAG) || editType.equals(PublicationActivity.REPUBLISH_PUBLICATION_TAG)){
             loadPublicationIntoViews();
+        }
+        if(place!=null){
+            textLocationAddPublication.setText(place.getAddress());
         }
         return v;
     }
@@ -168,18 +172,30 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         IntentFilter filter = new IntentFilter(ReceiverConstants.BROADCAST_FOODONET);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
 
-        GroupsDBHandler handler = new GroupsDBHandler(getContext());
-        groups = handler.getAllGroupsWithPublic();
-        String[] groupsNames = new String[groups.size()];
-        Group group;
-        String groupName;
-        for (int i = 0; i < groups.size(); i++) {
-            group = groups.get(i);
-            groupName = group.getGroupName();
-            groupsNames[i] = groupName;
-        }
+        GroupsDBHandler groupsDBHandler = new GroupsDBHandler(getContext());
+
         spinnerAdapter.clear();
-        spinnerAdapter.addAll(groupsNames);
+        if (editType.equals(PublicationActivity.EDIT_PUBLICATION_TAG) || editType.equals(PublicationActivity.REPUBLISH_PUBLICATION_TAG)){
+            Group group = groupsDBHandler.getGroup(publication.getAudience());
+            spinnerAdapter.add(group.getGroupName());
+            if(groups== null){
+                groups = new ArrayList<>();
+            }else{
+                groups.clear();
+            }
+            groups.add(group);
+        } else{
+            groups = groupsDBHandler.getAllGroupsWithPublic();
+            String[] groupsNames = new String[groups.size()];
+            Group group;
+            String groupName;
+            for (int i = 0; i < groups.size(); i++) {
+                group = groups.get(i);
+                groupName = group.getGroupName();
+                groupsNames[i] = groupName;
+            }
+            spinnerAdapter.addAll(groupsNames);
+        }
 
         if (mCurrentPhotoPath == null|| mCurrentPhotoPath.equals("")) {
             layoutInfo.setVisibility(View.VISIBLE);
@@ -198,11 +214,19 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_CURRENT_PHOTO_PATH,mCurrentPhotoPath);
+        outState.putString(STATE_PICK_PHOTO_PATH,pickPhotoPath);
+        outState.putParcelable(STATE_PUBLICATION,publication);
+        outState.putParcelable(STATE_PLACE,place);
+        outState.putString(STATE_EDIT_TYPE,editType);
+    }
+
     public void loadPublicationIntoViews() {
         editTextTitleAddPublication.setText(publication.getTitle());
         textLocationAddPublication.setText(publication.getAddress());
-        // TODO: 29/12/2016 add logic to spinner
-//        spinnerShareWith.set
         editTextDetailsAddPublication.setText(publication.getSubtitle());
         editTextPriceAddPublication.setText(String.valueOf(publication.getPrice()));
     }
@@ -249,7 +273,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                 break;
             case R.id.textLocationAddPublication:
                 // start the google places select activity */
-                startActivityForResult(new Intent(getContext(), PlacesActivity.class), PlacesActivity.REQUEST_PLACE_PICKER);
+                startActivityForResult(new Intent(getContext(), LatestPlacesActivity.class), LatestPlacesActivity.REQUEST_PLACE_PICKER);
                 break;
         }
     }
@@ -330,7 +354,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                         e.printStackTrace();
                     }
                     break;
-                case PlacesActivity.REQUEST_PLACE_PICKER:
+                case LatestPlacesActivity.REQUEST_PLACE_PICKER:
                     place = data.getParcelableExtra("place");
                     textLocationAddPublication.setText(place.getAddress());
                     break;
@@ -338,7 +362,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         }
     }
 
-    public void uploadPublicationToServer(boolean isAddNewPublication) {
+    public void uploadPublicationToServer() {
         // upload the publication to the foodonet server */
         String contactInfo = CommonMethods.getMyUserPhone(getContext());
         String title = editTextTitleAddPublication.getText().toString();
@@ -346,18 +370,28 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         String priceS = editTextPriceAddPublication.getText().toString();
         String details = editTextDetailsAddPublication.getText().toString();
         // currently starting time is now */
-        double startingDate = CommonMethods.getCurrentTimeSeconds();
-        if (endingDate == 0) {
-            // default ending date is 2 days after creation */
-            endingDate = startingDate + 172800;
+        double startingDate = 0;
+        double endingDate = 0;
+
+        long localPublicationID = -1;
+        switch (editType){
+            case PublicationActivity.ADD_PUBLICATION_TAG:
+                localPublicationID = CommonMethods.getNewLocalPublicationID();
+                startingDate = CommonMethods.getCurrentTimeSeconds();
+                endingDate = startingDate + CommonConstants.TIME_SECONDS_NORMAL_PUBLICATION_DURATION;
+                break;
+            case PublicationActivity.EDIT_PUBLICATION_TAG:
+                localPublicationID = publication.getId();
+                startingDate = Double.valueOf(publication.getStartingDate());
+                endingDate = Double.valueOf(publication.getEndingDate());
+                break;
+            case PublicationActivity.REPUBLISH_PUBLICATION_TAG:
+                // keeping the original id so that it will be deleted in server methods
+                localPublicationID = publication.getId();
+                startingDate = CommonMethods.getCurrentTimeSeconds();
+                endingDate = startingDate + CommonConstants.TIME_SECONDS_NORMAL_PUBLICATION_DURATION;
+                break;
         }
-        long localPublicationID;
-        if (!isEdit) {
-            localPublicationID = CommonMethods.getNewLocalPublicationID();
-        } else {
-            localPublicationID = publication.getId();
-        }
-        String photoPath;
         if(mCurrentPhotoPath==null || mCurrentPhotoPath.equals("")){
             mCurrentPhotoPath = null;
         }
@@ -379,17 +413,21 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                 }
             }
 
-            // TODO: 08/11/2016 currently some fields are hard coded for testing
-
             publication = new Publication(localPublicationID, -1, title, details, location, (short) 2, place.getLat(), place.getLng(),
-                    String.valueOf(startingDate), String.valueOf(endingDate), contactInfo, true, CommonMethods.getDeviceUUID(getContext()),
+                    CommonMethods.getNoDecimalStringFromNumber(startingDate), CommonMethods.getNoDecimalStringFromNumber(endingDate), contactInfo, true, CommonMethods.getDeviceUUID(getContext()),
                     mCurrentPhotoPath,
                     CommonMethods.getMyUserID(getContext()),
                     groups.get(spinnerShareWith.getSelectedItemPosition()).getGroupID() , CommonMethods.getMyUserName(getContext()), price, "");
-            if(isAddNewPublication){
-                ServerMethods.addPublication(getContext(),publication);
-            } else{
-                ServerMethods.editPublication(getContext(),publication);
+            switch (editType){
+                case PublicationActivity.ADD_PUBLICATION_TAG:
+                    ServerMethods.addPublication(getContext(),publication);
+                    break;
+                case PublicationActivity.EDIT_PUBLICATION_TAG:
+                    ServerMethods.editPublication(getContext(),publication);
+                    break;
+                case PublicationActivity.REPUBLISH_PUBLICATION_TAG:
+                    ServerMethods.republishPublication(getContext(),publication);
+                    break;
             }
         }
     }
@@ -407,34 +445,33 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                         // TODO: 18/12/2016 add logic if fails
                         Toast.makeText(context, "fab failed", Toast.LENGTH_SHORT).show();
                     } else {
-                        int fabType = intent.getIntExtra(ReceiverConstants.FAB_TYPE, -1);
-                        if (fabType == ReceiverConstants.FAB_TYPE_SAVE_NEW_PUBLICATION) {
-                            uploadPublicationToServer(true);
-                        }else if(fabType == ReceiverConstants.FAB_TYPE_EDIT_PUBLICATION){
-                            uploadPublicationToServer(false);
-                        }
+                        uploadPublicationToServer();
                     }
                     break;
 
                 case ReceiverConstants.ACTION_ADD_PUBLICATION:
-                    onReceiveResponseListener.onReceiveResponse();
-                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
-                        // TODO: 27/11/2016 add logic if fails
-                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
-                    } else{
-                        onReplaceFragListener.onReplaceFrags(PublicationActivity.BACK_IN_STACK_TAG,-1);
-                    }
-                    break;
-
                 case ReceiverConstants.ACTION_EDIT_PUBLICATION:
                     onReceiveResponseListener.onReceiveResponse();
                     if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
                         // TODO: 27/11/2016 add logic if fails
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     } else{
-                        onReplaceFragListener.onReplaceFrags(PublicationActivity.BACK_IN_STACK_TAG,publication.getId());
+                        onReplaceFragListener.onReplaceFrags(PublicationActivity.NEW_STACK_TAG,-1);
                     }
                     break;
+
+                case ReceiverConstants.ACTION_DELETE_PUBLICATION:
+                    onReceiveResponseListener.onReceiveResponse();
+                    if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
+                        // TODO: 21/05/2017 add logic if fails
+                        Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
+                    } else{
+                        if(publication.getId()==intent.getLongExtra(Publication.PUBLICATION_ID,-1)){
+                            onReplaceFragListener.onReplaceFrags(PublicationActivity.NEW_STACK_TAG,-1);
+                        }
+                    }
+                    break;
+
                 case ReceiverConstants.ACTION_SAVE_USER_IMAGE:
                     OnGotMyUserImageListener onGotMyUserImageListener = (OnGotMyUserImageListener) getContext();
                     onGotMyUserImageListener.gotMyUserImage();

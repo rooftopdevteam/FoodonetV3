@@ -68,7 +68,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         /** get non user publications from db */
         PublicationsDBHandler handler = new PublicationsDBHandler(this);
-        publications = handler.getOnlineNonUserPublications(CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
+        publications = handler.getOnlineNonEndedNonUserPublications(CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
         adapter.updatePublications(publications);
 
         /** set the broadcast receiver for future stuff */
@@ -156,7 +156,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void updateMap(){
         PublicationsDBHandler handler = new PublicationsDBHandler(getBaseContext());
-        publications = handler.getOnlineNonUserPublications(CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
+        publications = handler.getOnlineNonEndedNonUserPublications(CommonConstants.PUBLICATION_SORT_TYPE_CLOSEST);
         adapter.updatePublications(publications);
         startMap();
     }

@@ -12,9 +12,11 @@ import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.GroupMembersDBHandler;
 import com.roa.foodonetv3.db.LatestPlacesDBHandler;
+import com.roa.foodonetv3.db.NotificationsDBHandler;
 import com.roa.foodonetv3.db.PublicationsDBHandler;
 import com.roa.foodonetv3.db.ReportsDBHandler;
 import com.roa.foodonetv3.model.GroupMember;
+import com.roa.foodonetv3.model.Publication;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
 import java.io.File;
 import java.util.ArrayList;
@@ -45,10 +47,25 @@ public class GetDataService extends IntentService {
                     // delete the data from the db that won't be re-downloaded */
                     GroupMembersDBHandler groupMembersDBHandler = new GroupMembersDBHandler(this);
                     groupMembersDBHandler.deleteAllGroupsMembers();
+                    publicationsDBHandler = new PublicationsDBHandler(this);
+                    publicationsDBHandler.deleteAllPublications();
                     LatestPlacesDBHandler latestPlacesDBHandler = new LatestPlacesDBHandler(this);
                     latestPlacesDBHandler.deleteAllPlaces();
                     ReportsDBHandler reportsDBHandler = new ReportsDBHandler(this);
                     reportsDBHandler.deleteAllReports();
+                    NotificationsDBHandler notificationsDBHandler = new NotificationsDBHandler(this);
+                    notificationsDBHandler.deleteAllNotification();
+                    File directoryUsers = (getExternalFilesDir(CommonConstants.FILE_TYPE_USERS));
+                    if(directoryUsers!= null) {
+                        File[] userFiles = directoryUsers.listFiles();
+                        for(File file : userFiles){
+                            if(file.delete()){
+                                Log.d(TAG,"file Deleted :" + file.getName());
+                            } else {
+                                Log.d(TAG,"file could not be Deleted :" + file.getName());
+                            }
+                        }
+                    }
                     // continue to get new data from the server */
 
                 case ReceiverConstants.ACTION_GET_DATA:
@@ -63,8 +80,8 @@ public class GetDataService extends IntentService {
 
                 case ReceiverConstants.ACTION_GET_PUBLICATIONS:
                     // clear old non - user publications from db
-                    publicationsDBHandler = new PublicationsDBHandler(this);
-                    publicationsDBHandler.clearOldPublications();
+//                    publicationsDBHandler = new PublicationsDBHandler(this);
+//                    publicationsDBHandler.clearOldPublications();
                     // get publications */
                     ServerMethods.getPublications(this);
                     break;
@@ -76,13 +93,15 @@ public class GetDataService extends IntentService {
 
                 case ReceiverConstants.ACTION_CLEAN_IMAGES:
                     publicationsDBHandler = new PublicationsDBHandler(this);
-                    File directoryPictures = (getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS));
-                    if(directoryPictures!= null) {
+                    notificationsDBHandler = new NotificationsDBHandler(this);
+                    File directoryPublications = (getExternalFilesDir(CommonConstants.FILE_TYPE_PUBLICATIONS));
+                    if(directoryPublications!= null) {
                         ArrayList<String> fileNames = publicationsDBHandler.getPublicationImagesFileNames();
+                        ArrayList<String> notificationsFileNames = notificationsDBHandler.getNotificationPublicationImagesFileNames();
 
-                        File[] files = directoryPictures.listFiles();
+                        File[] files = directoryPublications.listFiles();
                         for (File file : files) {
-                            if (!fileNames.contains(file.getName())) {
+                            if (!fileNames.contains(file.getName()) && !notificationsFileNames.contains(file.getName())) {
                                 if (file.delete()) {
                                     Log.d(TAG,"file Deleted :" + file.getName());
                                 } else {
@@ -100,6 +119,11 @@ public class GetDataService extends IntentService {
                             CommonMethods.getMyUserPhone(this),CommonMethods.getMyUserName(this),true);
                     ServerMethods.addGroupMember(this,adminMember);
                     break;
+
+                case ReceiverConstants.ACTION_REPUBLISH_PUBLICATION:
+                    // after adding the republished publication, delete the old one
+                    long publicationID = intent.getLongExtra(Publication.PUBLICATION_ID,-1);
+                    ServerMethods.deletePublication(this,publicationID);
             }
         }
     }

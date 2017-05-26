@@ -96,7 +96,7 @@ public class GetLocationService extends Service implements LocationListener, Goo
                         }
                     };
                     locationManager.requestLocationUpdates(locationType, 1000, 100, this);
-                    timer.schedule(timerTask,System.currentTimeMillis()+CommonConstants.TIME_SWITCH_TO_FUSED_MILLIS);
+                    timer.schedule(timerTask,CommonConstants.TIME_SWITCH_TO_FUSED_MILLIS);
                     break;
 
                 case TYPE_GET_FUSED:

@@ -77,7 +77,7 @@ public class ReportsRecyclerAdapter extends RecyclerView.Adapter<ReportsRecycler
             textReport.setText(String.format(Locale.US,"%1$s - (%2$s)",
                     CommonMethods.getReportStringFromType(context,report.getReportType()),
                     CommonMethods.getTimeDifference(context,Double.parseDouble(report.getDateOfReport()),
-                            CommonMethods.getCurrentTimeSeconds(), CommonConstants.TIME_TYPE_AGO)));
+                            CommonMethods.getCurrentTimeSeconds(), context.getString(R.string.ago))));
         }
     }
 }

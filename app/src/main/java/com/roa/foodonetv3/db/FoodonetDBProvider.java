@@ -103,6 +103,7 @@ public class FoodonetDBProvider extends ContentProvider {
         static final String NOTIFICATION_TYPE = "notification_type";
         static final String NOTIFICATION_NAME = "notification_name";
         static final String NOTIFICATION_RECEIVED_TIME = "notification_received_time";
+        static final String NOTIFICATION_IMAGE_FILE_NAME = "notification_image_file_name";
         static final Uri CONTENT_URI = Uri.parse("content://"+AUTHORITY+"/"+TABLE_NAME);
     }
 

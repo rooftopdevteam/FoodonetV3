@@ -25,7 +25,7 @@ public class NotificationsDBHandler{
         Cursor c = context.getContentResolver().query(FoodonetDBProvider.NotificationsDB.CONTENT_URI,null,null,null,FoodonetDBProvider.NotificationsDB._ID_COLUMN+" DESC");
         long itemID, _id;
         int notificationType;
-        String notificationName;
+        String notificationName, notificationImageFileName;
         double notificationReceivedTime;
         while(c!= null && c.moveToNext()){
             notificationReceivedTime = c.getDouble(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_RECEIVED_TIME));
@@ -36,8 +36,9 @@ public class NotificationsDBHandler{
                 itemID = c.getLong(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.ITEM_ID));
                 notificationType = c.getInt(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_TYPE));
                 notificationName = c.getString(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_NAME));
+                notificationImageFileName = c.getString(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME));
 
-                notifications.add(new NotificationFoodonet(notificationType,itemID,notificationName,notificationReceivedTime));
+                notifications.add(new NotificationFoodonet(notificationType,itemID,notificationName,notificationReceivedTime,notificationImageFileName));
             }
         }
         if(notificationsToDelete.size() != 0){
@@ -47,6 +48,19 @@ public class NotificationsDBHandler{
             c.close();
         }
         return notifications;
+    }
+
+    public ArrayList<String> getNotificationPublicationImagesFileNames() {
+        ArrayList<String> notificationsImagesFileNames = new ArrayList<>();
+        String[] projection = {FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME};
+        Cursor c = context.getContentResolver().query(FoodonetDBProvider.NotificationsDB.CONTENT_URI,projection,null,null,null);
+        while(c!= null && c.moveToNext()){
+            notificationsImagesFileNames.add(c.getString(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME)));
+        }
+        if(c!= null){
+            c.close();
+        }
+        return notificationsImagesFileNames;
     }
 
     public ArrayList<NotificationFoodonet> getUnreadNotification(long loadNotificationsFromID) {
@@ -62,7 +76,7 @@ public class NotificationsDBHandler{
 
         long itemID, _id;
         int notificationType;
-        String notificationName;
+        String notificationName, notificationImageFileName;
         double notificationReceivedTime;
         while(c!= null && c.moveToNext()){
             notificationReceivedTime = c.getDouble(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_RECEIVED_TIME));
@@ -73,8 +87,9 @@ public class NotificationsDBHandler{
                 itemID = c.getLong(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.ITEM_ID));
                 notificationType = c.getInt(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_TYPE));
                 notificationName = c.getString(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_NAME));
+                notificationImageFileName = c.getString(c.getColumnIndex(FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME));
 
-                notifications.add(new NotificationFoodonet(notificationType,itemID,notificationName,notificationReceivedTime));
+                notifications.add(new NotificationFoodonet(notificationType,itemID,notificationName,notificationReceivedTime,notificationImageFileName));
             }
         }
         if(notificationsToDelete.size() != 0){
@@ -92,6 +107,7 @@ public class NotificationsDBHandler{
         values.put(FoodonetDBProvider.NotificationsDB.NOTIFICATION_TYPE,notification.getTypeNotification());
         values.put(FoodonetDBProvider.NotificationsDB.NOTIFICATION_NAME,notification.getNameNotification());
         values.put(FoodonetDBProvider.NotificationsDB.NOTIFICATION_RECEIVED_TIME,notification.getReceivedTime());
+        values.put(FoodonetDBProvider.NotificationsDB.NOTIFICATION_IMAGE_FILE_NAME,notification.getImageFileName());
         long _id = ContentUris.parseId(context.getContentResolver().insert(FoodonetDBProvider.NotificationsDB.CONTENT_URI,values));
         CommonMethods.updateUnreadNotificationID(context,_id);
     }
@@ -111,5 +127,4 @@ public class NotificationsDBHandler{
     public void deleteAllNotification(){
         context.getContentResolver().delete(FoodonetDBProvider.NotificationsDB.CONTENT_URI,null,null);
     }
-
 }

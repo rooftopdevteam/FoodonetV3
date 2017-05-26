@@ -10,6 +10,7 @@
         android:id="@+id/textGroupName"
         style="@style/FooMedium"
         android:gravity="end"
+        android:textAlignment="viewEnd"
         android:layout_margin="@dimen/margin_4"
 
         />

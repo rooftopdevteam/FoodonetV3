@@ -5,8 +5,8 @@
     android:layout_height="@dimen/layout_size_80">
 
     <ImageView
-        android:layout_width="@dimen/image_size_50"
-        android:layout_height="@dimen/image_size_50"
+        android:layout_width="@dimen/image_size_48"
+        android:layout_height="@dimen/image_size_48"
         app:srcCompat="@drawable/group_blue"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
@@ -16,9 +16,12 @@
         android:layout_marginStart="@dimen/margin_16" />
 
     <TextView
+        android:text="Group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textGroupName"
+        android:gravity="start"
+        android:textAlignment="viewStart"
         android:layout_above="@+id/textAdmin"
         android:layout_toRightOf="@+id/imageView3"
         android:layout_toEndOf="@+id/imageView3"
@@ -31,7 +34,8 @@
         android:layout_marginEnd="@dimen/margin_16"
         android:paddingLeft="@dimen/margin_4"
         android:paddingStart="@dimen/margin_4"
-        android:text="Group"
+        android:paddingEnd="@dimen/margin_4"
+        android:paddingRight="@dimen/margin_4"
         style="@style/FooBlackLarge"
         android:maxLines="1"
         android:scrollHorizontally="true"
