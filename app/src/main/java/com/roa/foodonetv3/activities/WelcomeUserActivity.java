@@ -38,7 +38,6 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
     private FirebaseUser mFirebaseUser;
     private FirebaseAuth mFirebaseAuth;
     private EditText userPhoneNumber;
-    private String userName = "";
     private CircleImageView circleImageView;
     private FoodonetReceiver receiver;
     private ProgressDialog dialog;
@@ -49,7 +48,7 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_user);
 
-        setTitle(R.string.foodonet);
+        setTitle(R.string.app_name);
 
         finishRegistrationButton = (Button) findViewById(R.id.buttonFinishRegistration);
         editUserName = (EditText) findViewById(R.id.editUserName);
@@ -61,9 +60,10 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (mFirebaseUser != null && mFirebaseUser.getPhotoUrl()!= null) {
             //load the photo from file
-           ServerMethods.getMyUserImage(this);
-            userName = mFirebaseUser.getDisplayName();
-            if (userName != null) {
+            ServerMethods.getMyUserImage(this);
+            String userName = mFirebaseUser.getDisplayName();
+            if(userName!= null){
+                userName = userName.replace("\n","");
                 editUserName.setText(userName);
             } else {
                 // TODO: 28/11/2016 add logic

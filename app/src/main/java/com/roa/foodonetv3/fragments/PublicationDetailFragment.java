@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -31,6 +30,7 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,26 +59,29 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PublicationDetailFragment extends Fragment implements View.OnClickListener, ReportDialog.OnReportCreateListener, TransferListener {
     private static final String TAG = "PublicationDetailFrag";
 
+    private static final String STATE_PUBLICATION = "statePublication";
+
     private TextView textCategory,textTimeRemaining,textJoined,textTitlePublication,textPublicationAddress,textPublicationRating,
             textPublisherName,textPublicationPrice,textPublicationDetails, textPublicationPriceType;
-    private ImageView imagePicturePublication;
+    private ImageView imagePicturePublication,imagePublicationGroup;
     private CircleImageView imagePublisherUser;
     private View layoutAdminDetails, layoutRegisteredDetails;
-    private Publication publication;
     private ReportsRecyclerAdapter adapter;
     private FoodonetReceiver receiver;
-    private int countRegisteredUsers;
-    private long userID;
-    private boolean isAdmin,isRegistered;
-    private ArrayList<PublicationReport> reports;
     private AlertDialog alertDialog;
     private ReportDialog reportDialog;
     private RegisteredUsersDBHandler registeredUsersDBHandler;
     private OnFabChangeListener onFabChangeListener;
     private OnReceiveResponseListener onReceiveResponseListener;
     private OnReplaceFragListener onReplaceFragListener;
+    private TransferUtility transferUtility;
+
+    private Publication publication;
+    private int countRegisteredUsers,observerId,failCount;
+    private long userID;
+    private boolean isAdmin,isRegistered;
+    private ArrayList<PublicationReport> reports;
     private String userImagePath;
-    private ImageView imagePublicationGroup;
 
     public PublicationDetailFragment() {
         // Required empty public constructor
@@ -96,11 +99,12 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // get the user's ID */
         userID = CommonMethods.getMyUserID(getContext());
-
-        // get the publication from the intent */
-        publication = getArguments().getParcelable(Publication.PUBLICATION_KEY);
+        if(savedInstanceState==null){
+            publication = getArguments().getParcelable(Publication.PUBLICATION_KEY);
+        } else{
+            publication = savedInstanceState.getParcelable(STATE_PUBLICATION);
+        }
 
         // check if the user is the admin of the publication */
         isAdmin = publication != null && publication.getPublisherID() == userID;
@@ -154,12 +158,14 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                 Glide.with(this).load(userImageFile).into(imagePublisherUser);
             } else {
                 String userImageFIleName = CommonMethods.getFileNameFromUserID(getContext(),publication.getPublisherID());
-                TransferObserver observer = CommonMethods.getS3TransferUtility(getContext()).download(getContext().getResources().getString(R.string.amazon_users_bucket),
+                failCount = 3;
+                transferUtility = CommonMethods.getS3TransferUtility(getContext());
+                TransferObserver observer = transferUtility.download(getContext().getResources().getString(R.string.amazon_users_bucket),
                         userImageFIleName, userImageFile);
                 observer.setTransferListener(this);
+                observerId = observer.getId();
             }
         }
-        //
 
         v.findViewById(R.id.imageActionPublicationReport).setOnClickListener(this);
         v.findViewById(R.id.imageActionPublicationSMS).setOnClickListener(this);
@@ -198,10 +204,16 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(STATE_PUBLICATION,publication);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         if(isAdmin){
-            if(publication.isOnAir()){
+            if(publication.isOnAir() && Double.valueOf(publication.getEndingDate()) > CommonMethods.getCurrentTimeSeconds()){
                 inflater.inflate(R.menu.detail_options_admin_online,menu);
             } else{
                 inflater.inflate(R.menu.detail_options_admin_offline,menu);
@@ -485,7 +497,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                                 });
                         alertDialog = smsDialog.show();
                     } else{
-                        Snackbar.make(imagePicturePublication,R.string.toast_there_are_no_registered_users,Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), R.string.toast_there_are_no_registered_users, Toast.LENGTH_SHORT).show();
                     }
                     break;
 
@@ -520,7 +532,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         alertDialog = callDialog.show();
 
                     } else{
-                        Snackbar.make(imagePicturePublication, R.string.toast_there_are_no_registered_users,Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), R.string.toast_there_are_no_registered_users, Toast.LENGTH_SHORT).show();
                     }
                     break;
 
@@ -535,9 +547,8 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     @Override
     public void onReportCreate(int rating, short typeOfReport) {
         // send the report
-        long currentTime = (long) CommonMethods.getCurrentTimeSeconds();
         PublicationReport publicationReport = new PublicationReport(-1,publication.getId(),publication.getVersion(), typeOfReport,
-                CommonMethods.getDeviceUUID(getContext()),String.valueOf(currentTime),CommonMethods.getMyUserName(getContext()),
+                CommonMethods.getDeviceUUID(getContext()),CommonMethods.getCurrentTimeSecondsString(),CommonMethods.getMyUserName(getContext()),
                 CommonMethods.getMyUserPhone(getContext()),CommonMethods.getMyUserID(getContext()),rating);
         ServerMethods.addReport(getContext(),publicationReport);
     }
@@ -548,8 +559,11 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             if(getContext()!= null){
                 Glide.with(this).load(userImagePath).into(imagePublisherUser);
             }
-        } else{
-            // TODO: 06/05/2017 add
+        }else if(state == TransferState.FAILED){
+            if(failCount >= 0){
+                failCount--;
+                transferUtility.resume(observerId);
+            }
         }
     }
 
@@ -613,7 +627,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     } else{
                         // registered successfully */
-                        Snackbar.make(imagePicturePublication,getResources().getString(R.string.successfully_registered),Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.successfully_registered, Toast.LENGTH_SHORT).show();
                         isRegistered = true;
                         initViews();
                     }
@@ -625,7 +639,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         // TODO: 28/01/2017 add logic
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     }else{
-                        Snackbar.make(imagePicturePublication,getResources().getString(R.string.unregistered),Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.unregistered, Toast.LENGTH_SHORT).show();
                         isRegistered = false;
                         initViews();
                     }
@@ -638,7 +652,12 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         Toast.makeText(context, "service failed", Toast.LENGTH_SHORT).show();
                     } else{
                         // report registered successfully */
-                        Snackbar.make(imagePicturePublication,getResources().getString(R.string.report_added),Snackbar.LENGTH_LONG).show();
+                        PublicationReport publicationReport = intent.getParcelableExtra(PublicationReport.REPORT_KEY);
+                        if(publicationReport.getPublicationID()==publication.getId()){
+                            reports.add(publicationReport);
+                            adapter.updateReports(reports);
+                            Toast.makeText(context, R.string.report_added, Toast.LENGTH_SHORT).show();
+                        }
                     }
                     break;
 

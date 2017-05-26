@@ -41,4 +41,6 @@
 
     <dimen name="divider_height">1dp</dimen>
 
+    <integer name="fragment_animation_time">200</integer>
+
 </resources>

@@ -16,7 +16,7 @@
         android:layout_marginStart="@dimen/margin_16" />
 
     <TextView
-        android:text="Member name"
+        android:text="אלון"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -24,6 +24,8 @@
         android:layout_toEndOf="@+id/imageMember"
         android:layout_toLeftOf="@+id/imageRemoveMember"
         android:layout_toStartOf="@+id/imageRemoveMember"
+        android:gravity="start"
+        android:textAlignment="viewStart"
         android:id="@+id/textMemberName"
         android:maxLines="1"
         android:layout_marginLeft="@dimen/margin_16"

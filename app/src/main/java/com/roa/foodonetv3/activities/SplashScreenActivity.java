@@ -28,9 +28,11 @@ public class SplashScreenActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        setTitle(R.string.foodonet);
+        setTitle(R.string.app_name);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPreferences== null){
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        }
 
         if (!sharedPreferences.getBoolean(getString(R.string.key_prefs_initialized), false)) {
             init();

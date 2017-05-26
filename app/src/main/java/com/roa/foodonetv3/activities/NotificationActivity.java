@@ -90,8 +90,9 @@ public class NotificationActivity extends AppCompatActivity implements Navigatio
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        CommonMethods.navigationItemSelectedAction(this,item.getItemId());
-
+        if(item.getItemId()!=R.id.nav_notifications){
+            CommonMethods.navigationItemSelectedAction(this,item.getItemId());
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

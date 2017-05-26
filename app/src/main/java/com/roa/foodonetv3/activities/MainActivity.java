@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // toolbar set up */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.foodonet);
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         // set the drawer */
@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         // trying to update the location returns a 404, disabling for now
-        // TODO: 24/04/2017 temp test
         // CommonMethods.updateUserLocationToServer(this);
     }
 
@@ -166,8 +165,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        CommonMethods.navigationItemSelectedAction(this,item.getItemId());
-
+        if(item.getItemId()!=R.id.nav_all_events){
+            CommonMethods.navigationItemSelectedAction(this,item.getItemId());
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

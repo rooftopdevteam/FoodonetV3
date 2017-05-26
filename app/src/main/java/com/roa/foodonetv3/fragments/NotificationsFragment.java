@@ -12,16 +12,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.adapters.NotificationsRecyclerAdapter;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.db.NotificationsDBHandler;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class NotificationsFragment extends Fragment {
 
     private static final String TAG = "NotificationsFragment";

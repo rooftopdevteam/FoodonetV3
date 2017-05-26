@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class LatestPlacesActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     public static final int REQUEST_PLACE_PICKER = 10;
-    private Intent intentForResult;
+
     private ArrayList<SavedPlace> places;
     private LatestPlacesDBHandler handler;
 
@@ -70,10 +70,6 @@ public class LatestPlacesActivity extends AppCompatActivity implements AdapterVi
             Intent intent = intentBuilder.build(this);
             startActivityForResult(intent, REQUEST_PLACE_PICKER);
 
-            // Hide the pick option in the UI to prevent users from starting the picker
-            // multiple times.
-//                    showPickAction(false);
-
         } catch (GooglePlayServicesRepairableException e) {
             GooglePlayServicesUtil
                     .getErrorDialog(e.getConnectionStatusCode(), this, 0);
@@ -91,11 +87,15 @@ public class LatestPlacesActivity extends AppCompatActivity implements AdapterVi
         } else{
             // return the clicked place to the AddEditPublicationFragment */
             SavedPlace place = places.get(position);
-            intentForResult = new Intent();
-            intentForResult.putExtra("place",place);
-            setResult(RESULT_OK, intentForResult);
-            finish();
+            returnToAddEdit(place);
         }
+    }
+
+    private void returnToAddEdit(SavedPlace place){
+        Intent intentForResult = new Intent();
+        intentForResult.putExtra("place",place);
+        setResult(RESULT_OK, intentForResult);
+        finish();
     }
 
     @Override
@@ -104,14 +104,15 @@ public class LatestPlacesActivity extends AppCompatActivity implements AdapterVi
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_PLACE_PICKER:
-                    /** returning from google widget, return the clicked place to the AddEditPublicationFragment after adding it to the db */
+                    // returning from google widget, return the clicked place to the AddEditPublicationFragment after adding it to the db
                     Place placeData = PlacePicker.getPlace(this, data);
                     SavedPlace place = new SavedPlace(String.valueOf(placeData.getAddress()),placeData.getLatLng().latitude,placeData.getLatLng().longitude);
                     SavedPlace checkPlace;
                     boolean foundPlace = false;
                     for(int i = 0; i < places.size(); i++){
                         checkPlace = places.get(i);
-                        if(checkPlace.getAddress() != null && checkPlace.getAddress().equals(place.getAddress()) && checkPlace.getLat() == place.getLat() && checkPlace.getLng() == place.getLng()){
+                        if(checkPlace.getAddress() != null && checkPlace.getAddress().equals(place.getAddress()) &&
+                                checkPlace.getLat() == place.getLat() && checkPlace.getLng() == place.getLng()){
                             foundPlace = true;
                             break;
                         }
@@ -119,15 +120,11 @@ public class LatestPlacesActivity extends AppCompatActivity implements AdapterVi
                     if(!foundPlace){
                         handler.addLatestPlace(place);
                     }
-                    intentForResult = new Intent();
-                    intentForResult.putExtra("place",place);
-                    setResult(RESULT_OK, intentForResult);
-                    finish();
+                    returnToAddEdit(place);
                     break;
             }
         }
     }
-
 }
 
 

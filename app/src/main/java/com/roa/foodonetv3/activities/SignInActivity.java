@@ -65,8 +65,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Toast.makeText(SignInActivity.this, R.string.success, Toast.LENGTH_SHORT).show();
-//                    openWelcomeUserActivity();
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -80,14 +78,13 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         // Set click listeners
         mButtonSignInGoogle.setOnClickListener(this);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        if(savedInstanceState==null){
+            connectToGoogleClient();
+        }else{
+            if(mGoogleApiClient!= null){
+                connectToGoogleClient();
+            }
+        }
 
         // Initialize FirebaseAuth
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -104,6 +101,17 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         if (mAuthListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    private void connectToGoogleClient(){
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
     }
 
     private void openWelcomeUserActivity(){

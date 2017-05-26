@@ -6,6 +6,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
 import android.telephony.PhoneNumberUtils;
 import android.widget.Toast;
 
@@ -26,13 +27,17 @@ public class PrefsFragment extends PreferenceFragment implements Preference.OnPr
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences_screen);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
         listener = (OnSignOutClickListener) getActivity();
 
         keyListNotificationRadius = getString(R.string.key_prefs_list_notification_radius);
         keyUserName = getString(R.string.key_prefs_user_name);
         keyUserPhone = getString(R.string.key_prefs_user_phone);
+        String keyGetNotifications = getString(R.string.key_prefs_get_notifications);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SwitchPreference getNotifications = (SwitchPreference) findPreference(keyGetNotifications);
+        getNotifications.setChecked(sharedPreferences.getBoolean(keyGetNotifications,true));
 
         listNotificationRadius = (ListPreference) findPreference(keyListNotificationRadius);
         String[] notificationRadiusListKMValues = getResources().getStringArray(R.array.prefs_notification_radius_values_km);
@@ -52,7 +57,7 @@ public class PrefsFragment extends PreferenceFragment implements Preference.OnPr
         preferenceUserPhone.setSummary(sharedPreferences.getString(keyUserPhone,""));
         preferenceUserPhone.setOnPreferenceChangeListener(this);
 
-        findPreference(getString(R.string.prefs_sign_out)).setOnPreferenceClickListener(this);
+        findPreference(getString(R.string.key_prefs_sign_out)).setOnPreferenceClickListener(this);
 
     }
 

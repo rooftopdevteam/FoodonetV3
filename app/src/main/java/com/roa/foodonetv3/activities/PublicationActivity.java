@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
@@ -52,6 +53,10 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
     public static final String BACK_IN_STACK_TAG = "backInStack";
     public static final String NEW_STACK_TAG = "newStack";
 
+    private static final String STATE_FRAG_STACK = "stateFragStack";
+    private static final String STATE_PUBLICATION = "statePublication";
+    private static final String STATE_WAIT_FOR_SERVER_RESPONSE = "stateWaitForServerResponse";
+
     private FloatingActionButton fab;
     private Stack<String> fragStack;
     private CircleImageView circleImageView;
@@ -73,15 +78,11 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
         // set the fragment manager */
         fragmentManager = getSupportFragmentManager();
 
-        fragStack = new Stack<>();
-
         publicationsDBHandler = new PublicationsDBHandler(this);
 
         // set the floating action button */
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(this);
-
-        waitForServerResponse = false;
 
         // set the drawer */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -98,11 +99,17 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
 
         // get which fragment should be opened from the intent, and open it */
         Intent intent = getIntent();
-        publication = publicationsDBHandler.getPublication(getIntent().getLongExtra(Publication.PUBLICATION_KEY,-1));
         String openFragType = intent.getStringExtra(ACTION_OPEN_PUBLICATION);
         if(savedInstanceState==null){
+            publication = publicationsDBHandler.getPublication(getIntent().getLongExtra(Publication.PUBLICATION_KEY,-1));
+            waitForServerResponse = false;
+            fragStack = new Stack<>();
             fragStack.push(openFragType);
-            replaceFrags(openFragType,true);
+            replaceFrags(openFragType,true,false);
+        } else{
+            publication = savedInstanceState.getParcelable(STATE_PUBLICATION);
+            fragStack = (Stack<String>) savedInstanceState.getSerializable(STATE_FRAG_STACK);
+            waitForServerResponse = savedInstanceState.getBoolean(STATE_WAIT_FOR_SERVER_RESPONSE);
         }
     }
 
@@ -120,6 +127,14 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_FRAG_STACK,fragStack);
+        outState.putParcelable(STATE_PUBLICATION,publication);
+        outState.putBoolean(STATE_WAIT_FOR_SERVER_RESPONSE,waitForServerResponse);
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -132,7 +147,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                 if(fragStack.isEmpty()){
                     super.onBackPressed();
                 } else{
-                    replaceFrags(fragStack.peek(),false);
+                    replaceFrags(fragStack.peek(),false,true);
                 }
             }
         }
@@ -142,10 +157,11 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // handle the navigation actions in the common methods class */
         if(item.getItemId()== R.id.nav_my_shares){
+            //if currently not in my shares - set a new stack and open my shares
             if(!fragStack.peek().equals(MY_PUBLICATIONS_TAG)){
                 fragStack = new Stack<>();
                 fragStack.push(MY_PUBLICATIONS_TAG);
-                replaceFrags(MY_PUBLICATIONS_TAG,false);
+                replaceFrags(MY_PUBLICATIONS_TAG,false,true);
             }
         } else{
             CommonMethods.navigationItemSelectedAction(this,item.getItemId());
@@ -156,7 +172,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
         return true;
     }
 
-    public void replaceFrags(String openFragType, boolean isAddNewFragment) {
+    public void replaceFrags(String openFragType, boolean isAddNewFragment, boolean isBackPress) {
         // get the values for the fab animation */
         waitForServerResponse = false;
         long duration;
@@ -175,7 +191,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                 bundle = new Bundle();
                 bundle.putString(AddEditPublicationFragment.TAG,openFragType);
                 addPublicationFragment.setArguments(bundle);
-                updateContainer(isAddNewFragment, addPublicationFragment,"addEditPublicationFrag");
+                updateContainer(isAddNewFragment, addPublicationFragment,"addEditPublicationFrag",isBackPress);
                 animateFab(openFragType,true,duration);
                 break;
             case EDIT_PUBLICATION_TAG:
@@ -185,7 +201,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                     bundle.putString(AddEditPublicationFragment.TAG,openFragType);
                     bundle.putParcelable(Publication.PUBLICATION_KEY,publication);
                     editPublicationFragment.setArguments(bundle);
-                    updateContainer(isAddNewFragment, editPublicationFragment,"addEditPublicationFrag");
+                    updateContainer(isAddNewFragment, editPublicationFragment,"addEditPublicationFrag",isBackPress);
                     animateFab(openFragType,true,duration);
                 }
                 break;
@@ -196,7 +212,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                     bundle.putString(AddEditPublicationFragment.TAG,openFragType);
                     bundle.putParcelable(Publication.PUBLICATION_KEY,publication);
                     republishPublicationFragment.setArguments(bundle);
-                    updateContainer(isAddNewFragment, republishPublicationFragment,"republishPublicationFrag");
+                    updateContainer(isAddNewFragment, republishPublicationFragment,"republishPublicationFrag",isBackPress);
                     animateFab(openFragType,true,duration);
                 }
                 break;
@@ -206,7 +222,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                     bundle = new Bundle();
                     bundle.putParcelable(Publication.PUBLICATION_KEY, publication);
                     publicationDetailFragment.setArguments(bundle);
-                    updateContainer(isAddNewFragment, publicationDetailFragment, "publicationDetailFrag");
+                    updateContainer(isAddNewFragment, publicationDetailFragment, "publicationDetailFrag",isBackPress);
                     if(publication.isOnAir()){
                         animateFab(openFragType, false, duration);
                     } else{
@@ -215,18 +231,25 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                 }
                 break;
             case MY_PUBLICATIONS_TAG:
-                updateContainer(isAddNewFragment, new MyPublicationsFragment(),"my_publications");
+                updateContainer(isAddNewFragment, new MyPublicationsFragment(),"my_publications",isBackPress);
                 animateFab(openFragType,true,duration);
                 break;
         }
     }
 
-    private void updateContainer(boolean isAddNewFragment, Fragment fragment, String fragmentTag){
-        if(isAddNewFragment){
-            fragmentManager.beginTransaction().add(R.id.container_publication, fragment, fragmentTag).commit();
+    private void updateContainer(boolean isAddNewFragment, Fragment fragment, String fragmentTag, boolean isBackPress){
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if(isAddNewFragment || isBackPress){
+            transaction.setCustomAnimations(R.anim.anim_slide_in_from_end, R.anim.anim_slide_out_from_start);
         } else{
-            fragmentManager.beginTransaction().replace(R.id.container_publication, fragment, fragmentTag).commit();
+            transaction.setCustomAnimations(R.anim.anim_slide_in_from_start, R.anim.anim_slide_out_from_end);
         }
+        if(isAddNewFragment){
+            transaction.add(R.id.container_publication, fragment, fragmentTag);
+        } else{
+            transaction.replace(R.id.container_publication, fragment, fragmentTag);
+        }
+        transaction.commit();
     }
 
     private void animateFab(String fragmentTag, boolean setVisible, long duration){
@@ -240,11 +263,11 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                 break;
             case EDIT_PUBLICATION_TAG:
                 imgResource = R.drawable.fab_check;
-                color = ContextCompat.getColor(this,R.color.fooRed);
+                color = ContextCompat.getColor(this,R.color.fooGreen);
                 break;
             case REPUBLISH_PUBLICATION_TAG:
                 imgResource = R.drawable.fab_check;
-                color = ContextCompat.getColor(this,R.color.fooRed);
+                color = ContextCompat.getColor(this,R.color.fooGreen);
                 break;
             case PUBLICATION_DETAIL_TAG:
                 imgResource = R.drawable.fab_register;
@@ -313,7 +336,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                                 startActivity(intent);
                             } else{
                                 fragStack.push(ADD_PUBLICATION_TAG);
-                                replaceFrags(ADD_PUBLICATION_TAG,false);
+                                replaceFrags(ADD_PUBLICATION_TAG,false,false);
                             }
                             break;
 
@@ -349,7 +372,9 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
 
     @Override
     public void onReplaceFrags(String openFragType, long id) {
+        boolean isBackPress = false;
         if(openFragType.equals(BACK_IN_STACK_TAG)){
+            isBackPress = true;
             fragStack.pop();
             if(fragStack.isEmpty()){
                 // if empty stack - a new publication was added from the main activity, go to my shares
@@ -359,6 +384,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
                 openFragType = fragStack.peek();
             }
         } else if(openFragType.equals(NEW_STACK_TAG)){
+            isBackPress = true;
             fragStack.clear();
             openFragType = MY_PUBLICATIONS_TAG;
             fragStack.push(openFragType);
@@ -368,7 +394,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
         if(id != -1){
             publication = publicationsDBHandler.getPublication(id);
         }
-        replaceFrags(openFragType,false);
+        replaceFrags(openFragType,false,isBackPress);
     }
 
     @Override
