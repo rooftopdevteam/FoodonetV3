@@ -11,6 +11,7 @@ import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.db.GroupMembersDBHandler;
+import com.roa.foodonetv3.db.GroupsDBHandler;
 import com.roa.foodonetv3.db.LatestPlacesDBHandler;
 import com.roa.foodonetv3.db.NotificationsDBHandler;
 import com.roa.foodonetv3.db.PublicationsDBHandler;
@@ -34,9 +35,14 @@ public class GetDataService extends IntentService {
             Log.d(TAG,"entered "+ intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1 ));
 
             PublicationsDBHandler publicationsDBHandler;
+            GroupsDBHandler groupsDBHandler;
+            GroupMembersDBHandler groupMembersDBHandler;
+            LatestPlacesDBHandler latestPlacesDBHandler;
+            ReportsDBHandler reportsDBHandler;
+            NotificationsDBHandler notificationsDBHandler;
             switch (intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1)){
+
                 case ReceiverConstants.ACTION_SIGN_OUT:
-                    // TODO: 05/12/2016 check if it is written as it should...
                     FirebaseAuth.getInstance().signOut();
                     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                     // remove user phone number and foodonet user ID from sharedPreferences */
@@ -45,15 +51,15 @@ public class GetDataService extends IntentService {
                     editor.remove(getString(R.string.key_prefs_user_id));
                     editor.apply();
                     // delete the data from the db that won't be re-downloaded */
-                    GroupMembersDBHandler groupMembersDBHandler = new GroupMembersDBHandler(this);
+                    groupMembersDBHandler = new GroupMembersDBHandler(this);
                     groupMembersDBHandler.deleteAllGroupsMembers();
                     publicationsDBHandler = new PublicationsDBHandler(this);
                     publicationsDBHandler.deleteAllPublications();
-                    LatestPlacesDBHandler latestPlacesDBHandler = new LatestPlacesDBHandler(this);
+                    latestPlacesDBHandler = new LatestPlacesDBHandler(this);
                     latestPlacesDBHandler.deleteAllPlaces();
-                    ReportsDBHandler reportsDBHandler = new ReportsDBHandler(this);
+                    reportsDBHandler = new ReportsDBHandler(this);
                     reportsDBHandler.deleteAllReports();
-                    NotificationsDBHandler notificationsDBHandler = new NotificationsDBHandler(this);
+                    notificationsDBHandler = new NotificationsDBHandler(this);
                     notificationsDBHandler.deleteAllNotification();
                     File directoryUsers = (getExternalFilesDir(CommonConstants.FILE_TYPE_USERS));
                     if(directoryUsers!= null) {
@@ -75,6 +81,9 @@ public class GetDataService extends IntentService {
                     if (userID != (long)-1) {
                         ServerMethods.getGroups(this,userID);
                         break;
+                    } else{
+                        groupsDBHandler = new GroupsDBHandler(this);
+                        groupsDBHandler.deleteAllGroups();
                     }
                     // if the user is not registered yet, with userID -1, skip getting the groups and get the publications (which will get only the 'audience 0 - public' group) */
 

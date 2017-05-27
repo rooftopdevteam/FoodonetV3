@@ -162,7 +162,6 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
                         newPublicationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         context.startActivity(newPublicationIntent);
                     } else{
-                        // TODO: 18/05/2017 add real message dialog
                         Toast.makeText(context, R.string.event_no_longer_online, Toast.LENGTH_SHORT).show();
                     }
                     break;

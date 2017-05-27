@@ -26,7 +26,7 @@
         android:id="@+id/editUserName"
         style="@style/FooBoldMedium"
         android:maxLines="1"
-        android:maxLength="12"
+        android:maxLength="@integer/user_name_length_limit"
         android:layout_centerHorizontal="true" />
 
     <de.hdodenhof.circleimageview.CircleImageView

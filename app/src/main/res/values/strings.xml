@@ -143,4 +143,5 @@
     <string name="ready_to_get_started">Ready to get started?</string>
 
     <string name="log_failed_to_pick_contact" translatable="false">Failed to pick contact</string>
+    <string name="user_name_too_long">User name too long</string>
 </resources>

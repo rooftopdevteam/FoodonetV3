@@ -303,12 +303,13 @@ public class CommonMethods {
     }
 
     public static String getDigitsFromPhone(String origin) {
-        return origin.replaceAll("[^0-9]", "");
+        String phoneNum = origin.replaceAll("[^0-9]", "");
+        return removeInternationalPhoneCode(phoneNum);
     }
 
     public static boolean comparePhoneNumbers(String first, String second) {
-        first = removeInternationalPhoneCode(getDigitsFromPhone(first));
-        second = removeInternationalPhoneCode(getDigitsFromPhone(second));
+        first = getDigitsFromPhone(first);
+        second = getDigitsFromPhone(second);
         return PhoneNumberUtils.compare(first, second);
     }
 

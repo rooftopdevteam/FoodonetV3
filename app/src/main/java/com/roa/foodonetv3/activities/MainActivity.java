@@ -40,7 +40,7 @@ import com.roa.foodonetv3.services.GetLocationService;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,TabLayout.OnTabSelectedListener,
-        OnReplaceFragListener, OnGotMyUserImageListener {
+        OnReplaceFragListener, OnGotMyUserImageListener, View.OnClickListener {
     private static final String TAG = "MainActivity";
 
 
@@ -89,22 +89,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // set the floating action button, since it only serves one fragment, no need to animate or change the view */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /** pressed on create new publication */
-                Intent i;
-                if(FirebaseAuth.getInstance().getCurrentUser()==null){
-                    /** no user logged in yet, open the sign in activity */
-                    i = new Intent(MainActivity.this,SignInActivity.class);
-                } else{
-                    /** a user is logged in, continue to open the activity and fragment of the add publication */
-                    i = new Intent(MainActivity.this,PublicationActivity.class);
-                    i.putExtra(PublicationActivity.ACTION_OPEN_PUBLICATION, PublicationActivity.ADD_PUBLICATION_TAG);
-                }
-                startActivity(i);
-            }
-        });
+        fab.setOnClickListener(this);
+        //            @Override
+//            public void onClick(View view) {
+//                /** pressed on create new publication */
+//                Intent i;
+//                if(FirebaseAuth.getInstance().getCurrentUser()==null){
+//                    /** no user logged in yet, open the sign in activity */
+//                    i = new Intent(MainActivity.this,SignInActivity.class);
+//                } else{
+//                    /** a user is logged in, continue to open the activity and fragment of the add publication */
+//                    i = new Intent(MainActivity.this,PublicationActivity.class);
+//                    i.putExtra(PublicationActivity.ACTION_OPEN_PUBLICATION, PublicationActivity.ADD_PUBLICATION_TAG);
+//                }
+//                startActivity(i);
+//            }
+//        });
 
         // trying to update the location returns a 404, disabling for now
         // CommonMethods.updateUserLocationToServer(this);
@@ -182,6 +182,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
+    }
+
+    @Override
+    public void onClick(View v) {
+        // fab click
+        Intent i;
+        if(CommonMethods.getMyUserID(this)==-1){
+            i = new Intent(this,SignInActivity.class);
+        } else{
+            /** a user is logged in, continue to open the activity and fragment of the add publication */
+            i = new Intent(MainActivity.this,PublicationActivity.class);
+            i.putExtra(PublicationActivity.ACTION_OPEN_PUBLICATION, PublicationActivity.ADD_PUBLICATION_TAG);
+        }
+        startActivity(i);
     }
 
     @Override

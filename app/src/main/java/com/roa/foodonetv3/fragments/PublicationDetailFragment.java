@@ -475,24 +475,26 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                                         StringBuilder phoneBuilder = new StringBuilder();
                                         int itemIndex;
                                         String phone;
-                                        for(int i = 0; i < selectedItemsIndexList.size(); i++){
-                                            itemIndex = selectedItemsIndexList.get(i);
-                                            phone = smsRegisteredUsers.get(itemIndex).getCollectorContactInfo();
-                                            if (i > 0) {
-                                                phoneBuilder.append(";");
+                                        if(selectedItemsIndexList.size()!=0){
+                                            for(int i = 0; i < selectedItemsIndexList.size(); i++){
+                                                itemIndex = selectedItemsIndexList.get(i);
+                                                phone = smsRegisteredUsers.get(itemIndex).getCollectorContactInfo();
+                                                if (i > 0) {
+                                                    phoneBuilder.append(";");
+                                                }
+                                                phoneBuilder.append(phone);
                                             }
-                                            phoneBuilder.append(phone);
-                                        }
 
-                                        String message = String.format("%1$s%2$s%3$s%4$s",
-                                                getResources().getString(R.string.sms_to_registered_user_part1),
-                                                publication.getTitle(),
-                                                getResources().getString(R.string.sms_to_registered_user_part2),
-                                                CommonMethods.getMyUserName(getContext()));
-                                        Uri uri = Uri.parse(String.format("smsto:%1$s",phoneBuilder.toString()));
-                                        final Intent intent = new Intent(Intent.ACTION_SENDTO,uri);
-                                        intent.putExtra("sms_body",message);
-                                        startActivity(intent);
+                                            String message = String.format("%1$s%2$s%3$s%4$s",
+                                                    getResources().getString(R.string.sms_to_registered_user_part1),
+                                                    publication.getTitle(),
+                                                    getResources().getString(R.string.sms_to_registered_user_part2),
+                                                    CommonMethods.getMyUserName(getContext()));
+                                            Uri uri = Uri.parse(String.format("smsto:%1$s",phoneBuilder.toString()));
+                                            final Intent intent = new Intent(Intent.ACTION_SENDTO,uri);
+                                            intent.putExtra("sms_body",message);
+                                            startActivity(intent);
+                                        }
                                     }
                                 });
                         alertDialog = smsDialog.show();

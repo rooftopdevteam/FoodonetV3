@@ -4,11 +4,16 @@
         android:title="@string/prefs_profile_settings">
         <EditTextPreference
             android:title="@string/prefs_user_name"
-            android:key="@string/key_prefs_user_name"/>
+            android:key="@string/key_prefs_user_name"
+            android:maxLength="@integer/user_name_length_limit"
+            android:singleLine="true"
+            />
 
         <EditTextPreference
             android:title="@string/prefs_phone_number"
-            android:key="@string/key_prefs_user_phone"/>
+            android:key="@string/key_prefs_user_phone"
+            android:inputType="phone"
+            />
 
     </PreferenceCategory>
 

@@ -66,8 +66,7 @@
     <string name="no">לא</string>
     <string name="not_rated">לא דורג</string>
     <string name="not_signed_in">לא מחובר</string>
-    <string name="notification_added_to_group">צורפת לקבוצה</string>
-    <string name="notification_new_added_in_group">צורפת לקבוצה:</string>
+    <string name="notification_group_members">עדכון חברי קבוצה:</string>
     <string name="notification_new_event">שיתוף חדש</string>
     <string name="notification_new_publication_report">משתמש יצר דיווח חדש על שיתופך:</string>
     <string name="notification_new_registered_user">משתמש נרשם לשיתופך:</string>
@@ -133,4 +132,5 @@
     <string name="yes">כן</string>
     <string name="you_can_only_report_once">אפשר לדווח פעם אחת בלבד</string>
     <string name="you_dont_have_any_groups_yet">אין לך עדיין קבוצה</string>
+    <string name="user_name_too_long">שם משתמש ארוך מדי</string>
 </resources>
