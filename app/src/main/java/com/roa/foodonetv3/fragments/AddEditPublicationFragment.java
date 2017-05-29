@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -75,6 +76,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     private FoodonetReceiver receiver;
     private OnReceiveResponseListener onReceiveResponseListener;
     private OnReplaceFragListener onReplaceFragListener;
+    private boolean isKeyOpen;
 
 
     public AddEditPublicationFragment() {
@@ -452,10 +454,12 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
 
         if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
             // keyboard is opened
+            isKeyOpen = true;
             layoutImage.setVisibility(View.GONE);
             imageTakePictureAddPublication.setVisibility(View.GONE);
         }
         else {
+            isKeyOpen = false;
             layoutImage.setVisibility(View.VISIBLE);
             imageTakePictureAddPublication.setVisibility(View.VISIBLE);
             // keyboard is closed
@@ -475,7 +479,13 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                         // TODO: 18/12/2016 add logic if fails
                         Toast.makeText(context, "fab failed", Toast.LENGTH_SHORT).show();
                     } else {
-                        uploadPublicationToServer();
+                        if(isKeyOpen){
+                            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(layoutImage.getWindowToken(), 0);
+                            onReceiveResponseListener.onReceiveResponse();
+                        } else {
+                            uploadPublicationToServer();
+                        }
                     }
                     break;
 

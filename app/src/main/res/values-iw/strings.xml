@@ -76,7 +76,7 @@
     <string name="phone">טלפון</string>
     <string name="pick_new_location">בחר מיקום חדש</string>
     <string name="please_wait">המתן בבקשה</string>
-    <string name="post_hint_additional_details">מידע נוסף</string>
+    <string name="post_hint_additional_details">מידע נוסף(אופציונלי)</string>
     <string name="post_hint_choose_date_to_end">בחר תאריך סיום</string>
     <string name="post_hint_pickup_address">מיקום איסוף</string>
     <string name="post_hint_price">מחיר</string>
@@ -134,4 +134,5 @@
     <string name="you_dont_have_any_groups_yet">אין לך עדיין קבוצה</string>
     <string name="user_name_too_long">שם משתמש ארוך מדי</string>
     <string name="cannot_publish_closed_group_event">לא ניתן לפרסם שיתוף של קבוצה סגורה</string>
+    <string name="twitter_app_isnt_found">אפליקציית טוויטר לא נמצאה</string>
 </resources>

@@ -31,7 +31,7 @@
     <string name="amazon_authorized" translatable="false">arn:aws:iam::458352772906:role/Cognito_food_collector_poolAuth_DefaultRole</string>
 
     <string name="facebook_app_id" translatable="false">291815507943535</string>
-    <string name="facebook_app_authority">com.facebook.app.FacebookContentProvider291815507943535</string>
+    <string name="facebook_app_authority" translatable="false">com.facebook.app.FacebookContentProvider291815507943535</string>
     <string name="fb_login_protocol_scheme" translatable="false">fb1059200874178777</string>
 
 </resources>

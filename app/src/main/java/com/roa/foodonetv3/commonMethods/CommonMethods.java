@@ -359,7 +359,7 @@ public class CommonMethods {
         if(resolved){
             context.startActivity(tweetIntent);
         }else{
-            Toast.makeText(context, "Twitter app isn't found", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.twitter_app_isnt_found, Toast.LENGTH_LONG).show();
         }
     }
 
