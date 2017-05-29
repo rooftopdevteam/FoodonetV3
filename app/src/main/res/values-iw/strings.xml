@@ -133,4 +133,5 @@
     <string name="you_can_only_report_once">אפשר לדווח פעם אחת בלבד</string>
     <string name="you_dont_have_any_groups_yet">אין לך עדיין קבוצה</string>
     <string name="user_name_too_long">שם משתמש ארוך מדי</string>
+    <string name="cannot_publish_closed_group_event">לא ניתן לפרסם שיתוף של קבוצה סגורה</string>
 </resources>

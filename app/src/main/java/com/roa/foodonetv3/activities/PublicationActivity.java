@@ -53,7 +53,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
     public static final String BACK_IN_STACK_TAG = "backInStack";
     public static final String NEW_STACK_TAG = "newStack";
 
-    private static final String STATE_FRAG_STACK = "stateFragStack";
+    private static final String STATE_PUBLICATION_FRAG_STACK = "statePublicationFragStack";
     private static final String STATE_PUBLICATION = "statePublication";
     private static final String STATE_WAIT_FOR_SERVER_RESPONSE = "stateWaitForServerResponse";
 
@@ -108,7 +108,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
             replaceFrags(openFragType,true,false);
         } else{
             publication = savedInstanceState.getParcelable(STATE_PUBLICATION);
-            fragStack = (Stack<String>) savedInstanceState.getSerializable(STATE_FRAG_STACK);
+            fragStack = (Stack<String>) savedInstanceState.getSerializable(STATE_PUBLICATION_FRAG_STACK);
             waitForServerResponse = savedInstanceState.getBoolean(STATE_WAIT_FOR_SERVER_RESPONSE);
         }
     }
@@ -129,7 +129,7 @@ public class PublicationActivity extends AppCompatActivity implements Navigation
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(STATE_FRAG_STACK,fragStack);
+        outState.putSerializable(STATE_PUBLICATION_FRAG_STACK,fragStack);
         outState.putParcelable(STATE_PUBLICATION,publication);
         outState.putBoolean(STATE_WAIT_FOR_SERVER_RESPONSE,waitForServerResponse);
     }
