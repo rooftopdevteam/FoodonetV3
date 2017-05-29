@@ -78,7 +78,7 @@ public class NotificationFoodonet {
             case NOTIFICATION_TYPE_NEW_PUBLICATION_REPORT:
                 return context.getString(R.string.notification_new_publication_report);
             case NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
-                return context.getString(R.string.notification_new_added_in_group);
+                return context.getString(R.string.notification_group_members);
         }
         return "";
     }
@@ -96,7 +96,7 @@ public class NotificationFoodonet {
                 return String.format("%1$s %2$s, %3$s",context.getString(R.string.notification_new_publication_report),nameNotification,
                         context.getString(R.string.got_a_new_report));
             case NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP:
-                return context.getString(R.string.notification_added_to_group);
+                return String.format("%1$s %2$s", context.getString(R.string.notification_group_members),nameNotification);
         }
         return "";
     }

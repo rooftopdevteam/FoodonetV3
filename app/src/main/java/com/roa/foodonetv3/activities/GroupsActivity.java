@@ -48,7 +48,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
     public static final String BACK_IN_STACK_TAG = "backInStack";
 
     public static final int CONTACT_PICKER = 1;
-    private static final String STATE_FRAG_STACK = "stateFragStack";
+    private static final String STATE_GROUP_FRAG_STACK = "stateGroupFragStack";
     private static final String STATE_ADMIN_GROUP_ID = "stateAdminGroupID";
     private static final String STATE_NON_ADMIN_GROUP_ID = "stateNonAdminGroupID";
 
@@ -105,7 +105,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
         } else{
             adminGroupID = savedInstanceState.getLong(STATE_ADMIN_GROUP_ID);
             nonAdminGroupID = savedInstanceState.getLong(STATE_NON_ADMIN_GROUP_ID);
-            fragStack = (Stack<String>) savedInstanceState.getSerializable(STATE_FRAG_STACK);
+            fragStack = (Stack<String>) savedInstanceState.getSerializable(STATE_GROUP_FRAG_STACK);
         }
     }
 
@@ -135,7 +135,7 @@ public class GroupsActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(STATE_FRAG_STACK,fragStack);
+        outState.putSerializable(STATE_GROUP_FRAG_STACK,fragStack);
         outState.putLong(STATE_ADMIN_GROUP_ID,adminGroupID);
         outState.putLong(STATE_NON_ADMIN_GROUP_ID,nonAdminGroupID);
     }

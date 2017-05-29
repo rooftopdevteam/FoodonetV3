@@ -52,8 +52,7 @@ public class ReportDialog extends Dialog implements View.OnClickListener {
                         break;
                 }
                 if(typeOfReport == -1){
-                    // TODO: 23/01/2017 change
-                    Toast.makeText(getContext(), "Please Choose Report", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.dialog_please_choose_report, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 listener.onReportCreate((int)ratingReport.getRating(),typeOfReport);

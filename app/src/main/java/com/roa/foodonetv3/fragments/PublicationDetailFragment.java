@@ -32,12 +32,18 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.bumptech.glide.Glide;
+import com.facebook.CallbackManager;
+import com.facebook.share.ShareApi;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.activities.PublicationActivity;
 import com.roa.foodonetv3.activities.SignInActivity;
 import com.roa.foodonetv3.adapters.ReportsRecyclerAdapter;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.OnFabChangeListener;
 import com.roa.foodonetv3.commonMethods.OnGotMyUserImageListener;
@@ -83,6 +89,10 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
     private ArrayList<PublicationReport> reports;
     private String userImagePath;
 
+    //test facebook
+    private CallbackManager callbackManager;
+    private ShareDialog shareDialog;
+
     public PublicationDetailFragment() {
         // Required empty public constructor
     }
@@ -114,6 +124,10 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
             isRegistered = registeredUsersDBHandler.isUserRegistered(publication.getId());
         }
         setHasOptionsMenu(true);
+
+        // test facebook
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
 
         receiver = new FoodonetReceiver();
     }
@@ -423,7 +437,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                     }
                     break;
 
-                // intent to open navigation apps */
+                // intent to open map */
                 case R.id.imageActionPublicationMap:
                     // TODO: 22/11/2016 fix to allow both waze and google maps to work
                     if(publication.getLat()!=0 && publication.getLng()!= 0){
@@ -440,10 +454,25 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
 
                 case R.id.imageActionAdminShareFacebook:
                     // TODO: 13/02/2017 add facebook share
+//                    if(publication.getPublisherID()== 0) {
+//                    Share
+                        ShareLinkContent content = new ShareLinkContent.Builder()
+                                .setContentUrl(Uri.parse("https://www.facebook.com/foodonet/"))
+                                .build();
+                        shareDialog.show(content);
+//                    } else{
+//                        Toast.makeText(getContext(), R.string.cannot_publish_closed_group_event, Toast.LENGTH_SHORT).show();
+//                    }
                     break;
 
                 case R.id.imageActionAdminShareTwitter:
-                    // TODO: 13/02/2017 add twitter share
+                    // TODO: 28/05/2017 add message string
+//                    if(publication.getPublisherID()== 0){
+                        String tweet = "https://www.facebook.com/foodonet/";
+                        CommonMethods.sendTweet(getContext(),tweet);
+//                    } else{
+//                        Toast.makeText(getContext(), R.string.cannot_publish_closed_group_event, Toast.LENGTH_SHORT).show();
+//                    }
                     break;
 
                 case R.id.imageActionAdminSMS:
@@ -475,24 +504,26 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                                         StringBuilder phoneBuilder = new StringBuilder();
                                         int itemIndex;
                                         String phone;
-                                        for(int i = 0; i < selectedItemsIndexList.size(); i++){
-                                            itemIndex = selectedItemsIndexList.get(i);
-                                            phone = smsRegisteredUsers.get(itemIndex).getCollectorContactInfo();
-                                            if (i > 0) {
-                                                phoneBuilder.append(";");
+                                        if(selectedItemsIndexList.size()!=0){
+                                            for(int i = 0; i < selectedItemsIndexList.size(); i++){
+                                                itemIndex = selectedItemsIndexList.get(i);
+                                                phone = smsRegisteredUsers.get(itemIndex).getCollectorContactInfo();
+                                                if (i > 0) {
+                                                    phoneBuilder.append(";");
+                                                }
+                                                phoneBuilder.append(phone);
                                             }
-                                            phoneBuilder.append(phone);
-                                        }
 
-                                        String message = String.format("%1$s%2$s%3$s%4$s",
-                                                getResources().getString(R.string.sms_to_registered_user_part1),
-                                                publication.getTitle(),
-                                                getResources().getString(R.string.sms_to_registered_user_part2),
-                                                CommonMethods.getMyUserName(getContext()));
-                                        Uri uri = Uri.parse(String.format("smsto:%1$s",phoneBuilder.toString()));
-                                        final Intent intent = new Intent(Intent.ACTION_SENDTO,uri);
-                                        intent.putExtra("sms_body",message);
-                                        startActivity(intent);
+                                            String message = String.format("%1$s%2$s%3$s%4$s",
+                                                    getResources().getString(R.string.sms_to_registered_user_part1),
+                                                    publication.getTitle(),
+                                                    getResources().getString(R.string.sms_to_registered_user_part2),
+                                                    CommonMethods.getMyUserName(getContext()));
+                                            Uri uri = Uri.parse(String.format("smsto:%1$s",phoneBuilder.toString()));
+                                            final Intent intent = new Intent(Intent.ACTION_SENDTO,uri);
+                                            intent.putExtra("sms_body",message);
+                                            startActivity(intent);
+                                        }
                                     }
                                 });
                         alertDialog = smsDialog.show();
@@ -542,6 +573,12 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                     break;
             }
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

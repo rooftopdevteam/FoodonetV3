@@ -13,8 +13,8 @@
         tools:context="com.roa.foodonetv3.activities.MapActivity" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/image_size_36"
+        android:layout_height="@dimen/image_size_36"
         app:srcCompat="@drawable/my_location"
         android:layout_gravity="end|top"
         android:layout_marginEnd="@dimen/margin_8"
@@ -25,7 +25,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="@dimen/image_size_height_120"
             android:layout_gravity="bottom"
             android:background="#3033b5e5"
             android:id="@+id/mapRecycler" />

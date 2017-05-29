@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.roa.foodonetv3.R;
 import com.roa.foodonetv3.commonMethods.CommonConstants;
+import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
 
 public class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
@@ -84,14 +85,22 @@ public class PrefsFragment extends PreferenceFragment implements Preference.OnPr
                     R.array.prefs_notification_radius_values_km,
                     newValue.toString()));
         } else if(preferenceKey.equals(keyUserName)){
-            userName = newValue.toString();
-            preferenceUserName.setSummary(newValue.toString());
+            userName = (newValue.toString()).replace("\n","");
+            int userNameLengthLimit = getResources().getInteger(R.integer.user_name_length_limit);
+            if(userName.length()> userNameLengthLimit){
+                userName = userName.substring(0,userNameLengthLimit);
+                Toast.makeText(getActivity(), R.string.user_name_too_long, Toast.LENGTH_SHORT).show();
+            }
+            preferenceUserName.setSummary(userName);
             updateUser(userName,userPhone);
+            return false;
         } else if(preferenceKey.equals(keyUserPhone)){
             userPhone = newValue.toString();
-            if(PhoneNumberUtils.isGlobalPhoneNumber(newValue.toString())){
-                preferenceUserPhone.setSummary(newValue.toString());
+            if(PhoneNumberUtils.isGlobalPhoneNumber(userPhone)){
+                userPhone = CommonMethods.getDigitsFromPhone(userPhone);
+                preferenceUserPhone.setSummary(userPhone);
                 updateUser(userName,userPhone);
+                return false;
             } else{
                 Toast.makeText(getActivity(), R.string.invalid_phone_number, Toast.LENGTH_SHORT).show();
                 return false;

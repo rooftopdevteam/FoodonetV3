@@ -34,6 +34,7 @@
                 android:maxLines="2"
                 android:layout_toRightOf="@id/imagePublicationGroup"
                 android:layout_toEndOf="@id/imagePublicationGroup"
+                style="@style/FooXS"
                 />
         </RelativeLayout>
 
@@ -58,6 +59,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/imagePublicationRemaining"
                 android:layout_toEndOf="@id/imagePublicationRemaining"
+                style="@style/FooSmall"
                 />
         </RelativeLayout>
 
@@ -82,6 +84,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/imagePublicationJoined"
                 android:layout_toEndOf="@+id/imagePublicationJoined"
+                style="@style/FooXS"
                 />
         </RelativeLayout>
 
@@ -118,8 +121,8 @@
         android:layout_marginTop="@dimen/margin_8" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/image_size_48"
+        android:layout_height="@dimen/image_size_48"
         android:src="@drawable/camera_xxh"
         android:id="@+id/imagePublisherUser"
         android:layout_below="@id/textTitlePublication"
@@ -144,8 +147,8 @@
         android:layout_marginTop="@dimen/margin_8" />
 
     <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/image_size_24"
+        android:layout_height="@dimen/image_size_24"
         app:srcCompat="@drawable/star"
         android:layout_below="@+id/textPublicationAddress"
         android:layout_toRightOf="@+id/imagePublisherUser"
@@ -162,10 +165,12 @@
         android:layout_toRightOf="@+id/imageStar"
         android:layout_toEndOf="@+id/imageStar"
         android:id="@+id/textPublicationRating"
-
+        android:text="Not rated"
         android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginTop="@dimen/margin_8" />
+        android:layout_marginTop="@dimen/margin_8"
+        style="@style/FooSmall"
+        />
 
     <TextView
         android:text="Leonardo DiCaprio"
@@ -180,7 +185,9 @@
         android:textAlignment="viewStart"
         android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginTop="@dimen/margin_8" />
+        android:layout_marginTop="@dimen/margin_8"
+        style="@style/FooSmall"
+        />
 
     <TextView
         android:text="@string/item_price"
@@ -228,7 +235,9 @@
         android:textAlignment="viewStart"
         android:layout_below="@+id/textGroupName"
         android:layout_alignLeft="@+id/textGroupName"
-        android:layout_alignStart="@+id/textGroupName" />
+        android:layout_alignStart="@+id/textGroupName"
+        style="@style/FooXS"
+        />
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

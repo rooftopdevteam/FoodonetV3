@@ -122,16 +122,9 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                 break;
             }
             case CommonConstants.NOTIF_TYPE_GROUP_MEMBERS:
-//                notificationsDBHandler = new NotificationsDBHandler(this);
                 long groupID = msgRoot.getLong("id");
                 String title = msgRoot.getString("title");
                 ServerMethods.getGroupAdminImage(this,groupID,title);
-//                // TODO: 18/05/2017 null for file image for now
-//                notificationsDBHandler.insertNotification(new NotificationFoodonet(NotificationFoodonet.NOTIFICATION_TYPE_NEW_ADDED_IN_GROUP,
-//                        groupID, title, CommonMethods.getCurrentTimeSeconds(),null));
-//                if (sendNotifications) {
-//                    CommonMethods.sendNotification(this);
-//                }
                 CommonMethods.getNewData(this);
                 break;
         }

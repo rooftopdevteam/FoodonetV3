@@ -14,7 +14,7 @@
     <string name="post_hint_what_would_you_like_to_share">What would you like to share?</string>
     <string name="post_hint_pickup_address">Pickup address</string>
     <string name="post_hint_share_with">Share with:</string>
-    <string name="post_hint_additional_details">Additional details</string>
+    <string name="post_hint_additional_details">Additional details(optional)</string>
     <string name="post_please_enter_all_fields">Please enter all fields</string>
     <string name="post_hint_choose_date_to_end">Choose date to end</string>
     <string name="post_hint_price">Price</string>
@@ -45,6 +45,7 @@
     <string name="report_has_more_to_offer">has more to offer</string>
     <string name="report_took_all">took all</string>
     <string name="report_found_nothing_there">found nothing there</string>
+    <string name="dialog_please_choose_report">Please choose report</string>
 
     <string name="signed_out_successfully">Signed out successfully</string>
     <string name="toast_needs_location_permission">needs location permission</string>
@@ -143,4 +144,8 @@
     <string name="ready_to_get_started">Ready to get started?</string>
 
     <string name="log_failed_to_pick_contact" translatable="false">Failed to pick contact</string>
+    <string name="user_name_too_long">User name too long</string>
+    <string name="cannot_publish_closed_group_event">Cannot publish closed group event</string>
+    <string name="twitter_app_isnt_found">Twitter app isn\'t found</string>
+    <string name="foodonet">Foodonet</string>
 </resources>

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,6 +20,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,7 +50,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class AddEditPublicationFragment extends Fragment implements View.OnClickListener{
+public class AddEditPublicationFragment extends Fragment implements View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String TAG = "AddEditPublicationFrag";
     private static final int INTENT_TAKE_PICTURE = 1;
     private static final int INTENT_PICK_PICTURE = 2;
@@ -61,8 +64,8 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     private EditText editTextTitleAddPublication, editTextPriceAddPublication, editTextDetailsAddPublication;
     private Spinner spinnerShareWith;
     private TextView textLocationAddPublication, textPublicationPriceType;
-    private ImageView imagePictureAddPublication;
-    private View layoutInfo;
+    private ImageView imagePictureAddPublication,imageTakePictureAddPublication;
+    private View layoutInfo, layoutImage;
 
     private String mCurrentPhotoPath, pickPhotoPath;
     private SavedPlace place;
@@ -73,6 +76,7 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     private FoodonetReceiver receiver;
     private OnReceiveResponseListener onReceiveResponseListener;
     private OnReplaceFragListener onReplaceFragListener;
+    private boolean isKeyOpen;
 
 
     public AddEditPublicationFragment() {
@@ -156,13 +160,16 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         layoutInfo.setVisibility(View.GONE);
         TextView textInfo = (TextView) v.findViewById(R.id.textInfo);
         textInfo.setText(R.string.start_sharing_by_adding_an_image_of_the_food_you_wish_to_share);
-        textInfo.setTextSize(getResources().getDimension(R.dimen.text_size_12));
         if (editType.equals(PublicationActivity.EDIT_PUBLICATION_TAG) || editType.equals(PublicationActivity.REPUBLISH_PUBLICATION_TAG)){
             loadPublicationIntoViews();
         }
         if(place!=null){
             textLocationAddPublication.setText(place.getAddress());
         }
+        layoutImage = v.findViewById(R.id.layoutImage);
+        imageTakePictureAddPublication = (ImageView) v.findViewById(R.id.imageTakePictureAddPublication);
+        layoutImage.getViewTreeObserver().addOnGlobalLayoutListener(this);
+
         return v;
     }
 
@@ -432,6 +439,32 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         }
     }
 
+    @Override
+    public void onGlobalLayout() {
+        Rect r = new Rect();
+        layoutImage.getWindowVisibleDisplayFrame(r);
+        int screenHeight = layoutImage.getRootView().getHeight();
+
+        // r.bottom is the position above soft keypad or device button.
+        // if keypad is shown, the r.bottom is smaller than that before.
+        int keypadHeight = screenHeight - r.bottom;
+
+        Log.d(TAG, "keypadHeight = " + keypadHeight);
+
+        if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+            // keyboard is opened
+            isKeyOpen = true;
+            layoutImage.setVisibility(View.GONE);
+            imageTakePictureAddPublication.setVisibility(View.GONE);
+        }
+        else {
+            isKeyOpen = false;
+            layoutImage.setVisibility(View.VISIBLE);
+            imageTakePictureAddPublication.setVisibility(View.VISIBLE);
+            // keyboard is closed
+        }
+    }
+
 
     private class FoodonetReceiver extends BroadcastReceiver {
         @Override
@@ -445,7 +478,13 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                         // TODO: 18/12/2016 add logic if fails
                         Toast.makeText(context, "fab failed", Toast.LENGTH_SHORT).show();
                     } else {
-                        uploadPublicationToServer();
+                        if(isKeyOpen){
+                            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(layoutImage.getWindowToken(), 0);
+                            onReceiveResponseListener.onReceiveResponse();
+                        } else {
+                            uploadPublicationToServer();
+                        }
                     }
                     break;
 

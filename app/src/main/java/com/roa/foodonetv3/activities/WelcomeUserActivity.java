@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.roa.foodonetv3.R;
+import com.roa.foodonetv3.commonMethods.CommonConstants;
 import com.roa.foodonetv3.commonMethods.CommonMethods;
 import com.roa.foodonetv3.commonMethods.ReceiverConstants;
 import com.roa.foodonetv3.serverMethods.ServerMethods;
@@ -63,7 +64,11 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
             ServerMethods.getMyUserImage(this);
             String userName = mFirebaseUser.getDisplayName();
             if(userName!= null){
+                int userNameLengthLimit = getResources().getInteger(R.integer.user_name_length_limit);
                 userName = userName.replace("\n","");
+                if(userName.length()> userNameLengthLimit){
+                    userName = userName.substring(0,userNameLengthLimit);
+                }
                 editUserName.setText(userName);
             } else {
                 // TODO: 28/11/2016 add logic
@@ -107,6 +112,7 @@ public class WelcomeUserActivity extends AppCompatActivity implements View.OnCli
                 phone = CommonMethods.getDigitsFromPhone(phone);
                 String userName = editUserName.getText().toString();
                 if(PhoneNumberUtils.isGlobalPhoneNumber(phone)){
+                    phone = CommonMethods.getDigitsFromPhone(phone);
                     ServerMethods.addUser(this, phone, userName);
                     registerToPushNotification(this);
                     dialog = new ProgressDialog(this);

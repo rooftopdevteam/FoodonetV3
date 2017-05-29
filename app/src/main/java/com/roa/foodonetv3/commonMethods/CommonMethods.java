@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
@@ -54,6 +55,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
 
@@ -303,12 +305,13 @@ public class CommonMethods {
     }
 
     public static String getDigitsFromPhone(String origin) {
-        return origin.replaceAll("[^0-9]", "");
+        String phoneNum = origin.replaceAll("[^0-9]", "");
+        return removeInternationalPhoneCode(phoneNum);
     }
 
     public static boolean comparePhoneNumbers(String first, String second) {
-        first = removeInternationalPhoneCode(getDigitsFromPhone(first));
-        second = removeInternationalPhoneCode(getDigitsFromPhone(second));
+        first = getDigitsFromPhone(first);
+        second = getDigitsFromPhone(second);
         return PhoneNumberUtils.compare(first, second);
     }
 
@@ -333,6 +336,31 @@ public class CommonMethods {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
         return df.format(num);
+    }
+
+    public static void sendTweet(Context context, String message){
+        Intent tweetIntent = new Intent(Intent.ACTION_SEND);
+        tweetIntent.putExtra(Intent.EXTRA_TEXT, message);
+        tweetIntent.setType("text/plain");
+
+        PackageManager packManager = context.getPackageManager();
+        List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
+
+        boolean resolved = false;
+        for(ResolveInfo resolveInfo: resolvedInfoList){
+            if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")){
+                tweetIntent.setClassName(
+                        resolveInfo.activityInfo.packageName,
+                        resolveInfo.activityInfo.name );
+                resolved = true;
+                break;
+            }
+        }
+        if(resolved){
+            context.startActivity(tweetIntent);
+        }else{
+            Toast.makeText(context, R.string.twitter_app_isnt_found, Toast.LENGTH_LONG).show();
+        }
     }
 
     /** sends all new messages from the db as notifications to the user */

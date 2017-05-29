@@ -12,7 +12,6 @@
         android:layout_marginLeft="@dimen/margin_16"
         android:layout_marginStart="@dimen/margin_16"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginRight="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16" />
@@ -23,7 +22,6 @@
         android:id="@+id/imagePublicationGroup"
         app:srcCompat="@drawable/camera_xxh"
         android:layout_alignBottom="@+id/textPublicationTitle"
-        android:layout_toRightOf="@+id/imagePublication"
         android:layout_toEndOf="@+id/imagePublication" />
 
     <TextView
@@ -36,10 +34,9 @@
         android:textAlignment="viewStart"
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/margin_8"
-        android:layout_toRightOf="@+id/imagePublicationGroup"
         android:layout_toEndOf="@+id/imagePublicationGroup"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginLeft="@dimen/margin_8" />
+        />
 
     <TextView
         android:text="Tel Aviv , 15.6 km"
@@ -49,7 +46,6 @@
         android:gravity="start"
         android:textAlignment="viewStart"
         android:layout_below="@+id/imagePublicationGroup"
-        android:layout_toRightOf="@+id/imagePublication"
         android:layout_toEndOf="@+id/imagePublication"
         android:layout_marginTop="@dimen/margin_4"
         style="@style/FooXS" />
@@ -60,7 +56,6 @@
         android:layout_height="match_parent"
         android:id="@+id/textPublicationUsers"
         android:layout_below="@id/textPublicationAddressDistance"
-        android:layout_toRightOf="@+id/imagePublication"
         android:layout_toEndOf="@+id/imagePublication"
         android:layout_marginTop="@dimen/margin_4"
         style="@style/FooXS" />
@@ -71,9 +66,7 @@
         android:layout_height="match_parent"
         android:id="@+id/textPublicationTimeRemaining"
         android:layout_alignBaseline="@id/textPublicationUsers"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginRight="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16"
         style="@style/FooXS"
         />
@@ -81,9 +74,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_height"
-        android:layout_toRightOf="@+id/imagePublication"
         android:layout_toEndOf="@+id/imagePublication"
-        android:layout_marginRight="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16"
         android:background="@color/fooDivider"
         android:layout_alignParentBottom="true"/>

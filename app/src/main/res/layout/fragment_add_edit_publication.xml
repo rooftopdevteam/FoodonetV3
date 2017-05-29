@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    >
+    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -33,11 +33,10 @@
         android:id="@+id/imageTakePictureAddPublication"
         android:scaleType="fitCenter"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="153dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp" />
+        android:layout_marginTop="@dimen/add_publication_image_height"
+        android:layout_marginEnd="@dimen/margin_16"
+        />
 
     <EditText
         android:layout_width="match_parent"
@@ -45,7 +44,6 @@
         android:inputType="textPersonName"
         android:ems="10"
         android:layout_below="@+id/imageTakePictureAddPublication"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/editTextTitleAddPublication"
         android:layout_marginEnd="@dimen/margin_16"
@@ -53,12 +51,66 @@
         android:hint="@string/post_hint_what_would_you_like_to_share"
         style="@style/FooMedium"/>
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:layout_below="@+id/editTextTitleAddPublication"
+        android:layout_alignParentStart="true"
+        android:id="@+id/editTextDetailsAddPublication"
+        android:layout_marginEnd="@dimen/margin_16"
+        android:layout_marginStart="@dimen/margin_16"
+        android:hint="@string/post_hint_additional_details"
+        style="@style/FooMedium"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textPriceHeader"
+        android:layout_alignBaseline="@+id/editTextPriceAddPublication"
+        android:layout_alignParentStart="true"
+        android:text="@string/price"
+        android:layout_marginStart="@dimen/margin_16"
+        android:paddingStart="@dimen/margin_4"
+        android:paddingLeft="@dimen/margin_4"
+        android:paddingRight="@dimen/margin_4"
+        android:paddingEnd="@dimen/margin_4"
+        style="@style/FooMedium"
+        />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:id="@+id/editTextPriceAddPublication"
+        android:ems="5"
+        android:layout_below="@id/editTextDetailsAddPublication"
+        android:layout_toEndOf="@+id/textPriceHeader"
+        android:layout_marginStart="@dimen/margin_8"
+        android:paddingLeft="@dimen/margin_8"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingRight="@dimen/margin_8"
+        android:paddingEnd="@dimen/margin_8"
+        android:hint="@string/free"
+        style="@style/FooMedium"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/currency_nis"
+        android:id="@+id/textPublicationPriceType"
+        android:layout_alignBaseline="@id/editTextPriceAddPublication"
+        android:layout_alignBottom="@+id/textPriceHeader"
+        android:layout_toEndOf="@id/editTextPriceAddPublication"
+        style="@style/FooSmall"
+        />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:layout_below="@+id/editTextTitleAddPublication"
-        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editTextPriceAddPublication"
         android:layout_alignParentStart="true"
         android:id="@+id/textLocationAddPublication"
         android:layout_marginEnd="@dimen/margin_16"
@@ -77,10 +129,9 @@
         android:id="@+id/divider1"
         android:layout_below="@id/textLocationAddPublication"
         android:background="@color/fooGrey"
-        android:layout_alignLeft="@id/textLocationAddPublication"
         android:layout_alignStart="@id/textLocationAddPublication"
-        android:layout_alignRight="@id/textLocationAddPublication"
         android:layout_alignEnd="@id/textLocationAddPublication"
+        android:layout_marginTop="@dimen/margin_4"
         android:layout_marginBottom="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_4"
         android:layout_marginLeft="@dimen/margin_4"
@@ -88,64 +139,14 @@
         android:layout_marginRight="@dimen/margin_4"
         />
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textPriceHeader"
         android:layout_below="@+id/divider1"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:text="@string/price"
-        android:layout_marginStart="@dimen/margin_16"
-        android:layout_marginLeft="@dimen/margin_16"
-        android:paddingStart="@dimen/margin_4"
-        android:paddingLeft="@dimen/margin_4"
-        android:paddingRight="@dimen/margin_4"
-        android:paddingEnd="@dimen/margin_4"
-        style="@style/FooMedium"
-        />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:id="@+id/editTextPriceAddPublication"
-        android:ems="5"
-        android:layout_alignBaseline="@+id/textPriceHeader"
-        android:layout_alignBottom="@+id/textPriceHeader"
-        android:layout_toRightOf="@+id/textPriceHeader"
-        android:layout_toEndOf="@+id/textPriceHeader"
-        android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginLeft="@dimen/margin_8"
-        android:paddingLeft="@dimen/margin_8"
-        android:paddingStart="@dimen/margin_8"
-        android:paddingRight="@dimen/margin_8"
-        android:paddingEnd="@dimen/margin_8"
-        android:hint="@string/free"
-        style="@style/FooMedium"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/currency_nis"
-        android:id="@+id/textPublicationPriceType"
-        android:layout_alignBaseline="@id/textPriceHeader"
-        android:layout_alignBottom="@+id/textPriceHeader"
-        android:layout_toRightOf="@id/editTextPriceAddPublication"
-        android:layout_toEndOf="@id/editTextPriceAddPublication"
-        style="@style/FooSmall"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textPriceHeader"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/textShareWithAddPublication"
         android:layout_marginStart="@dimen/margin_16"
-        android:layout_marginLeft="@dimen/margin_16"
         android:layout_marginTop="@dimen/margin_8"
         android:paddingStart="@dimen/margin_4"
         android:paddingLeft="@dimen/margin_4"
@@ -159,27 +160,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/spinnerShareWith"
-        android:layout_above="@+id/editTextDetailsAddPublication"
-        android:layout_toRightOf="@+id/textShareWithAddPublication"
+        android:layout_alignBottom="@id/textShareWithAddPublication"
         android:layout_toEndOf="@+id/textShareWithAddPublication"
-        android:layout_marginRight="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16"
         android:gravity="center"
         />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:layout_below="@+id/textShareWithAddPublication"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/editTextDetailsAddPublication"
-        android:layout_marginEnd="@dimen/margin_16"
-        android:layout_marginStart="@dimen/margin_16"
-        android:hint="@string/post_hint_additional_details"
-        style="@style/FooMedium"/>
 
 
 
