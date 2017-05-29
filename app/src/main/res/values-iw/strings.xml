@@ -135,4 +135,6 @@
     <string name="user_name_too_long">שם משתמש ארוך מדי</string>
     <string name="cannot_publish_closed_group_event">לא ניתן לפרסם שיתוף של קבוצה סגורה</string>
     <string name="twitter_app_isnt_found">אפליקציית טוויטר לא נמצאה</string>
+    <string name="foodonet">פודונט</string>
+    <string name="dialog_please_choose_report">בבקשה בחר בדיווח</string>
 </resources>

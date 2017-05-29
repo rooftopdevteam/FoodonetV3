@@ -160,7 +160,6 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         layoutInfo.setVisibility(View.GONE);
         TextView textInfo = (TextView) v.findViewById(R.id.textInfo);
         textInfo.setText(R.string.start_sharing_by_adding_an_image_of_the_food_you_wish_to_share);
-        textInfo.setTextSize(getResources().getDimension(R.dimen.text_size_12));
         if (editType.equals(PublicationActivity.EDIT_PUBLICATION_TAG) || editType.equals(PublicationActivity.REPUBLISH_PUBLICATION_TAG)){
             loadPublicationIntoViews();
         }

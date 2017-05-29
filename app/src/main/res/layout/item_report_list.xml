@@ -9,9 +9,8 @@
         app:srcCompat="@drawable/report_circle"
         android:id="@+id/imageView2"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginLeft="@dimen/margin_8"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
+        android:layout_width="@dimen/image_size_12"
+        android:layout_height="@dimen/image_size_12"
         android:layout_gravity="center_vertical" />
 
     <TextView
@@ -25,7 +24,6 @@
         android:paddingEnd="@dimen/margin_4"
         android:paddingRight="@dimen/margin_4"
         android:layout_marginStart="@dimen/margin_4"
-        android:layout_marginLeft="@dimen/margin_4"
         android:layout_marginTop="@dimen/margin_4"
         android:layout_marginBottom="@dimen/margin_4" />
 </LinearLayout>

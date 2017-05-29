@@ -45,6 +45,7 @@
     <string name="report_has_more_to_offer">has more to offer</string>
     <string name="report_took_all">took all</string>
     <string name="report_found_nothing_there">found nothing there</string>
+    <string name="dialog_please_choose_report">Please choose report</string>
 
     <string name="signed_out_successfully">Signed out successfully</string>
     <string name="toast_needs_location_permission">needs location permission</string>
@@ -146,4 +147,5 @@
     <string name="user_name_too_long">User name too long</string>
     <string name="cannot_publish_closed_group_event">Cannot publish closed group event</string>
     <string name="twitter_app_isnt_found">Twitter app isn\'t found</string>
+    <string name="foodonet">Foodonet</string>
 </resources>

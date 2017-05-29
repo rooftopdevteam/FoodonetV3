@@ -23,6 +23,7 @@
         <item name="android:textColor">@color/fooWhite</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/text_size_22</item>
     </style>
 
     <style name="FooBlackXL">
@@ -66,10 +67,6 @@
         <item name="android:textStyle">italic</item>
     </style>
 
-    <style name="FooWhiteMedium">
-        <item name="android:textSize">@dimen/text_size_20</item>
-        <item name="android:textColor">@color/fooWhite</item>
-    </style>
 
     <style name="FooBlackMedium">
         <item name="android:textSize">@dimen/text_size_20</item>
@@ -130,6 +127,11 @@
     <style name="FooBlueXS">
         <item name="android:textSize">@dimen/text_size_12</item>
         <item name="android:textColor">@color/fooLightBlue</item>
+    </style>
+
+    <style name="FooDrawerUserName">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/fooWhite</item>
     </style>
 
     <style name="FullscreenTheme" parent="AppTheme">

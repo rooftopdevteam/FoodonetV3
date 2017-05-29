@@ -12,7 +12,6 @@
         android:layout_marginLeft="@dimen/margin_16"
         android:layout_marginStart="@dimen/margin_16"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginRight="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16" />
@@ -24,7 +23,6 @@
         app:srcCompat="@drawable/camera_xxh"
         android:layout_alignBottom="@+id/imageNotification"
         android:layout_alignEnd="@id/imageNotification"
-        android:layout_alignRight="@id/imageNotification"
 
         />
 
@@ -36,10 +34,9 @@
         style="@style/FooBlueSmall"
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/margin_8"
-        android:layout_toRightOf="@+id/imageNotification"
         android:layout_toEndOf="@+id/imageNotification"
         android:layout_marginStart="@dimen/margin_16"
-        android:layout_marginLeft="@dimen/margin_16" />
+        />
 
     <TextView
         android:text="Grilled meat"
@@ -50,11 +47,10 @@
         android:gravity="start"
         android:textAlignment="viewStart"
         android:layout_marginTop="@dimen/margin_8"
-        android:layout_toRightOf="@+id/imageNotification"
         android:layout_toEndOf="@+id/imageNotification"
         android:layout_below="@+id/textNotificationType"
         android:layout_marginStart="@dimen/margin_16"
-        android:layout_marginLeft="@dimen/margin_16" />
+        />
 
     <TextView
         android:text="12 days"
@@ -65,8 +61,6 @@
         android:textAlignment="viewEnd"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/imageNotification"
         android:layout_toEndOf="@id/imageNotification"
         android:layout_marginTop="@dimen/margin_4"
         android:paddingStart="@dimen/margin_16"
@@ -80,9 +74,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_height"
-        android:layout_toRightOf="@+id/imageNotification"
         android:layout_toEndOf="@+id/imageNotification"
-        android:layout_marginRight="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16"
         android:background="@color/fooDivider"
         android:layout_alignParentBottom="true"/>
