@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,7 +49,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class AddEditPublicationFragment extends Fragment implements View.OnClickListener{
+public class AddEditPublicationFragment extends Fragment implements View.OnClickListener, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String TAG = "AddEditPublicationFrag";
     private static final int INTENT_TAKE_PICTURE = 1;
     private static final int INTENT_PICK_PICTURE = 2;
@@ -61,8 +63,8 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
     private EditText editTextTitleAddPublication, editTextPriceAddPublication, editTextDetailsAddPublication;
     private Spinner spinnerShareWith;
     private TextView textLocationAddPublication, textPublicationPriceType;
-    private ImageView imagePictureAddPublication;
-    private View layoutInfo;
+    private ImageView imagePictureAddPublication,imageTakePictureAddPublication;
+    private View layoutInfo, layoutImage;
 
     private String mCurrentPhotoPath, pickPhotoPath;
     private SavedPlace place;
@@ -163,6 +165,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
         if(place!=null){
             textLocationAddPublication.setText(place.getAddress());
         }
+        layoutImage = v.findViewById(R.id.layoutImage);
+        imageTakePictureAddPublication = (ImageView) v.findViewById(R.id.imageTakePictureAddPublication);
+        layoutImage.getViewTreeObserver().addOnGlobalLayoutListener(this);
+
         return v;
     }
 
@@ -429,6 +435,30 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
                     ServerMethods.republishPublication(getContext(),publication);
                     break;
             }
+        }
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        Rect r = new Rect();
+        layoutImage.getWindowVisibleDisplayFrame(r);
+        int screenHeight = layoutImage.getRootView().getHeight();
+
+        // r.bottom is the position above soft keypad or device button.
+        // if keypad is shown, the r.bottom is smaller than that before.
+        int keypadHeight = screenHeight - r.bottom;
+
+        Log.d(TAG, "keypadHeight = " + keypadHeight);
+
+        if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+            // keyboard is opened
+            layoutImage.setVisibility(View.GONE);
+            imageTakePictureAddPublication.setVisibility(View.GONE);
+        }
+        else {
+            layoutImage.setVisibility(View.VISIBLE);
+            imageTakePictureAddPublication.setVisibility(View.VISIBLE);
+            // keyboard is closed
         }
     }
 
