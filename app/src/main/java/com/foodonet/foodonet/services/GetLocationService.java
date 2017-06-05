@@ -22,7 +22,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.foodonet.foodonet.commonMethods.CommonConstants;
 import com.foodonet.foodonet.commonMethods.CommonMethods;
 import com.foodonet.foodonet.commonMethods.ReceiverConstants;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -79,6 +78,12 @@ public class GetLocationService extends Service implements LocationListener, Goo
         Log.d(TAG,"onDestroy");
     }
 
+    /**
+     * handles getting the location, according to the type wanted,
+     * it will either start by trying to get the data through the network,
+     * then, if not received after a second (time is a constant variable),
+     * move to get the location through the getLastLocation from fused location API
+     */
     public void startGetLocation() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
@@ -88,7 +93,7 @@ public class GetLocationService extends Service implements LocationListener, Goo
                     TimerTask timerTask = new TimerTask() {
                         @Override
                         public void run() {
-                            Log.d(TAG,"entered delayed task");
+                            Log.i(TAG,"entered delayed task");
                             if(!gotLocation){
                                 locationManager.removeUpdates(GetLocationService.this);
                                 connectToLocationAPI();
@@ -115,7 +120,7 @@ public class GetLocationService extends Service implements LocationListener, Goo
         CommonMethods.setLastLocation(this,new LatLng(location.getLatitude(),location.getLongitude()));
         locationManager.removeUpdates(this);
         getNewData();
-        Log.d(TAG,"got location from location manager");
+        Log.i(TAG,"got location from location manager");
     }
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -150,7 +155,7 @@ public class GetLocationService extends Service implements LocationListener, Goo
                 CommonMethods.setLastLocation(this,new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude()));
             }
             getNewData();
-            Log.d(TAG,"got location from fused location");
+            Log.i(TAG,"got location from fused location");
         }
     }
     @Override

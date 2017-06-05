@@ -18,10 +18,9 @@
         app:srcCompat="@drawable/my_location"
         android:layout_gravity="end|top"
         android:layout_marginEnd="@dimen/margin_8"
-        android:layout_marginRight="@dimen/margin_8"
         android:layout_marginTop="@dimen/margin_16"
         android:id="@+id/imageMyLocation"
-        />
+        android:contentDescription="@string/image_desc_my_location" />
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"

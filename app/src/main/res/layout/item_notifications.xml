@@ -8,7 +8,7 @@
         android:layout_width="@dimen/image_size_68"
         android:layout_height="@dimen/image_size_68"
         android:id="@+id/imageNotification"
-        app:srcCompat="@drawable/camera_xxh"
+        app:srcCompat="@drawable/icon_alpha"
         android:layout_marginLeft="@dimen/margin_16"
         android:layout_marginStart="@dimen/margin_16"
         android:layout_centerVertical="true"
@@ -20,14 +20,13 @@
         android:layout_width="@dimen/image_size_36"
         android:layout_height="@dimen/image_size_36"
         android:id="@+id/imageNotificationType"
-        app:srcCompat="@drawable/camera_xxh"
+        app:srcCompat="@drawable/icon_alpha"
         android:layout_alignBottom="@+id/imageNotification"
         android:layout_alignEnd="@id/imageNotification"
 
         />
 
     <TextView
-        android:text="New Event:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textNotificationType"
@@ -39,7 +38,6 @@
         />
 
     <TextView
-        android:text="Grilled meat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textNotificationName"
@@ -53,7 +51,6 @@
         />
 
     <TextView
-        android:text="12 days"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textNotificationTime"

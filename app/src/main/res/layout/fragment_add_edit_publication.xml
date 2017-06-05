@@ -13,8 +13,9 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="@dimen/image_size_height_180"
-            app:srcCompat="@drawable/camera_xxh"
-            android:id="@+id/imagePictureAddPublication" />
+            app:srcCompat="@drawable/icon_alpha"
+            android:id="@+id/imagePictureAddPublication"
+            android:contentDescription="@string/image_desc_publication_image" />
 
         <include layout="@layout/layout_info_add_publication"
             android:id="@+id/layoutInfo"/>
@@ -36,7 +37,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="@dimen/add_publication_image_height"
         android:layout_marginEnd="@dimen/margin_16"
-        />
+        android:contentDescription="@string/image_desc_add_image" />
 
     <EditText
         android:layout_width="match_parent"

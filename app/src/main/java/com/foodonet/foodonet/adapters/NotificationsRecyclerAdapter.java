@@ -99,7 +99,7 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
             mCurrentPhotoFile = null;
             failCount = 3;
             notification = notifications.get(position);
-            Glide.with(context).load(R.drawable.camera_xxh).into(imageNotification);
+            Glide.with(context).load(R.drawable.icon_alpha).into(imageNotification);
             textNotificationType.setText(notification.getTypeNotificationString(context));
             textNotificationType.setTextColor(ContextCompat.getColor(context,notification.getNotificationTextColor()));
             textNotificationName.setText(notification.getNameNotification());

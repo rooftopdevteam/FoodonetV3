@@ -214,7 +214,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1)){
-                case ReceiverConstants.ACTION_GET_PUBLICATION:
+                case ReceiverConstants.ACTION_GET_NEW_PUBLICATION:
                     if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
                         Toast.makeText(context, R.string.toast_something_went_wrong_please_try_again, Toast.LENGTH_SHORT).show();
                     } else{

@@ -92,7 +92,7 @@ public class MyPublicationsFragment extends Fragment{
         public void onReceive(Context context, Intent intent) {
             int action = intent.getIntExtra(ReceiverConstants.ACTION_TYPE, -1);
             switch (action) {
-                case ReceiverConstants.ACTION_GET_PUBLICATION:
+                case ReceiverConstants.ACTION_GET_NEW_PUBLICATION:
                     if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
                         Toast.makeText(context, R.string.toast_something_went_wrong_please_try_again, Toast.LENGTH_SHORT).show();
                     } else{

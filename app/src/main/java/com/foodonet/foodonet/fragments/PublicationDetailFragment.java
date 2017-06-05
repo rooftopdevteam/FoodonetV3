@@ -195,7 +195,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
         IntentFilter filter = new IntentFilter(ReceiverConstants.BROADCAST_FOODONET);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(receiver,filter);
 
-        ServerMethods.getReports(getContext(),publication.getId(),publication.getVersion());
+        ServerMethods.getPublicationReports(getContext(),publication.getId(),publication.getVersion());
 
         // initialize the views */
         initViews();
@@ -705,7 +705,7 @@ public class PublicationDetailFragment extends Fragment implements View.OnClickL
                         Toast.makeText(context, R.string.toast_something_went_wrong_please_try_again, Toast.LENGTH_SHORT).show();
                     } else{
                         if(publication.getId() == intent.getLongExtra(Publication.PUBLICATION_ID,-1) && intent.getBooleanExtra(ReceiverConstants.UPDATE_DATA,true)){
-                            ServerMethods.getReports(getContext(),publication.getId(),publication.getVersion());
+                            ServerMethods.getPublicationReports(getContext(),publication.getId(),publication.getVersion());
                         }
                     }
                     break;

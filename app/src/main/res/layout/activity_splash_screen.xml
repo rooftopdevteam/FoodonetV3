@@ -16,5 +16,6 @@
         app:srcCompat="@drawable/icon"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/imageView" />
+        android:id="@+id/imageView"
+        android:contentDescription="@null" />
 </RelativeLayout>

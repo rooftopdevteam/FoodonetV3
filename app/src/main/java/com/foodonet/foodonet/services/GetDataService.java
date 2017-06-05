@@ -15,7 +15,6 @@ import com.foodonet.foodonet.db.GroupsDBHandler;
 import com.foodonet.foodonet.db.LatestPlacesDBHandler;
 import com.foodonet.foodonet.db.NotificationsDBHandler;
 import com.foodonet.foodonet.db.PublicationsDBHandler;
-import com.foodonet.foodonet.db.ReportsDBHandler;
 import com.foodonet.foodonet.model.GroupMember;
 import com.foodonet.foodonet.model.Publication;
 import com.foodonet.foodonet.serverMethods.ServerMethods;
@@ -32,13 +31,12 @@ public class GetDataService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            Log.d(TAG,"entered "+ intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1 ));
+            Log.i(TAG,"entered "+ intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1 ));
 
             PublicationsDBHandler publicationsDBHandler;
             GroupsDBHandler groupsDBHandler;
             GroupMembersDBHandler groupMembersDBHandler;
             LatestPlacesDBHandler latestPlacesDBHandler;
-            ReportsDBHandler reportsDBHandler;
             NotificationsDBHandler notificationsDBHandler;
             switch (intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1)){
 
@@ -64,9 +62,9 @@ public class GetDataService extends IntentService {
                         File[] userFiles = directoryUsers.listFiles();
                         for(File file : userFiles){
                             if(file.delete()){
-                                Log.d(TAG,"file Deleted :" + file.getName());
+                                Log.i(TAG,"file Deleted :" + file.getName());
                             } else {
-                                Log.d(TAG,"file could not be Deleted :" + file.getName());
+                                Log.i(TAG,"file could not be Deleted :" + file.getName());
                             }
                         }
                     }
@@ -86,15 +84,12 @@ public class GetDataService extends IntentService {
                     // if the user is not registered yet, with userID -1, skip getting the groups and get the publications (which will get only the 'audience 0 - public' group) */
 
                 case ReceiverConstants.ACTION_GET_PUBLICATIONS:
-                    // clear old non - user publications from db
-//                    publicationsDBHandler = new PublicationsDBHandler(this);
-//                    publicationsDBHandler.clearOldPublications();
-                    // get publications */
+                    // get publications
                     ServerMethods.getPublications(this);
                     break;
 
                 case ReceiverConstants.ACTION_GET_ALL_PUBLICATIONS_REGISTERED_USERS:
-                    // get registered users */
+                    // get registered users
                     ServerMethods.getAllRegisteredUsers(this);
                     // continue to clean unused images
 
@@ -110,9 +105,9 @@ public class GetDataService extends IntentService {
                         for (File file : files) {
                             if (!fileNames.contains(file.getName()) && !notificationsFileNames.contains(file.getName())) {
                                 if (file.delete()) {
-                                    Log.d(TAG,"file Deleted :" + file.getName());
+                                    Log.i(TAG,"file Deleted :" + file.getName());
                                 } else {
-                                    Log.d(TAG,"file could not be Deleted :" + file.getName());
+                                    Log.i(TAG,"file could not be Deleted :" + file.getName());
                                 }
                             }
                         }

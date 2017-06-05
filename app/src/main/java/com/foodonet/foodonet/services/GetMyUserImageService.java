@@ -28,7 +28,6 @@ public class GetMyUserImageService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            Log.d(TAG,"entered get user name service");
             String url = intent.getStringExtra(IMAGE_URL);
             String userImagePath = CommonMethods.getMyUserImageFilePath(this);
             File userImageFile;

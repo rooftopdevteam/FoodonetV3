@@ -154,4 +154,17 @@
     <string name="enter_your_name">Enter your name</string>
     <string name="toast_please_enter_your_name">Please enter your name</string>
     <string name="toast_please_enter_a_group_name">Please enter a group name</string>
+    <string name="image_desc_my_location">My location</string>
+    <string name="image_desc_publication_image">Publication image</string>
+    <string name="image_desc_add_image">Add image</string>
+    <string name="image_desc_star">Star</string>
+    <string name="button_desc_report">Report</string>
+    <string name="button_desc_sms_publisher">SMS publisher</string>
+    <string name="button_desc_phone_publisher">Phone publisher</string>
+    <string name="button_desc_navigate">Navigate</string>
+    <string name="button_desc_share_on_facebook">Share on Facebook</string>
+    <string name="button_desc_share_on_twitter">Share on Twitter</string>
+    <string name="button_desc_sms_registered_users">SMS registered users</string>
+    <string name="button_desc_phone_registered_users">Phone registered users</string>
+    <string name="button_desc_remove_user">Remove user</string>
 </resources>

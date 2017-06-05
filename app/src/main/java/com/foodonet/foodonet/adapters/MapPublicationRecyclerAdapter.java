@@ -68,7 +68,7 @@ public class MapPublicationRecyclerAdapter extends RecyclerView.Adapter<MapPubli
 
         PublicationHolder(View itemView) {
             super(itemView);
-            mapRecyclerImageView = (ImageView) itemView.findViewById(R.id.mapRecyclerImageView);
+            mapRecyclerImageView = (ImageView) itemView.findViewById(R.id.imagePublication);
             mapRecyclerImageView.setOnClickListener(this);
         }
 

@@ -47,7 +47,7 @@ public class UpdatePublicationsTask extends AsyncTask<ArrayList<Long>,Void,Void>
         for (int i = 0; i < publications.size(); i++) {
             long publicationID = publications.get(i);
             args = new String[]{String.valueOf(publicationID)};
-            String urlAddress = StartFoodonetServiceMethods.getUrlAddress(context, ReceiverConstants.ACTION_GET_PUBLICATION, args);
+            String urlAddress = StartFoodonetServiceMethods.getUrlAddress(context, ReceiverConstants.ACTION_GET_NEW_PUBLICATION, args);
             HttpsURLConnection connection = null;
             BufferedReader reader = null;
             URL url;

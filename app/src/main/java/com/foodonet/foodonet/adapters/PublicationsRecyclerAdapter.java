@@ -181,7 +181,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
                 if (mCurrentPhotoFile.isFile()) {
                     Glide.with(fragment).load(mCurrentPhotoFile).centerCrop().into(imagePublication);
                 } else {
-                    Glide.with(fragment).load(R.drawable.camera_xxh).into(imagePublication);
+                    Glide.with(fragment).load(R.drawable.icon_alpha).into(imagePublication);
                     String s3FileName = CommonMethods.getFileNameFromPublicationID(publication.getId(), publication.getVersion());
                     TransferObserver observer = transferUtility.download(context.getResources().getString(R.string.amazon_publications_bucket),
                             s3FileName, mCurrentPhotoFile);
@@ -189,7 +189,7 @@ public class PublicationsRecyclerAdapter extends RecyclerView.Adapter<Publicatio
                     observerId = observer.getId();
                 }
             } else{
-                Glide.with(fragment).load(R.drawable.camera_xxh).into(imagePublication);
+                Glide.with(fragment).load(R.drawable.icon_alpha).into(imagePublication);
             }
         }
 

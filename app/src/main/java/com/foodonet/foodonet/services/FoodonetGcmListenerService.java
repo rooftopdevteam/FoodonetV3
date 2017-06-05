@@ -40,6 +40,10 @@ public class FoodonetGcmListenerService extends GcmListenerService {
         }
     }
 
+    /**
+     * handle the incoming GCM message from the foodonet server
+     * @param msgRoot JsonObject of the message
+     */
     private void handleMessage(JSONObject msgRoot) throws JSONException {
         boolean sendNotifications = CommonMethods.isNotificationTurnedOn(this);
         NotificationsDBHandler notificationsDBHandler;
@@ -47,14 +51,14 @@ public class FoodonetGcmListenerService extends GcmListenerService {
         String type = msgRoot.getString("type");
         switch (type) {
             case CommonConstants.NOTIF_TYPE_NEW_PUBLICATION: {
+                // new publication was posted, currently received for all groups, filtering locally for user joined groups
                 getNewLocation(false,GetLocationService.TYPE_GET_FUSED);
                 long publicationID = msgRoot.getLong("id");
-                ServerMethods.getPublication(this, publicationID);
+                ServerMethods.getNewPublication(this, publicationID);
                 break;
             }
             case CommonConstants.NOTIF_TYPE_DELETED_PUBLICATION: {
-                // TODO: 20/05/2017 message received both for offline and deleted events...
-//                publicationsDBHandler = new PublicationsDBHandler(this);
+                // publication was either deleted or taken offline, currently received for public registered publications only
                 RegisteredUsersDBHandler registeredUsersDBHandler = new RegisteredUsersDBHandler(this);
                 long publicationID = msgRoot.getLong("id");
                 // since the server returns an incremented version - there won't be an image, therefor we subtract 1 to get the latest version available
@@ -70,7 +74,6 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                         CommonMethods.sendNotification(this);
                     }
                 }
-//                publicationsDBHandler.deletePublication(publicationID);
                 Intent intent = new Intent(ReceiverConstants.BROADCAST_FOODONET);
                 intent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_DELETE_PUBLICATION);
                 intent.putExtra(ReceiverConstants.SERVICE_ERROR, false);
@@ -80,13 +83,13 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                 break;
             }
             case CommonConstants.NOTIF_TYPE_REGISTRATION_FOR_PUBLICATION: {
+                // received for users registering to a user publication (currently only receiving for public publications)
                 long publicationID = msgRoot.getLong("id");
                 int publicationVersion = msgRoot.getInt("version");
                 publicationsDBHandler = new PublicationsDBHandler(this);
                 boolean isUserAdmin = publicationsDBHandler.isUserAdmin(publicationID);
                 if (isUserAdmin) {
                     ServerMethods.getAllRegisteredUsers(this);
-                    // TODO: 20/05/2017 check what if received while the publication is not yet in the db
                     String publicationTitle = publicationsDBHandler.getPublicationTitle(publicationID);
                     double timeRegistered = msgRoot.getDouble("date");
                     notificationsDBHandler = new NotificationsDBHandler(this);
@@ -99,6 +102,7 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                 break;
             }
             case CommonConstants.NOTIF_TYPE_PUBLICATION_REPORT: {
+                // received for users reporting on a user publication (currently only receiving for public publications)
                 long publicationID = msgRoot.getLong("publication_id");
                 int publicationVersion = msgRoot.getInt("publication_version");
                 publicationsDBHandler = new PublicationsDBHandler(this);
@@ -122,6 +126,8 @@ public class FoodonetGcmListenerService extends GcmListenerService {
                 break;
             }
             case CommonConstants.NOTIF_TYPE_GROUP_MEMBERS:
+                // received for group members changes in a group
+                // (annoyingly, it is received for each joined or deleted member in a user joined group, excluding the admin - even if the user exiting is not the admin)
                 long groupID = msgRoot.getLong("id");
                 String title = msgRoot.getString("title");
                 ServerMethods.getGroupAdminImage(this,groupID,title);
@@ -130,7 +136,7 @@ public class FoodonetGcmListenerService extends GcmListenerService {
         }
     }
 
-    /** start getting new location , don't show UI for failure*/
+    /** start getting new location fused location, don't show UI for failure*/
     private void getNewLocation(boolean getNewData, int actionType){
         String locationType = CommonMethods.getAvailableLocationType(this);
         switch (locationType){
@@ -138,13 +144,13 @@ public class FoodonetGcmListenerService extends GcmListenerService {
             case LocationManager.NETWORK_PROVIDER:
                 if(CommonMethods.isLocationPermissionGranted(this)){
                     CommonMethods.startGetLocationService(this,getNewData,locationType, actionType);
-                    Log.d(TAG,"have permissions");
+                    Log.i(TAG,"have permissions");
                 } else{
-                    Log.d(TAG,"ask permissions");
+                    Log.i(TAG,"ask permissions");
                 }
                 break;
             case CommonConstants.LOCATION_TYPE_LOCATION_DISABLED:
-                Log.d(TAG,"location disabled");
+                Log.i(TAG,"location disabled");
                 break;
         }
     }

@@ -6,6 +6,8 @@ public class CommonConstants {
 
     public static final short VALUE_FALSE = 0;
     public static final short VALUE_TRUE = 1;
+    public static final String VALUE_FALSE_STRING = "0";
+    public static final String VALUE_TRUE_STRING = "1";
 
     public static final long NON_FOODONET_MEMBER_ID = 0;
 

@@ -20,7 +20,7 @@ public class ReceiverConstants {
     public static final int ACTION_ADD_PUBLICATION = 2;
     public static final int ACTION_EDIT_PUBLICATION = 3;
     public static final int ACTION_DELETE_PUBLICATION = 4;
-    public static final int ACTION_GET_PUBLICATION = 5;
+    public static final int ACTION_GET_NEW_PUBLICATION = 5;
     public static final int ACTION_TAKE_PUBLICATION_OFFLINE = 6;
     public static final int ACTION_REPUBLISH_PUBLICATION = 7;
     public static final int ACTION_GET_REPORTS = 10;

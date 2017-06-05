@@ -14,10 +14,8 @@
         android:layout_centerHorizontal="true"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
-        />
-        <!--android:alpha="0.2"-->
+        android:contentDescription="@null" />
     <TextView
-        android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textInfo"

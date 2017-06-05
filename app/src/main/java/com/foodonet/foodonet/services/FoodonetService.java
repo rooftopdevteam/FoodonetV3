@@ -52,14 +52,20 @@ public class FoodonetService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        // a universal service for all foodonet server communications */
+        // a universal service for most of foodonet server communications */
         if (intent != null) {
+            // setting the returned intent that will be broadcast later
             Intent finishedIntent = new Intent(ReceiverConstants.BROADCAST_FOODONET);
             boolean serviceError = false;
+            // from ReceiverConstants
             int actionType = intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1);
+            // arguments for address construction and other uses
             args = intent.getStringArrayExtra(ReceiverConstants.ADDRESS_ARGS);
+            // data as ArrayList<Parcelable> for data checking and use later on
             data = intent.getParcelableArrayListExtra(ReceiverConstants.DATA);
+            // get url address
             String urlAddress = StartFoodonetServiceMethods.getUrlAddress(this,actionType, args);
+
             HttpsURLConnection connection = null;
             BufferedReader reader = null;
             URL url;
@@ -68,7 +74,6 @@ public class FoodonetService extends IntentService {
                 url = new URL(urlAddress);
                 connection = (HttpsURLConnection) url.openConnection();
                 connection.setConnectTimeout(TIMEOUT_TIME);
-                // TODO: 28/11/2016 add logic for timeout
                 int httpType = StartFoodonetServiceMethods.getHTTPType(actionType);
                 switch (httpType){
                     case CommonConstants.HTTP_GET:
@@ -139,9 +144,19 @@ public class FoodonetService extends IntentService {
         }
     }
 
+    /**
+     * handles successful server communications and data handling,
+     * changing the intent to reference the specific type and data that needs to be sent in the broadcast at the end
+     * @param actionType int type of action requested from ReceiverConstants
+     * @param responseRoot String of the response json the server sent back
+     * @param intent the intent that will be sent as a broadcast when all is done,
+     *               it will automatically have an extra ACTION_TYPE with the type inserted and SERVICE_ERROR for error handling, no need to add those
+     * @return the intent that will be sent via broadcast
+     */
     private Intent addResponseToIntent(int actionType, String responseRoot, Intent intent){
         Log.d(TAG,responseRoot);
         try {
+            // preparing the db handlers
             PublicationsDBHandler publicationsDBHandler;
             GroupsDBHandler groupsDBHandler;
             RegisteredUsersDBHandler registeredUsersDBHandler;
@@ -223,7 +238,6 @@ public class FoodonetService extends IntentService {
                             }else{
                                 Log.d(TAG,"Rename failed");
                             }
-                            // TODO: 25/01/2017 currently not checking if the upload was successful or not
                         }
                     }
                 }
@@ -253,7 +267,6 @@ public class FoodonetService extends IntentService {
                             }else{
                                 Log.d(TAG,"Rename failed");
                             }
-                            // TODO: 05/03/2017 currently not checking if the upload was successful or not
                         }
                     }
                 }
@@ -266,7 +279,7 @@ public class FoodonetService extends IntentService {
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
             }
 
-            else if(actionType == ReceiverConstants.ACTION_GET_PUBLICATION){
+            else if(actionType == ReceiverConstants.ACTION_GET_NEW_PUBLICATION){
                 groupsDBHandler = new GroupsDBHandler(this);
                 publicationsDBHandler = new PublicationsDBHandler(this);
                 ArrayList<Long> groupsIDs = groupsDBHandler.getGroupsIDs();
@@ -323,10 +336,6 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE){
-//                publicationsDBHandler = new PublicationsDBHandler(this);
-//                publicationsDBHandler.takePublicationOffline(Long.parseLong(args[0]));
-//                intent.putExtra(Publication.PUBLICATION_ID,Long.valueOf(args[0]));
-//                intent.putExtra(ReceiverConstants.UPDATE_DATA,true);
                 JSONObject root = new JSONObject(responseRoot);
                 long publicationID = root.getLong("id");
                 int publicationVersion = root.getInt("version");
@@ -354,7 +363,6 @@ public class FoodonetService extends IntentService {
                             }else{
                                 Log.d(TAG,"Rename failed");
                             }
-                            // TODO: 05/03/2017 currently not checking if the upload was successful or not
                         }
                     }
                 }
@@ -393,7 +401,6 @@ public class FoodonetService extends IntentService {
                             } else {
                                 Log.d(TAG, "Rename failed");
                             }
-                            // TODO: 25/01/2017 currently not checking if the upload was successful or not
                         }
                     }
                 }
@@ -433,7 +440,6 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_ADD_REPORT){
-                // TODO: 27/11/2016 add logic
                 JSONObject root = new JSONObject(responseRoot);
                 long reportID = root.getLong("id");
                 long publicationID = root.getLong("publication_id");
@@ -466,7 +472,7 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_UPDATE_USER){
-                // TODO: 22/02/2017 add logic
+                Log.d(TAG,"ACTION_UPDATE_USER");
             }
 
             else if(actionType == ReceiverConstants.ACTION_REGISTER_TO_PUBLICATION){
@@ -628,14 +634,15 @@ public class FoodonetService extends IntentService {
             }
 
             else if(actionType == ReceiverConstants.ACTION_POST_FEEDBACK){
-
+                Log.d(TAG,"ACTION_POST_FEEDBACK");
             }
 
             else if(actionType == ReceiverConstants.ACTION_ACTIVE_DEVICE_NEW_USER){
-
+                Log.d(TAG,"ACTION_ACTIVE_DEVICE_NEW_USER");
             }
 
             else if(actionType == ReceiverConstants.ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION){
+                Log.d(TAG,"ACTION_ACTIVE_DEVICE_UPDATE_USER_LOCATION");
             }
 
             else if(actionType == ReceiverConstants.ACTION_GET_GROUP_ADMIN_IMAGE){

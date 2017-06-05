@@ -8,37 +8,18 @@ import com.foodonet.foodonet.commonMethods.ReceiverConstants;
 import java.util.Locale;
 
 public class StartFoodonetServiceMethods {
-    private static final String TAG = "StartFoodonetServiceMethods";
 
-    /** builds and handles the building of the required URL.
-     * actions in post - add JSON_TO_SEND = (String) json data to intent.
-     * actions in put - add JSON_TO_SEND = (String) json data to intent.
-     * add publication / edit publication - add DATA - (ArrayList<Parcelable>) with publication )
-     * add group member - add Data - (ArrayList<Parcelable>) with GroupMember
-     * @param actionType all actions - add String ACTION_TYPE to intent
-     * @param args
-     * edit publication - add args[0] = (String) publication id
-     * delete publication - add args[0] = (String) publication id
-     * take publication offline - args[0] = (String) publication id
-     * republish publication - args[0] - (String) old publication id
-     * get publication - add args[0] = (String) publication id
-     * get reports - add args[0] = (String) publication id, args[1] = (String) publication version
-     * add report - add args[0] = (String) publication id
-     * register for publication - add args[0] = (String) publication id
-     * get publication registered users - add args[0] = (String) publication id
-     * add user - add args[0] = (String) userID
-     * unregister from publication - add args[0] (string) publication id, args[1] (String) publication version, args[2] (String) user UUID
-     * add group - add args[0] = String group name
-     * get groups - add args[0] = (String) user id
-     * add group member - add args[0] = (String) group id
-     * delete group member - add args[0] = (String) uniqueID, args[1] - String "1" or "0" - isUserExitingGroup, args[2] - String groupID
-     * get group admin image - args[0] - (String) group id, args[1] - String group name
+    /**
+     * handles getting the url for the requested server method
+     * @param actionType int of the type of action from ReceiverConstants
+     * @param args additional arguments for the creation of the url, see in ServerMethods for details
+     * @return String of the url to use in the server request
      */
     public static String getUrlAddress(Context context, int actionType, String[] args) {
-        /** prepares the url address according to the action intended */
+        // prepares the url address according to the action intended */
         StringBuilder builder = new StringBuilder();
 
-        /** add the server to foodonet */
+        // add the server to foodonet */
         builder.append(context.getResources().getString(R.string.foodonet_server));
         switch (actionType){
             case ReceiverConstants.ACTION_GET_PUBLICATIONS:
@@ -63,7 +44,7 @@ public class StartFoodonetServiceMethods {
                 builder.append(String.format(Locale.US,"/%1$s",args[0]));
                 builder.append(context.getResources().getString(R.string._json));
                 break;
-            case ReceiverConstants.ACTION_GET_PUBLICATION:
+            case ReceiverConstants.ACTION_GET_NEW_PUBLICATION:
                 builder.append(context.getResources().getString(R.string.foodonet_publications));
                 builder.append(String.format(Locale.US,"/%1$s",args[0]));
                 builder.append(context.getResources().getString(R.string._json));
@@ -153,7 +134,7 @@ public class StartFoodonetServiceMethods {
     }
 
     /** gets the appropriate https type
-     * @value actionType - from ReceiverConstants
+     * @param actionType int from ReceiverConstants
      * @return int (GET,POST,DELETE,PUT)*/
     public static int getHTTPType(int actionType){
         switch (actionType){
@@ -167,7 +148,7 @@ public class StartFoodonetServiceMethods {
                 return CommonConstants.HTTP_DELETE;
             case ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE:
                 return CommonConstants.HTTP_PUT;
-            case ReceiverConstants.ACTION_GET_PUBLICATION:
+            case ReceiverConstants.ACTION_GET_NEW_PUBLICATION:
                 return CommonConstants.HTTP_GET;
             case ReceiverConstants.ACTION_REPUBLISH_PUBLICATION:
                 return CommonConstants.HTTP_POST;

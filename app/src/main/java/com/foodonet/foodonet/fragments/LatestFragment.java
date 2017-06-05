@@ -108,7 +108,7 @@ public class LatestFragment extends Fragment {
                         adapter.updatePublications(FoodonetDBProvider.PublicationsDB.TYPE_GET_NON_USER_PUBLICATIONS);
                     }
                     break;
-                case ReceiverConstants.ACTION_GET_PUBLICATION:
+                case ReceiverConstants.ACTION_GET_NEW_PUBLICATION:
                     if(intent.getBooleanExtra(ReceiverConstants.SERVICE_ERROR,false)){
                         Toast.makeText(context, R.string.toast_something_went_wrong_please_try_again, Toast.LENGTH_SHORT).show();
                     } else{
