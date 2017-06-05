@@ -154,7 +154,6 @@ public class FoodonetService extends IntentService {
      * @return the intent that will be sent via broadcast
      */
     private Intent addResponseToIntent(int actionType, String responseRoot, Intent intent){
-        Log.d(TAG,responseRoot);
         try {
             // preparing the db handlers
             PublicationsDBHandler publicationsDBHandler;
@@ -163,7 +162,7 @@ public class FoodonetService extends IntentService {
             GroupMembersDBHandler groupMembersDBHandler;
             NotificationsDBHandler notificationsDBHandler;
 
-            if(actionType == ReceiverConstants.ACTION_GET_PUBLICATIONS){
+            if(actionType == ReceiverConstants.ACTION_GET_ONLINE_PUBLIC_PUBLICATIONS){
                 // get the users groups id, as we don't care about the others */
                 groupsDBHandler = new GroupsDBHandler(this);
                 ArrayList<Long> groupsIDs = groupsDBHandler.getGroupsIDs();
@@ -209,6 +208,7 @@ public class FoodonetService extends IntentService {
                 }
                 publicationsDBHandler = new PublicationsDBHandler(this);
                 publicationsDBHandler.updatePublicPublicationsData(publications);
+                Log.i(TAG,"finished handling get online public publications");
             }
 
             else if(actionType == ReceiverConstants.ACTION_ADD_PUBLICATION){
@@ -333,6 +333,7 @@ public class FoodonetService extends IntentService {
                     updateData = true;
                 }
                 intent.putExtra(ReceiverConstants.UPDATE_DATA,updateData);
+                Log.i(TAG,"finished handling get new publication");
             }
 
             else if(actionType == ReceiverConstants.ACTION_TAKE_PUBLICATION_OFFLINE){
@@ -437,6 +438,7 @@ public class FoodonetService extends IntentService {
                             dateOfReport, reportUserName, reportContactInfo, reportUserID, rating));
                 }
                 intent.putParcelableArrayListExtra(PublicationReport.REPORT_KEY, reports);
+                Log.i(TAG,"finished handling get reports");
             }
 
             else if(actionType == ReceiverConstants.ACTION_ADD_REPORT){
@@ -520,6 +522,7 @@ public class FoodonetService extends IntentService {
                 }
                 registeredUsersDBHandler = new RegisteredUsersDBHandler(this);
                 registeredUsersDBHandler.replaceAllRegisteredUsers(registeredUsers);
+                Log.i(TAG,"finished handling get all publications registered users");
             }
 
             else if(actionType == ReceiverConstants.ACTION_UNREGISTER_FROM_PUBLICATION){
@@ -595,8 +598,9 @@ public class FoodonetService extends IntentService {
                 groupMembersDBHandler.replaceAllGroupsMembers(members);
 
                 Intent getDataIntent = new Intent(this,GetDataService.class);
-                getDataIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_PUBLICATIONS);
+                getDataIntent.putExtra(ReceiverConstants.ACTION_TYPE,ReceiverConstants.ACTION_GET_ONLINE_PUBLIC_PUBLICATIONS);
                 startService(getDataIntent);
+                Log.i(TAG,"finished handling get groups");
             }
 
             else if (actionType == ReceiverConstants.ACTION_ADD_GROUP_MEMBER){

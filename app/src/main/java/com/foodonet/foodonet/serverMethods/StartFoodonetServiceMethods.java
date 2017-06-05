@@ -22,7 +22,7 @@ public class StartFoodonetServiceMethods {
         // add the server to foodonet */
         builder.append(context.getResources().getString(R.string.foodonet_server));
         switch (actionType){
-            case ReceiverConstants.ACTION_GET_PUBLICATIONS:
+            case ReceiverConstants.ACTION_GET_ONLINE_PUBLIC_PUBLICATIONS:
                 builder.append(context.getString(R.string.foodonet_publications));
                 break;
             case ReceiverConstants.ACTION_ADD_PUBLICATION:
@@ -138,7 +138,7 @@ public class StartFoodonetServiceMethods {
      * @return int (GET,POST,DELETE,PUT)*/
     public static int getHTTPType(int actionType){
         switch (actionType){
-            case ReceiverConstants.ACTION_GET_PUBLICATIONS:
+            case ReceiverConstants.ACTION_GET_ONLINE_PUBLIC_PUBLICATIONS:
                 return CommonConstants.HTTP_GET;
             case ReceiverConstants.ACTION_ADD_PUBLICATION:
                 return CommonConstants.HTTP_POST;

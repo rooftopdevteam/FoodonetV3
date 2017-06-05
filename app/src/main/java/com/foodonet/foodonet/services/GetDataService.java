@@ -31,8 +31,6 @@ public class GetDataService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            Log.i(TAG,"entered "+ intent.getIntExtra(ReceiverConstants.ACTION_TYPE,-1 ));
-
             PublicationsDBHandler publicationsDBHandler;
             GroupsDBHandler groupsDBHandler;
             GroupMembersDBHandler groupMembersDBHandler;
@@ -83,7 +81,7 @@ public class GetDataService extends IntentService {
                     }
                     // if the user is not registered yet, with userID -1, skip getting the groups and get the publications (which will get only the 'audience 0 - public' group) */
 
-                case ReceiverConstants.ACTION_GET_PUBLICATIONS:
+                case ReceiverConstants.ACTION_GET_ONLINE_PUBLIC_PUBLICATIONS:
                     // get publications
                     ServerMethods.getPublications(this);
                     break;

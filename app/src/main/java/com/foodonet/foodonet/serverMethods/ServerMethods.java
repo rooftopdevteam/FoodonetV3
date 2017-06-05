@@ -47,7 +47,7 @@ public class ServerMethods {
      */
     private static void getPublicPublications(Context context){
         Intent getPublicationsIntent = new Intent(context, FoodonetService.class);
-        getPublicationsIntent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_GET_PUBLICATIONS);
+        getPublicationsIntent.putExtra(ReceiverConstants.ACTION_TYPE, ReceiverConstants.ACTION_GET_ONLINE_PUBLIC_PUBLICATIONS);
         context.startService(getPublicationsIntent);
     }
 

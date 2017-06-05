@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import javax.net.ssl.HttpsURLConnection;
 
 public class UpdatePublicationsTask extends AsyncTask<ArrayList<Long>,Void,Void> {
-    private static final String TAG = "UpdateNonPublicPubsTask";
+    private static final String TAG = "UpdatePublicationsTask";
 
     private static final int ACTION_DELETE = 1;
     private static final int ACTION_UPDATE = 2;

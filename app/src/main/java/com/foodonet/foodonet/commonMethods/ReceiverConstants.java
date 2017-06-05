@@ -16,7 +16,7 @@ public class ReceiverConstants {
     public static final String REQUEST_IDENTIFIER = "request_identifier";
     public static final String DATA = "data";
     /** Server types */
-    public static final int ACTION_GET_PUBLICATIONS = 1;
+    public static final int ACTION_GET_ONLINE_PUBLIC_PUBLICATIONS = 1;
     public static final int ACTION_ADD_PUBLICATION = 2;
     public static final int ACTION_EDIT_PUBLICATION = 3;
     public static final int ACTION_DELETE_PUBLICATION = 4;
