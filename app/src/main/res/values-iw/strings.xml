@@ -137,4 +137,9 @@
     <string name="twitter_app_isnt_found">אפליקציית טוויטר לא נמצאה</string>
     <string name="foodonet">פודונט</string>
     <string name="dialog_please_choose_report">בבקשה בחר בדיווח</string>
+    <string name="location_disabled">מיקום אינו מופעל</string>
+    <string name="toast_something_went_wrong_please_try_again">ארעה שגיאה, אנא נסו שוב</string>
+    <string name="enter_your_name">הזן את שמך</string>
+    <string name="toast_please_enter_your_name">בבקשה הזן את שמך</string>
+    <string name="toast_please_enter_a_group_name">בבקשה הזן שם קבוצה</string>
 </resources>

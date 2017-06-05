@@ -148,4 +148,10 @@
     <string name="cannot_publish_closed_group_event">Cannot publish closed group event</string>
     <string name="twitter_app_isnt_found">Twitter app isn\'t found</string>
     <string name="foodonet">Foodonet</string>
+    <string name="location_disabled">Location disabled</string>
+    <string name="google_play_services_is_not_available" translatable="false">Google Play Services is not available.</string>
+    <string name="toast_something_went_wrong_please_try_again">Something went wrong, please try again</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="toast_please_enter_your_name">Please enter your name</string>
+    <string name="toast_please_enter_a_group_name">Please enter a group name</string>
 </resources>

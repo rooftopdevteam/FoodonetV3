@@ -5,7 +5,7 @@
     android:id="@+id/activity_welcome_user"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.roa.foodonetv3.activities.WelcomeUserActivity">
+    tools:context="com.foodonet.foodonet.activities.WelcomeUserActivity">
 
     <TextView
         android:text="@string/welcome_to_foodonet"
@@ -18,7 +18,6 @@
         style="@style/FooBlueLarge"/>
 
     <EditText
-        android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_32"
@@ -27,6 +26,7 @@
         style="@style/FooBoldMedium"
         android:maxLines="1"
         android:maxLength="@integer/user_name_length_limit"
+        android:hint="@string/enter_your_name"
         android:layout_centerHorizontal="true" />
 
     <de.hdodenhof.circleimageview.CircleImageView

@@ -37,13 +37,13 @@
         android:layout_marginTop="@dimen/margin_32"
         />
 
-    <com.facebook.login.widget.LoginButton
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_facebook_login"
-        android:layout_below="@+id/button_sign_in_google"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="77dp"
-        android:visibility="gone"
-        />
+    <!--<com.facebook.login.widget.LoginButton-->
+        <!--android:layout_width="150dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/button_facebook_login"-->
+        <!--android:layout_below="@+id/button_sign_in_google"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="77dp"-->
+        <!--android:visibility="gone"-->
+        <!--/>-->
 </RelativeLayout>
