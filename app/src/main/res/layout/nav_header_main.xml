@@ -14,8 +14,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/headerCircleImage"
-        android:layout_width="@dimen/image_size_86"
-        android:layout_height="@dimen/image_size_86"
+        android:layout_width="@dimen/drawer_image_size"
+        android:layout_height="@dimen/drawer_image_size"
         android:src="@android:drawable/sym_def_app_icon"/>
 
     <TextView
@@ -23,9 +23,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginLeft="@dimen/margin_8"
         android:text="@string/not_signed_in"
-        style="@style/FooWhiteMedium"
+        style="@style/FooDrawerUserName"
         android:id="@+id/headerNavTxt"
         android:ellipsize="marquee"
         android:maxLines="1" />

@@ -66,8 +66,7 @@
     <string name="no">לא</string>
     <string name="not_rated">לא דורג</string>
     <string name="not_signed_in">לא מחובר</string>
-    <string name="notification_added_to_group">צורפת לקבוצה</string>
-    <string name="notification_new_added_in_group">צורפת לקבוצה:</string>
+    <string name="notification_group_members">עדכון חברי קבוצה:</string>
     <string name="notification_new_event">שיתוף חדש</string>
     <string name="notification_new_publication_report">משתמש יצר דיווח חדש על שיתופך:</string>
     <string name="notification_new_registered_user">משתמש נרשם לשיתופך:</string>
@@ -77,7 +76,7 @@
     <string name="phone">טלפון</string>
     <string name="pick_new_location">בחר מיקום חדש</string>
     <string name="please_wait">המתן בבקשה</string>
-    <string name="post_hint_additional_details">מידע נוסף</string>
+    <string name="post_hint_additional_details">מידע נוסף(אופציונלי)</string>
     <string name="post_hint_choose_date_to_end">בחר תאריך סיום</string>
     <string name="post_hint_pickup_address">מיקום איסוף</string>
     <string name="post_hint_price">מחיר</string>
@@ -133,4 +132,27 @@
     <string name="yes">כן</string>
     <string name="you_can_only_report_once">אפשר לדווח פעם אחת בלבד</string>
     <string name="you_dont_have_any_groups_yet">אין לך עדיין קבוצה</string>
+    <string name="user_name_too_long">שם משתמש ארוך מדי</string>
+    <string name="cannot_publish_closed_group_event">לא ניתן לפרסם שיתוף של קבוצה סגורה</string>
+    <string name="twitter_app_isnt_found">אפליקציית טוויטר לא נמצאה</string>
+    <string name="foodonet">פודונט</string>
+    <string name="dialog_please_choose_report">בבקשה בחר בדיווח</string>
+    <string name="location_disabled">מיקום אינו מופעל</string>
+    <string name="toast_something_went_wrong_please_try_again">ארעה שגיאה, אנא נסו שוב</string>
+    <string name="enter_your_name">הזן את שמך</string>
+    <string name="toast_please_enter_your_name">בבקשה הזן את שמך</string>
+    <string name="toast_please_enter_a_group_name">בבקשה הזן שם קבוצה</string>
+    <string name="button_desc_navigate">נווט</string>
+    <string name="button_desc_phone_publisher">צלצל למשתף</string>
+    <string name="button_desc_phone_registered_users">צלצל למשתמשים הרשומים</string>
+    <string name="button_desc_remove_user">הסר משתמש</string>
+    <string name="button_desc_report">דווח</string>
+    <string name="button_desc_share_on_facebook">שתף בפייסבוק</string>
+    <string name="button_desc_share_on_twitter">שתף בטוויטר</string>
+    <string name="button_desc_sms_publisher">שלח הודעה למשתף</string>
+    <string name="button_desc_sms_registered_users">שלח הודעה למשתמשים הרשומים</string>
+    <string name="image_desc_add_image">הוסף תמונה</string>
+    <string name="image_desc_my_location">המיקום שלי</string>
+    <string name="image_desc_publication_image">תמונת השיתוף</string>
+    <string name="image_desc_star">כוכב</string>
 </resources>

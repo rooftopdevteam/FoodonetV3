@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sign_in_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,7 +13,8 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/textReady"
         android:layout_marginBottom="@dimen/margin_16"
-        app:srcCompat="@drawable/icon" />
+        app:srcCompat="@drawable/icon"
+        android:contentDescription="@null" />
 
     <TextView
         android:id="@+id/textReady"
@@ -37,13 +37,13 @@
         android:layout_marginTop="@dimen/margin_32"
         />
 
-    <com.facebook.login.widget.LoginButton
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_facebook_login"
-        android:layout_below="@+id/button_sign_in_google"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="77dp"
-        android:visibility="gone"
-        />
+    <!--<com.facebook.login.widget.LoginButton-->
+        <!--android:layout_width="150dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/button_facebook_login"-->
+        <!--android:layout_below="@+id/button_sign_in_google"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="77dp"-->
+        <!--android:visibility="gone"-->
+        <!--/>-->
 </RelativeLayout>

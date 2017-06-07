@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="wrap_content"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="15dp">
+    android:layout_margin="@dimen/margin_16">
 
     <ImageView
-        android:layout_height="120dp"
-        app:srcCompat="@drawable/camera_xxh"
-        android:id="@+id/mapRecyclerImageView"
-        android:layout_width="120dp" />
+        android:layout_height="@dimen/image_size_height_120"
+        android:layout_width="@dimen/image_size_height_120"
+        app:srcCompat="@drawable/icon_alpha"
+        android:id="@+id/imagePublication"
+        android:contentDescription="@string/image_desc_publication_image" />
 </LinearLayout>

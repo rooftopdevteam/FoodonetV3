@@ -24,16 +24,15 @@
                 android:src="@drawable/public_blue"
                 android:layout_margin="@dimen/margin_4"
                 android:layout_centerVertical="true"
-                />
+                android:contentDescription="@null" />
             <TextView
-                android:text="Public"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textCategory"
                 android:layout_centerVertical="true"
                 android:maxLines="2"
-                android:layout_toRightOf="@id/imagePublicationGroup"
                 android:layout_toEndOf="@id/imagePublicationGroup"
+                style="@style/FooXS"
                 />
         </RelativeLayout>
 
@@ -49,15 +48,14 @@
                 android:src="@drawable/clock"
                 android:layout_margin="@dimen/margin_4"
                 android:layout_centerVertical="true"
-                />
+                android:contentDescription="@null" />
             <TextView
-                android:text="12h 35min"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textTimeRemaining"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/imagePublicationRemaining"
                 android:layout_toEndOf="@id/imagePublicationRemaining"
+                style="@style/FooSmall"
                 />
         </RelativeLayout>
 
@@ -73,15 +71,14 @@
                 android:src="@drawable/user"
                 android:layout_margin="@dimen/margin_4"
                 android:layout_centerVertical="true"
-                />
+                android:contentDescription="@null" />
             <TextView
-                android:text="Joined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textJoined"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/imagePublicationJoined"
                 android:layout_toEndOf="@+id/imagePublicationJoined"
+                style="@style/FooXS"
                 />
         </RelativeLayout>
 
@@ -96,149 +93,132 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="@dimen/image_size_height_180"
-        app:srcCompat="@drawable/camera_xxh"
+        app:srcCompat="@drawable/icon_alpha"
         android:id="@+id/imagePicturePublication"
         android:layout_below="@+id/divider"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:contentDescription="@string/image_desc_publication_image" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imagePicturePublication"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/textTitlePublication"
         android:gravity="start"
         android:textAlignment="viewStart"
         android:layout_marginEnd="@dimen/margin_16"
         android:layout_marginStart="@dimen/margin_16"
-        android:text="Rice with meat"
         style="@style/FooBlackBoldMedium"
         android:layout_marginTop="@dimen/margin_8" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/camera_xxh"
+        android:layout_width="@dimen/image_size_48"
+        android:layout_height="@dimen/image_size_48"
+        android:src="@drawable/icon_alpha"
         android:id="@+id/imagePublisherUser"
         android:layout_below="@id/textTitlePublication"
         android:layout_marginStart="@dimen/margin_16"
-        android:layout_marginLeft="@dimen/margin_16"
         android:layout_marginTop="@dimen/margin_8"
         />
 
     <TextView
-        android:text="Tel Aviv, Zhabotinski 48"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textTitlePublication"
-        android:layout_toRightOf="@+id/imagePublisherUser"
         android:layout_toEndOf="@+id/imagePublisherUser"
         android:id="@+id/textPublicationAddress"
         style="@style/FooBlackSmall"
         android:gravity="start"
         android:textAlignment="viewStart"
-        android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginTop="@dimen/margin_8" />
 
     <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/image_size_24"
+        android:layout_height="@dimen/image_size_24"
         app:srcCompat="@drawable/star"
         android:layout_below="@+id/textPublicationAddress"
-        android:layout_toRightOf="@+id/imagePublisherUser"
         android:layout_toEndOf="@+id/imagePublisherUser"
         android:id="@+id/imageStar"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginLeft="@dimen/margin_8"
-        android:layout_marginTop="@dimen/margin_8" />
+        android:layout_marginTop="@dimen/margin_8"
+        android:contentDescription="@string/image_desc_star" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textPublicationAddress"
-        android:layout_toRightOf="@+id/imageStar"
         android:layout_toEndOf="@+id/imageStar"
         android:id="@+id/textPublicationRating"
-
-        android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginTop="@dimen/margin_8" />
+        android:layout_marginTop="@dimen/margin_8"
+        style="@style/FooSmall"
+        />
 
     <TextView
-        android:text="Leonardo DiCaprio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textPublicationAddress"
-        android:layout_toRightOf="@+id/textPublicationRating"
         android:layout_toEndOf="@+id/textPublicationRating"
         android:id="@+id/textPublisherName"
         android:maxLines="1"
         android:gravity="start"
         android:textAlignment="viewStart"
-        android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginTop="@dimen/margin_8" />
+        android:layout_marginTop="@dimen/margin_8"
+        style="@style/FooSmall"
+        />
 
     <TextView
         android:text="@string/item_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imageStar"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/textGroupName"
         style="@style/FooBlackSmall"
-        android:layout_marginLeft="@dimen/margin_16"
         android:layout_marginStart="@dimen/margin_16" />
 
     <TextView
-        android:text="Free"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/textGroupName"
-        android:layout_toRightOf="@+id/textGroupName"
         android:layout_toEndOf="@+id/textGroupName"
         android:id="@+id/textPublicationPrice"
         style="@style/FooBlueIndentMedium"
-        android:layout_marginLeft="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8" />
 
     <TextView
-        android:text="₪"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/textPublicationPrice"
-        android:layout_toRightOf="@id/textPublicationPrice"
         android:layout_toEndOf="@id/textPublicationPrice"
         android:id="@+id/textPublicationPriceType"
         style="@style/FooYellowSmall"
-        android:layout_marginLeft="@dimen/margin_4"
         android:layout_marginStart="@dimen/margin_4"
         />
 
     <TextView
-        android:text="Lorem ipsum dolor sit amet, conserctetur adipiscing elit."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textPublicationDetails"
         android:gravity="start"
         android:textAlignment="viewStart"
         android:layout_below="@+id/textGroupName"
-        android:layout_alignLeft="@+id/textGroupName"
-        android:layout_alignStart="@+id/textGroupName" />
+        android:layout_alignStart="@+id/textGroupName"
+        style="@style/FooXS"
+        />
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textPublicationDetails"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/recyclerPublicationReport"/>
 
     <LinearLayout
+        android:baselineAligned="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -255,7 +235,8 @@
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/fab_report"
                 android:id="@+id/imageActionPublicationReport"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/button_desc_report" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -269,7 +250,8 @@
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/fab_sms"
                 android:id="@+id/imageActionPublicationSMS"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/button_desc_sms_publisher" />
 
         </RelativeLayout>
 
@@ -284,7 +266,8 @@
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/fab_call"
                 android:id="@+id/imageActionPublicationPhone"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/button_desc_phone_publisher" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -298,7 +281,8 @@
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/fab_navigate"
                 android:id="@+id/imageActionPublicationMap"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/button_desc_navigate" />
 
         </RelativeLayout>
     </LinearLayout>
@@ -308,7 +292,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="?attr/colorPrimary"
-        android:id="@+id/layoutAdminDetails">
+        android:id="@+id/layoutAdminDetails"
+        android:baselineAligned="false">
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -320,7 +305,8 @@
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/fab_facebook"
                 android:id="@+id/imageActionAdminShareFacebook"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/button_desc_share_on_facebook" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -334,7 +320,8 @@
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/fab_twitter"
                 android:id="@+id/imageActionAdminShareTwitter"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/button_desc_share_on_twitter" />
 
         </RelativeLayout>
 
@@ -349,7 +336,8 @@
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/fab_sms"
                 android:id="@+id/imageActionAdminSMS"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/button_desc_sms_registered_users" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -363,7 +351,8 @@
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/fab_call"
                 android:id="@+id/imageActionAdminPhone"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/button_desc_phone_registered_users" />
 
         </RelativeLayout>
     </LinearLayout>
