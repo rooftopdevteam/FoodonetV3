@@ -11,10 +11,10 @@
         android:layout_marginStart="@dimen/margin_8"
         android:layout_width="@dimen/image_size_12"
         android:layout_height="@dimen/image_size_12"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@null" />
 
     <TextView
-        android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/FooIndentMedium"

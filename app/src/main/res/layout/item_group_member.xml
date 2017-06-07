@@ -11,10 +11,10 @@
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
         android:id="@+id/imageMember"
-        android:layout_marginStart="@dimen/margin_16" />
+        android:layout_marginStart="@dimen/margin_16"
+        android:contentDescription="@null" />
 
     <TextView
-        android:text="אלון"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -39,7 +39,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/margin_16"
         android:padding="@dimen/margin_8"
-        android:id="@+id/imageRemoveMember" />
+        android:id="@+id/imageRemoveMember"
+        android:contentDescription="@string/button_desc_remove_user" />
 
     <TextView
         android:text="@string/admin"

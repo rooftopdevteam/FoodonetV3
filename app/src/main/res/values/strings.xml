@@ -148,4 +148,23 @@
     <string name="cannot_publish_closed_group_event">Cannot publish closed group event</string>
     <string name="twitter_app_isnt_found">Twitter app isn\'t found</string>
     <string name="foodonet">Foodonet</string>
+    <string name="location_disabled">Location disabled</string>
+    <string name="google_play_services_is_not_available" translatable="false">Google Play Services is not available.</string>
+    <string name="toast_something_went_wrong_please_try_again">Something went wrong, please try again</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="toast_please_enter_your_name">Please enter your name</string>
+    <string name="toast_please_enter_a_group_name">Please enter a group name</string>
+    <string name="image_desc_my_location">My location</string>
+    <string name="image_desc_publication_image">Publication image</string>
+    <string name="image_desc_add_image">Add image</string>
+    <string name="image_desc_star">Star</string>
+    <string name="button_desc_report">Report</string>
+    <string name="button_desc_sms_publisher">SMS publisher</string>
+    <string name="button_desc_phone_publisher">Phone publisher</string>
+    <string name="button_desc_navigate">Navigate</string>
+    <string name="button_desc_share_on_facebook">Share on Facebook</string>
+    <string name="button_desc_share_on_twitter">Share on Twitter</string>
+    <string name="button_desc_sms_registered_users">SMS registered users</string>
+    <string name="button_desc_phone_registered_users">Phone registered users</string>
+    <string name="button_desc_remove_user">Remove user</string>
 </resources>

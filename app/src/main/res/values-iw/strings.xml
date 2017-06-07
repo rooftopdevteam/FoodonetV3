@@ -137,4 +137,22 @@
     <string name="twitter_app_isnt_found">אפליקציית טוויטר לא נמצאה</string>
     <string name="foodonet">פודונט</string>
     <string name="dialog_please_choose_report">בבקשה בחר בדיווח</string>
+    <string name="location_disabled">מיקום אינו מופעל</string>
+    <string name="toast_something_went_wrong_please_try_again">ארעה שגיאה, אנא נסו שוב</string>
+    <string name="enter_your_name">הזן את שמך</string>
+    <string name="toast_please_enter_your_name">בבקשה הזן את שמך</string>
+    <string name="toast_please_enter_a_group_name">בבקשה הזן שם קבוצה</string>
+    <string name="button_desc_navigate">נווט</string>
+    <string name="button_desc_phone_publisher">צלצל למשתף</string>
+    <string name="button_desc_phone_registered_users">צלצל למשתמשים הרשומים</string>
+    <string name="button_desc_remove_user">הסר משתמש</string>
+    <string name="button_desc_report">דווח</string>
+    <string name="button_desc_share_on_facebook">שתף בפייסבוק</string>
+    <string name="button_desc_share_on_twitter">שתף בטוויטר</string>
+    <string name="button_desc_sms_publisher">שלח הודעה למשתף</string>
+    <string name="button_desc_sms_registered_users">שלח הודעה למשתמשים הרשומים</string>
+    <string name="image_desc_add_image">הוסף תמונה</string>
+    <string name="image_desc_my_location">המיקום שלי</string>
+    <string name="image_desc_publication_image">תמונת השיתוף</string>
+    <string name="image_desc_star">כוכב</string>
 </resources>
