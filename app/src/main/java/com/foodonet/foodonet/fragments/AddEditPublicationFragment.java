@@ -304,9 +304,10 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
             }
             // Continue only if the File was successfully created
             if (photoFile != null && photoFile.isFile()) {
-                Uri photoURI = FileProvider.getUriForFile(getContext(),
+                Uri photoURI2 = FileProvider.getUriForFile(getContext(),
                         "com.foodonet.foodonet.fileprovider",
                         photoFile);
+                Uri photoURI = Uri.fromFile(photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, INTENT_TAKE_PICTURE);
             }

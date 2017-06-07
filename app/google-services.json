@@ -1,27 +1,38 @@
 {
   "project_info": {
-    "project_number": "424844115183",
-    "firebase_url": "https://foodonet-169118.firebaseio.com",
-    "project_id": "foodonet-169118",
-    "storage_bucket": "foodonet-169118.appspot.com"
+    "project_number": "366846890930",
+    "firebase_url": "https://foodonet-release.firebaseio.com",
+    "project_id": "foodonet-release",
+    "storage_bucket": "foodonet-release.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:424844115183:android:46a75b8c052a0d7b",
+        "mobilesdk_app_id": "1:366846890930:android:46a75b8c052a0d7b",
         "android_client_info": {
           "package_name": "com.foodonet.foodonet"
         }
       },
       "oauth_client": [
         {
-          "client_id": "424844115183-1jh8hl1affdlk6kgp8kso7tuplulm8vq.apps.googleusercontent.com",
+          "client_id": "366846890930-9kbu08a04kaakthi0e0fatsp2si5mp8a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.foodonet.foodonet",
+            "certificate_hash": "910688e9bd935866111bde352c7b830041405785"
+          }
+        },
+        {
+          "client_id": "366846890930-qp3l4ud9kocqk2hu8lsskc5n62c633oo.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDJA7SR4L_Oo0-GI_NsRQpwbZpgpn2aOUs"
+          "current_key": "AIzaSyAEYhNcqoAiLAOMctKqamwbwJ8aQbC7bvg"
+        },
+        {
+          "current_key": "AIzaSyCI_npp6amULqxlPgbKIjWcbu8UZnd2AoY"
         }
       ],
       "services": {
@@ -29,8 +40,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "366846890930-qp3l4ud9kocqk2hu8lsskc5n62c633oo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -12,3 +12,4 @@
 /app/src/debug/res/values/google_maps_api.xml
 /app/src/main/res/values/push_notification.xml
 /app/google-services.json
+/app/src/release/res/values/google_maps_api.xml

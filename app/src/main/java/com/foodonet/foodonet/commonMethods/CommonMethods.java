@@ -10,7 +10,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.LocationManager;
+import android.media.ExifInterface;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -585,34 +587,71 @@ public class CommonMethods {
         final float ratio = 16 / 9f;
         final int WANTED_HEIGHT = 560;
         final int WANTED_WIDTH = (int) (WANTED_HEIGHT * ratio);
-
+        final int SCALED_LIMIT = 1000;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        if(uri != null){
+        int orientation = ExifInterface.ORIENTATION_UNDEFINED;
+        if(uri!= null){
+            // gallery
             BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri),null,options);
+            try {
+                ExifInterface exifInterface = new ExifInterface(ImageFilePath.getPath(context,uri));
+                orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_UNDEFINED);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else{
+            // camera
             BitmapFactory.decodeFile(photoPath,options);
+            try {
+                ExifInterface exifInterface = new ExifInterface(photoPath);
+                orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_UNDEFINED);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         int originHeight = options.outHeight;
         int originWidth = options.outWidth;
         int scale = 1;
         while(true) {
-            if(originWidth / 2 < WANTED_WIDTH || originHeight / 2 < WANTED_HEIGHT)
+            if(originWidth / 2 < SCALED_LIMIT || originHeight / 2 < SCALED_LIMIT)
                 break;
             originWidth /= 2;
             originHeight /= 2;
             scale *= 2;
         }
-
         options.inJustDecodeBounds = false;
         options.inSampleSize = scale;
         Bitmap bitmap;
         if(uri!= null){
+            // gallery
             bitmap = BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri),null,options);
         } else{
+            // camera
             bitmap = BitmapFactory.decodeFile(photoPath,options);
         }
-
+        Matrix matrix;
+        switch (orientation){
+            case ExifInterface.ORIENTATION_NORMAL:
+            case ExifInterface.ORIENTATION_UNDEFINED:
+                bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight());
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix = new Matrix();
+                matrix.postRotate(90);
+                bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix = new Matrix();
+                matrix.postRotate(180);
+                bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix = new Matrix();
+                matrix.postRotate(270);
+                bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+                break;
+        }
         // cut the image to display as a 16:9 image
         if (bitmap.getHeight() * ratio < bitmap.getWidth()) {
             // full height of the image, cut the width

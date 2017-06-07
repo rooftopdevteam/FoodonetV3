@@ -26,7 +26,7 @@ public class FoodonetGcmListenerService extends GcmListenerService {
 
     @Override
     public void onMessageReceived(String s, Bundle bundle) {
-        Log.d(TAG, s+", :"+bundle.getString(PUSH_OBJECT_MSG));
+        Log.i(TAG, s+", :"+bundle.getString(PUSH_OBJECT_MSG));
         if(s.startsWith(getString(R.string.push_notification_prefix)) || s.compareTo(getString(R.string.notifications_server_id)) == 0) {
             String msg = bundle.getString(PUSH_OBJECT_MSG);
             JSONObject msgRoot;

@@ -10,7 +10,6 @@ import com.foodonet.foodonet.R;
 import com.foodonet.foodonet.commonMethods.CommonConstants;
 
 public class SplashForCamera extends AppCompatActivity {
-    private static final String TAG = "SplashForCamera";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
