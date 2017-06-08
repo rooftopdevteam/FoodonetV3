@@ -27,23 +27,84 @@
         style="@style/FooMedium"
         />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/textReady"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_32"
+        android:id="@+id/layoutAgree"
+        >
+
+        <CheckBox
+            android:id="@+id/checkBoxAgree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FooXS"
+                    android:text="I agree to the"
+                    android:layout_marginStart="@dimen/margin_4"
+                    />
+                <TextView
+                    android:id="@+id/textTerms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FooBlueXS"
+                    android:text="Terms and Conditions"
+                    android:layout_marginStart="@dimen/margin_4"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FooXS"
+                    android:text="and to the"
+                    android:layout_marginStart="@dimen/margin_4"
+                    />
+
+                <TextView
+                    android:id="@+id/textPolicy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FooBlueXS"
+                    android:text="Privacy Policy"
+                    android:layout_marginStart="@dimen/margin_4"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
     <com.google.android.gms.common.SignInButton
         android:id="@+id/button_sign_in_google"
         android:layout_width="@dimen/image_size_height_180"
         android:layout_height="wrap_content"
         android:visibility="visible"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/textReady"
-        android:layout_marginTop="@dimen/margin_32"
+        android:layout_below="@id/layoutAgree"
+        android:layout_marginTop="@dimen/margin_16"
         />
-
-    <!--<com.facebook.login.widget.LoginButton-->
-        <!--android:layout_width="150dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/button_facebook_login"-->
-        <!--android:layout_below="@+id/button_sign_in_google"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_marginTop="77dp"-->
-        <!--android:visibility="gone"-->
-        <!--/>-->
 </RelativeLayout>
