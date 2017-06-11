@@ -155,4 +155,5 @@
     <string name="image_desc_my_location">המיקום שלי</string>
     <string name="image_desc_publication_image">תמונת השיתוף</string>
     <string name="image_desc_star">כוכב</string>
+    <string name="toast_you_must_agree_with_the_terms_and_conditions">עליך להסכים לתנאי השירות והשימוש</string>
 </resources>

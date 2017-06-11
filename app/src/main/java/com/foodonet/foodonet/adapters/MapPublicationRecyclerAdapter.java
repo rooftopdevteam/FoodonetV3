@@ -98,7 +98,7 @@ public class MapPublicationRecyclerAdapter extends RecyclerView.Adapter<MapPubli
         public void onStateChanged(int id, TransferState state) {
             Log.d(TAG, "amazon onStateChanged " + id + " " + state.toString());
             if (state == TransferState.COMPLETED) {
-                if (observerId == id) {
+                if (observerId == id && mapRecyclerImageView.isShown()) {
                     Glide.with(context).load(mCurrentPhotoFile).centerCrop().into(mapRecyclerImageView);
                 } else if(state == TransferState.FAILED){
                     if(failCount >= 0){
