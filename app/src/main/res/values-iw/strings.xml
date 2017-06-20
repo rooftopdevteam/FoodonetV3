@@ -156,4 +156,6 @@
     <string name="image_desc_publication_image">תמונת השיתוף</string>
     <string name="image_desc_star">כוכב</string>
     <string name="toast_you_must_agree_with_the_terms_and_conditions">עליך להסכים לתנאי השירות והשימוש</string>
+    <string name="i_agree_to_the">אני מסכים</string>
+    <string name="terms_and_conditions">לתנאי השירות והשימוש</string>
 </resources>

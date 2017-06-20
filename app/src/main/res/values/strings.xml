@@ -168,4 +168,6 @@
     <string name="button_desc_phone_registered_users">Phone registered users</string>
     <string name="button_desc_remove_user">Remove user</string>
     <string name="toast_you_must_agree_with_the_terms_and_conditions">You must agree with the Terms and Conditions</string>
+    <string name="i_agree_to_the">I agree to the</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
 </resources>

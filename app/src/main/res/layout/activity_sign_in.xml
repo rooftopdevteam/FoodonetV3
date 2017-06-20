@@ -44,22 +44,17 @@
             android:layout_gravity="center_vertical"
             />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_gravity="center"
                 >
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/FooXS"
-                    android:text="I agree to the"
+                    android:text="@string/i_agree_to_the"
                     android:layout_marginStart="@dimen/margin_4"
                     />
                 <TextView
@@ -67,35 +62,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/FooBlueXS"
-                    android:text="Terms and Conditions"
+                    android:text="@string/terms_and_conditions"
                     android:layout_marginStart="@dimen/margin_4"
                     />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/FooXS"
-                    android:text="and to the"
-                    android:layout_marginStart="@dimen/margin_4"
-                    />
-
-                <TextView
-                    android:id="@+id/textPolicy"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/FooBlueXS"
-                    android:text="Privacy Policy"
-                    android:layout_marginStart="@dimen/margin_4"
-                    />
-
-            </LinearLayout>
-        </LinearLayout>
     </LinearLayout>
 
     <com.google.android.gms.common.SignInButton

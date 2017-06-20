@@ -1,6 +1,7 @@
 package com.foodonet.foodonet.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -57,7 +58,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         findViewById(R.id.button_sign_in_google).setOnClickListener(this);
         findViewById(R.id.textTerms).setOnClickListener(this);
-        findViewById(R.id.textPolicy).setOnClickListener(this);
         checkBoxAgree = (CheckBox) findViewById(R.id.checkBoxAgree);
 
         if(savedInstanceState==null){
@@ -115,9 +115,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.textTerms:
                 // TODO: 08/06/2017 add
-                break;
-            case R.id.textPolicy:
-                // TODO: 08/06/2017 add
+                String url = getString(R.string.foodonet_privacy_policy);
+                Intent openPolicyIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+                startActivity(openPolicyIntent);
                 break;
         }
     }
