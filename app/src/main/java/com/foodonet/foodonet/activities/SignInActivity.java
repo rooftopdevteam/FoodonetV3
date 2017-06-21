@@ -1,11 +1,13 @@
 package com.foodonet.foodonet.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -32,12 +34,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser user;
+    private CheckBox checkBoxAgree;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_sign_in);
 
         setTitle(R.string.sign_in);
@@ -55,6 +57,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         };
 
         findViewById(R.id.button_sign_in_google).setOnClickListener(this);
+        findViewById(R.id.textTerms).setOnClickListener(this);
+        checkBoxAgree = (CheckBox) findViewById(R.id.checkBoxAgree);
 
         if(savedInstanceState==null){
             connectToGoogleClient();
@@ -103,7 +107,17 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_sign_in_google:
-                signIn();
+                if(checkBoxAgree.isChecked()) {
+                    signIn();
+                } else{
+                    Toast.makeText(this, R.string.toast_you_must_agree_with_the_terms_and_conditions, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.textTerms:
+                // TODO: 08/06/2017 add
+                String url = getString(R.string.foodonet_privacy_policy);
+                Intent openPolicyIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+                startActivity(openPolicyIntent);
                 break;
         }
     }
