@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -304,10 +305,14 @@ public class AddEditPublicationFragment extends Fragment implements View.OnClick
             }
             // Continue only if the File was successfully created
             if (photoFile != null && photoFile.isFile()) {
-                Uri photoURI2 = FileProvider.getUriForFile(getContext(),
-                        "com.foodonet.foodonet.fileprovider",
-                        photoFile);
-                Uri photoURI = Uri.fromFile(photoFile);
+                Uri photoURI;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+                    photoURI = FileProvider.getUriForFile(getContext(),
+                            "com.foodonet.foodonet.fileprovider",
+                            photoFile);
+                } else{
+                    photoURI = Uri.fromFile(photoFile);
+                }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, INTENT_TAKE_PICTURE);
             }
